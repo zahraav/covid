@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def draw_tree(input_address, ):
+def draw_tree(input_address):
     clustalw_exe = r"C:\Program Files (x86)\ClustalW2\clustalw2.exe"
     clustalw_cline = ClustalwCommandline(clustalw_exe, infile=input_address)
     assert os.path.isfile(clustalw_exe), "Clustal W executable missing"

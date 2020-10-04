@@ -1,5 +1,4 @@
 import mysql.connector
-from matplotlib import collections
 
 #DatabaseConfig = collections.namedtuple('DatabaseConfig', ['userName', 'passWord'])
 

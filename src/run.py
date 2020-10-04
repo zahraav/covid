@@ -1,14 +1,16 @@
 import configparser
 import logging
+import os
 
 from src.utilities import DBConnection
 from src.utilities import PylogenticTree
 
-CONFIG_FILE = 'config/config.cfg'
+CONFIG_FILE = r'..//config/config.cfg'
 
-logging.basicConfig(filename="%s" % 'src/logs/log.log',
+logging.basicConfig(filename="%s" % '../src/logs/logs.log',
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 

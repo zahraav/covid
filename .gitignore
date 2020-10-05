@@ -1,0 +1,13 @@
+.idea
+Lib/*
+Lib/
+lib/
+lib/*
+input/*
+**/__pycache__/
+**/*.pyc
+.idea
+.idea/*
+Scripts
+Scripts/*
+!.gitignore

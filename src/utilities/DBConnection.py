@@ -1,21 +1,21 @@
-import mysql.connector
+#import mysql.connector
 
-#DatabaseConfig = collections.namedtuple('DatabaseConfig', ['userName', 'passWord'])
-
-mydb = mysql.connector.connect(
+'''mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
     database="seq_tech_metadata"
 )
-
+'''
 
 def query_execute(query):
-    my_cursor = mydb.cursor()
+    '''my_cursor = mydb.cursor()
     my_cursor.execute(query)
-    result = my_cursor.fetchone()
-    # my_result = my_cursor.fetchall()
+    result = my_cursor.fetchone()'''
+    result={'a'}
     # TODO change for select *
+    # my_result = my_cursor.fetchall()
+
     return result[0]
 
 

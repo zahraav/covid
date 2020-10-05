@@ -1,6 +1,5 @@
 import configparser
 import logging
-import os
 
 from src.utilities import DBConnection
 from src.utilities import PylogenticTree

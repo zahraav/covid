@@ -12,7 +12,7 @@ def query_execute(query):
     '''my_cursor = mydb.cursor()
     my_cursor.execute(query)
     result = my_cursor.fetchone()'''
-    result={'a'}
+    result=['a']
     # TODO change for select *
     # my_result = my_cursor.fetchall()
 

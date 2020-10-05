@@ -56,7 +56,7 @@ def next_data(fastafile):
     with open(fastafile) as infile:
         for line in infile:
             if line.__contains__('>'):
-                if count is 2:
+                if count == 2:
                     count = 1
                     temp_sequence = sequence[0:100:]
                     temp_header = header

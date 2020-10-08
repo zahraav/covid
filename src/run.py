@@ -3,7 +3,7 @@ import logging
 
 
 from utilities import DBConnection
-from utilities import PylogenticTree
+from utilities import PhylogenticTree
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -86,11 +86,11 @@ def main():
     config = get_configs()
     is_db_access = config['databaseInfo'].get('is_db_access')
     aligned_file = str(config['address'].get('input_fastafile')).replace("input/", "input/aligned_")
-    
+
     if is_db_access is True:
         change_fasta_header(aligned_file)
     else:
-        PylogenticTree.draw_tree(aligned_file)
+        PhylogenticTree.draw_tree(aligned_file)
 
 
 if __name__ == '__main__':

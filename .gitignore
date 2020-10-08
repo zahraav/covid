@@ -1,13 +1,16 @@
+.gitignore
 .idea
 Lib/*
 Lib/
 lib/
 lib/*
 input/*
+__pycache__/
 **/__pycache__/
 **/*.pyc
 .idea
 .idea/*
 Scripts
 Scripts/*
+
 !.gitignore

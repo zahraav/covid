@@ -86,8 +86,8 @@ def main():
     config = get_configs()
     is_db_access = config['databaseInfo'].get('is_db_access')
     aligned_file = str(config['address'].get('input_fastafile')).replace("input/", "input/aligned_")
-
-    if is_db_access:
+    
+    if is_db_access is True:
         change_fasta_header(aligned_file)
     else:
         PylogenticTree.draw_tree(aligned_file)

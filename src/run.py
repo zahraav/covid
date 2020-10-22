@@ -90,7 +90,10 @@ def save_to_file(filename,data,note):
     except MemoryError as e:
         logger.error(e)
 
-
+def read_from_file(filename):
+    with open(filename) as infile:
+        for line in infile:
+            print(line)
 
 def main():
     config = get_configs()

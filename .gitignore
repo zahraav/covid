@@ -12,5 +12,6 @@ __pycache__/
 .idea/*
 Scripts
 Scripts/*
+*.swp
 
 !.gitignore

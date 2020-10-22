@@ -2,13 +2,36 @@
 # from Bio.Align.Applications import ClustalwCommandline
 
 import sys
-from Bio import Phylo
 import logging
 from Bio.Align.Applications import ClustalwCommandline
 import os
-
 logger = logging.getLogger(__name__)
 
+import matplotlib
+import matplotlib.pyplot as plt
+from Bio import Phylo
+
+
+def tree_DFS(branch):
+    if branch.is_terminal() is True:
+        if 'Nanopore' in branch.name:
+            branch._set_color('red')
+        elif 'Illumina' in branch.name:
+            branch._set_color('blue')
+        else:
+            branch._set_color('orange')
+        return
+    count = 0
+    color=''
+    for i in branch:
+        if i.is_terminal() is True:
+            color= i._get_color()
+        tree_DFS(i)
+
+        if i._color == color:
+            count += 1
+    if count == len(branch):
+        branch._set_color(color)
 
 def draw_tree(input_address):
     # Linux:
@@ -25,7 +48,23 @@ def draw_tree(input_address):
     sys.setrecursionlimit(4000)
     tree = Phylo.read(input_address.replace('.fasta', '.dnd'), "newick")
 
-    # Print phylogenetic tree
-    # Phylo.draw_ascii(tree)
+    branches = [x for x in tree.clade.clades if x is not None]
+
+    for branch in branches:
+        tree_DFS(branch)
+
+
     tree.rooted = True
-    Phylo.draw(tree)
+
+    matplotlib.rc('font', size=6)
+    # matplotlib.rc('red' )
+    fig = plt.figure(figsize=(10, 20), dpi=100)
+    # tree.clade[0, 0,0,0,0,0].color = "blue"
+
+    axes = fig.add_subplot(1, 1, 1)
+    Phylo.draw(tree, axes=axes, do_show=False)
+    plt.savefig('files/canada.png', dpi=100)
+    plt.show()
+
+
+#draw_tree('files/test.fasta')

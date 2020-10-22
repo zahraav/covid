@@ -4,7 +4,7 @@ Lib/*
 Lib/
 lib/
 lib/*
-input/*
+files/*
 __pycache__/
 **/__pycache__/
 **/*.pyc

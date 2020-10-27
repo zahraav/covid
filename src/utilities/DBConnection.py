@@ -1,35 +1,35 @@
-'''import mysql.connector
+#import mysql.connector
 
-mydb = mysql.connector.connect(
+'''mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
     database="seq_tech_metadata"
-)
-'''
+)'''
+
 
 def query_execute(query):
-    result=[]
-    result[0]='a'
-#   my_cursor = mydb.cursor()
- #   my_cursor.execute(query)
-#    result = my_cursor.fetchone()
+    return 'a'
 
-    # TODO change for select *
-    # my_result = my_cursor.fetchall()
+'''   my_cursor = mydb.cursor()
+    my_cursor.execute(query)
+    result = my_cursor.fetchone()
 
-    return result[0]
+
+    my_result = my_cursor.fetchall()
+
+    return result[0]'''
+
 
 def query_execute_all(query):
-    result=[]
-    result[0]='a'
-    #my_cursor = mydb.cursor()
-    #my_cursor.execute(query)
-    #result = my_cursor.fetchone()
+    '''my_cursor = mydb.cursor()
+    my_cursor.execute(query)
+    result = my_cursor.fetchone()
 
     # TODO change for select *
-    #return my_cursor.fetchall()
-    return result
+    return my_cursor.fetchall()
+    return result'''
+    return 'a'
     #return result[0]
 
 def query():

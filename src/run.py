@@ -82,29 +82,15 @@ def change_fasta_header(output):
         logger.error(e)
 
 
-def save_to_file(filename,data,note):
-    try:
-        with open(filename, 'w', encoding='utf-8') as f1:
-            f1.write(note + '\n'+ str(data))
-
-    except MemoryError as e:
-        logger.error(e)
-
-def read_from_file(filename):
-    with open(filename) as infile:
-        for line in infile:
-            print(line)
-
 def main():
     config = get_configs()
     is_db_access = config['databaseInfo'].get('is_db_access')
     aligned_file = str(config['address'].get('input_fastafile')).replace("files/", "files/aligned_")
-    save_to_file('files/nano_Illumina_ratio',DBConnection.get_ratio_Nano_to_Illu(),'ratio of nanopore to Illumina seq in canada: ')
 
 #    if is_db_access == True:
-    change_fasta_header(aligned_file)
+    #change_fasta_header(aligned_file)
     #else:
-    #    PhylogenticTree.draw_tree(aligned_file)
+    PhylogenticTree.draw_tree(aligned_file)
 
 
 if __name__ == '__main__':

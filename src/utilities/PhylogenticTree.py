@@ -146,16 +146,17 @@ def draw_tree(input_address):
     tree = Phylo.read(input_address.replace('.fasta', '.dnd'), "newick")
 
     # make fasta file for give Phylip
-    newaddress = input_address.replace('/', '/phy_')
-    os.remove(newaddress)
-    os.remove(newaddress.replace('.fasta','.phy'))
-    print(newaddress)
+    newFastaAddress = input_address.replace('/', '/phy_')
+    newPhyAddress=newFastaAddress.replace('.fasta', '.phy')
+    os.remove(newFastaAddress)
+    os.remove(newPhyAddress)
+    print(newFastaAddress)
 
     make_new_fasta_file(input_address)
-    fastaToPhylipConvertor(newaddress)
+    fastaToPhylipConvertor(newFastaAddress)
 
     calculator = DistanceCalculator('identity')
-    aln = AlignIO.read(open(newaddress), 'phylip')
+    aln = AlignIO.read(open(newPhyAddress), 'phylip')
     dm = calculator.get_distance(aln)
     # print(dm)
 

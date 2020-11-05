@@ -52,13 +52,13 @@ import argparse
 
 def fastaToPhylipConvertor(address):
     # = parse_args(address)
-   # print('address: ',address)
-    #address='files/test2.fasta'
-    phyaddress=address.replace('fasta', 'phy')
-    #print(phyaddress)
+    # print('address: ',address)
+    # address='files/test2.fasta'
+    phyaddress = address.replace('fasta', 'phy')
+    # print(phyaddress)
     with open(address) as handle:
         records = AlignIO.parse(handle, "fasta")
-        #print(records)
+        # print(records)
         with open(phyaddress, "w") as output_handle:
             AlignIO.write(records, output_handle, "phylip")
             # The name should be ten characters in length
@@ -78,8 +78,14 @@ def make_new_fasta_file(address):
     phyaddress = address.replace('/', '/phy_')
     with open(address) as infile:
         for line in infile:
+            underscore = ''
             if line.__contains__('>'):
-                temp = '>'+line.rsplit('|')[1].rsplit('_')[2]
+                if line.__contains__('Nanopore'):
+                    underscore = '_'
+                else:
+                    underscore = ''
+
+                temp = '>' + line.rsplit('|')[1].rsplit('_')[2] + underscore
             else:
                 temp = str(line.rstrip("\r\n"))
             save_to_file(temp, phyaddress)
@@ -89,24 +95,26 @@ def tree_DFS(branch, address):
     # (red,blue)
     if branch.is_terminal() is True:
         print(branch.name)
-        if 'Nanopore' in branch.name:
+        if '_' in branch.name: #'Nanopore' in branch.name:
             branch._set_color('red')
-            #branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
+            # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (1, 0)
-        elif 'Illumina' in branch.name:
+        else: # 'Illumina' in branch.name:
             branch._set_color('blue')
-            #branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
+            # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (0, 1)
-        #else:
+        # else:
         #    branch._set_color('orange')
-        #branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
+        # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
         return (0, 0)
     count = 0
     color = -1
     (r_, b_) = (0, 0)
     for i in branch:
         (r, b) = tree_DFS(i, address)
-        #i.name = ''
+        if 'Inner' in i.name:
+            i.name=''
+
         # print(' ', r, ' ', b)
         if r != 0 and b != 0 and r + b > 10:
             save_to_file(((r, b), i.branch_length), address)
@@ -148,31 +156,31 @@ def draw_tree(input_address):
     calculator = DistanceCalculator('identity')
     aln = AlignIO.read(open('files/phy_test.phy'), 'phylip')
     dm = calculator.get_distance(aln)
-    #print(dm)
+    # print(dm)
 
     constructor = DistanceTreeConstructor()
     upgmatree = constructor.upgma(dm)
-    #upgmatree.scale()
+    # upgmatree.scale()
     tree_ratio_address2 = 'files/treeRatio2.txt'
     os.remove(tree_ratio_address2)
+    if 'Inner' in upgmatree.clade.name:
+        upgmatree.clade.name=''
     save_to_file(tree_DFS(upgmatree.clade, tree_ratio_address2), tree_ratio_address2)
 
     print(type(upgmatree))
     Phylo.draw(upgmatree, do_show=False)
     plt.savefig('files/canada2.png', dpi=100)
-    #plt.show()
+    # plt.show()
 
-    #print('constructor', upgmatree)
+    # print('constructor', upgmatree)
 
+    # tree_ratio_address = 'files/treeRatio.txt'
+    # os.remove(tree_ratio_address)
+    # save_to_file(tree_DFS(tree.clade, tree_ratio_address), tree_ratio_address)
 
-
-    #tree_ratio_address = 'files/treeRatio.txt'
-    #os.remove(tree_ratio_address)
-    #save_to_file(tree_DFS(tree.clade, tree_ratio_address), tree_ratio_address)
-
-    #tree.rooted = True
-    #Phylo.draw(tree, do_show=False)
-    #plt.savefig('files/canada.png', dpi=100)
+    # tree.rooted = True
+    # Phylo.draw(tree, do_show=False)
+    # plt.savefig('files/canada.png', dpi=100)
     plt.show()
 
 

@@ -8,6 +8,12 @@ import matplotlib.pyplot as plt
 from Bio import Phylo
 from Bio.Align.Applications import ClustalwCommandline
 from Bio.Phylo.TreeConstruction import DistanceCalculator
+from ruamel_yaml import constructor
+from Bio.Phylo.TreeConstruction import DistanceTreeConstructor
+from Bio.Phylo.TreeConstruction import DistanceCalculator
+from Bio import AlignIO
+from Bio.Cluster import treecluster
+from Bio.Cluster import Node, Tree
 
 logger = logging.getLogger(__name__)
 
@@ -46,13 +52,13 @@ import argparse
 
 def fastaToPhylipConvertor(address):
     # = parse_args(address)
-    print('address: ',address)
+   # print('address: ',address)
     #address='files/test2.fasta'
     phyaddress=address.replace('fasta', 'phy')
-    print(phyaddress)
+    #print(phyaddress)
     with open(address) as handle:
         records = AlignIO.parse(handle, "fasta")
-        print(records)
+        #print(records)
         with open(phyaddress, "w") as output_handle:
             AlignIO.write(records, output_handle, "phylip")
             # The name should be ten characters in length
@@ -82,24 +88,25 @@ def make_new_fasta_file(address):
 def tree_DFS(branch, address):
     # (red,blue)
     if branch.is_terminal() is True:
+        print(branch.name)
         if 'Nanopore' in branch.name:
             branch._set_color('red')
-            #  branch.name = (branch.name.split('|')[3])
+            #branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (1, 0)
         elif 'Illumina' in branch.name:
             branch._set_color('blue')
-            #   branch.name = (branch.name.split('|')[3])
+            #branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (0, 1)
-        else:
-            branch._set_color('orange')
-        # branch.name = (branch.name.split('|')[3])
+        #else:
+        #    branch._set_color('orange')
+        #branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
         return (0, 0)
     count = 0
     color = -1
     (r_, b_) = (0, 0)
     for i in branch:
         (r, b) = tree_DFS(i, address)
-        i.name = ''
+        #i.name = ''
         # print(' ', r, ' ', b)
         if r != 0 and b != 0 and r + b > 10:
             save_to_file(((r, b), i.branch_length), address)
@@ -137,33 +144,35 @@ def draw_tree(input_address):
 
     make_new_fasta_file(input_address)
     fastaToPhylipConvertor(newaddress)
+
     calculator = DistanceCalculator('identity')
-
     aln = AlignIO.read(open('files/phy_test.phy'), 'phylip')
-    print(aln)
     dm = calculator.get_distance(aln)
+    #print(dm)
 
-    #upgmatree = constructor.upgma(dm)
+    constructor = DistanceTreeConstructor()
+    upgmatree = constructor.upgma(dm)
+    #upgmatree.scale()
+    tree_ratio_address2 = 'files/treeRatio2.txt'
+    os.remove(tree_ratio_address2)
+    save_to_file(tree_DFS(upgmatree.clade, tree_ratio_address2), tree_ratio_address2)
 
-    print(dm)
-    #matrix = record.distancematrix()
-    #print(aln)
+    print(type(upgmatree))
+    Phylo.draw(upgmatree, do_show=False)
+    plt.savefig('files/canada2.png', dpi=100)
+    #plt.show()
 
-    #branches = [x for x in tree.clade.clades if x is not None]
-    #print(dir(tree.clade))
-    tree_ratio_address = 'files/treeRatio.txt'
-    os.remove(tree_ratio_address)
-    save_to_file(tree_DFS(tree.clade, tree_ratio_address), tree_ratio_address)
-
-    tree.rooted = True
-    #fig = plt.figure(figsize=(10, 20), dpi=100)
+    #print('constructor', upgmatree)
 
 
-    # tree.clade[0].ladderize()
-    print(tree.clade[0].width)
-    #axes = fig.add_subplot(1, 1, 1)
-    Phylo.draw(tree, do_show=False)
-    plt.savefig('files/canada.png', dpi=100)
+
+    #tree_ratio_address = 'files/treeRatio.txt'
+    #os.remove(tree_ratio_address)
+    #save_to_file(tree_DFS(tree.clade, tree_ratio_address), tree_ratio_address)
+
+    #tree.rooted = True
+    #Phylo.draw(tree, do_show=False)
+    #plt.savefig('files/canada.png', dpi=100)
     plt.show()
 
 

@@ -106,7 +106,6 @@ def tree_DFS(branch, address):
         # else:
         #    branch._set_color('orange')
         # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
-        return (0, 0)
     count = 0
     color = -1
     (r_, b_) = (0, 0)
@@ -142,7 +141,7 @@ def draw_tree(input_address):
     assert os.path.isfile(clustalw_exe), "Clustal W executable missing"
     stdout, stderr = clustalw_cline()
 
-    sys.setrecursionlimit(4000)
+    sys.setrecursionlimit(8000)
     tree = Phylo.read(input_address.replace('.fasta', '.dnd'), "newick")
 
     # make fasta file for give Phylip
@@ -171,7 +170,7 @@ def draw_tree(input_address):
 
     print(type(upgmatree))
     Phylo.draw(upgmatree, do_show=False)
-    plt.savefig('files/canada2.png', dpi=100)
+    plt.savefig('files/canada2.png', dpi=100, format="png")
     # plt.show()
 
     # print('constructor', upgmatree)
@@ -184,6 +183,7 @@ def draw_tree(input_address):
     # Phylo.draw(tree, do_show=False)
     # plt.savefig('files/canada.png', dpi=100)
     plt.show()
+    plt.close()
 
 
 draw_tree('files/test.fasta')

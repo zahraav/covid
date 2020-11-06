@@ -94,13 +94,15 @@ def make_new_fasta_file(address):
 def tree_DFS(branch, address):
     # (red,blue)
     if branch.is_terminal() is True:
-        print(branch.name)
+        #print(branch.name)
         if '_' in branch.name: #'Nanopore' in branch.name:
             branch._set_color('red')
+            branch.name=''
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (1, 0)
         else: # 'Illumina' in branch.name:
             branch._set_color('blue')
+            branch.name=''
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (0, 1)
         # else:

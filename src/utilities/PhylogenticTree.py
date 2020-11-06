@@ -120,12 +120,16 @@ def tree_DFS(branch, address):
 
         r_ = r_ + r
         b_ = b_ + b
-        if color == -1 or str(i.color) == str(color):
-            count += 1
-            color = i.color
-
-    if count == len(branch):
-        branch.color = 'red'  # (color)
+        #if color == -1 or str(i.color) == str(color):
+        #    print(i.color,color)
+        #    count += 1
+        #    color = i.color
+    if r_+b_==r_ and b_==0:
+        branch.color='red'
+    elif r_+b_==r and r_==0:
+        branch.color='blue'
+    #if count == len(branch):
+    #    branch.color = 'red'  # (color)
     return (r_, b_)
 
 

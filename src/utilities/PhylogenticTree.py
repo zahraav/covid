@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 def save_to_file(data, address):
     try:
-
         with open(address, 'a', encoding='utf-8') as f1:
             f1.write(str(data) + "\n")
 
@@ -24,41 +23,15 @@ def save_to_file(data, address):
         logger.error(e)
 
 
-### https://github.com/audy/bioinformatics-hacks/blob/master/bin/fasta-to-phylip
-# !/usr/bin/env python3
-
-"""
-Convert a FASTA alignment to Phylip format.
-Dependenies: BioPython
-fasta_to_phylip --input-fasta file.fasta --output-phy file.phy
-"""
-
-'''def parse_args(address):
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(address, default="/dev/stdin")
-    parser.add_argument(address.replace("/","/phylip_" ), default="/dev/stdout")
-
-    return parser.parse_args()
-'''
-
-
 def fastaToPhylipConvertor(address):
-    # = parse_args(address)
-    # print('address: ',address)
-    # address='files/test2.fasta'
     phyaddress = address.replace('fasta', 'phy')
-    # print(phyaddress)
     with open(address) as handle:
         records = AlignIO.parse(handle, "fasta")
-        # print(records)
         with open(phyaddress, "w") as output_handle:
             AlignIO.write(records, output_handle, "phylip")
             # The name should be ten characters in length
             # name is lines with > in the fasta file
 
-
-###
 
 def add_to_begining(filename, line):
     with open(filename, 'r+') as f:
@@ -76,55 +49,42 @@ def make_new_fasta_file(address):
                     underscore = '_'
                 else:
                     underscore = ''
-
                 temp = '>' + line.rsplit('|')[1].rsplit('_')[2] + underscore
             else:
                 temp = str(line.rstrip("\r\n"))
             save_to_file(temp, phyaddress)
 
 
-def tree_DFS(branch, address, clusters_name):
+def tree_DFS(branch, clusters_name):
     # (red,blue)
     if branch.is_terminal() is True:
         # print(branch.name)
-        if '_' in branch.name:  # 'Nanopore' in branch.name:
+        if '_' in branch.name: #or 'Nanopore' in branch.name:
             branch._set_color('red')
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (1, 0)
-        else:  # 'Illumina' in branch.name:
+        else:# 'Illumina' in branch.name:
             branch._set_color('blue')
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (0, 1)
-        # else:
-        #    branch._set_color('orange')
-        # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
-    #count = 0
-    #color = -1
+
     (r_, b_) = (0, 0)
     for i in branch:
-        (r, b) = tree_DFS(i, address, clusters_name)
-        if  i.name in clusters_name:
+        (r, b) = tree_DFS(i, clusters_name)
+        if i.name in clusters_name:
             i.name = '*'
         else:
             i.name = ''
 
-        # print(' ', r, ' ', b)
-        if r != 0 and b != 0 and r + b > 10:
-            save_to_file(((r, b), i.branch_length), address)
-
         r_ = r_ + r
         b_ = b_ + b
-        # if color == -1 or str(i.color) == str(color):
-        #    print(i.color,color)
-        #    count += 1
-        #    color = i.color
+
     if r_ + b_ == r_ and b_ == 0:
         branch.color = 'red'
     elif r_ + b_ == r_ and r_ == 0:
         branch.color = 'blue'
-    # if count == len(branch):
-    #    branch.color = 'red'  # (color)
-    return (r_, b_)
+
+    return r_, b_
 
 
 def draw_tree(input_address):
@@ -147,7 +107,7 @@ def draw_tree(input_address):
     newPhyAddress = newFastaAddress.replace('.fasta', '.phy')
     os.remove(newFastaAddress)
     os.remove(newPhyAddress)
-    print(newFastaAddress)
+    #print(newFastaAddress)
 
     make_new_fasta_file(input_address)
     fastaToPhylipConvertor(newFastaAddress)
@@ -155,7 +115,6 @@ def draw_tree(input_address):
     calculator = DistanceCalculator('identity')
     aln = AlignIO.read(open(newPhyAddress), 'phylip')
     dm = calculator.get_distance(aln)
-    # print(dm)
 
     constructor = DistanceTreeConstructor()
     upgmatree = constructor.upgma(dm)
@@ -165,7 +124,7 @@ def draw_tree(input_address):
     number_of_clusters = 5
     distance_threshold = .1
 
-    for nc in range(number_of_clusters-1):
+    for nc in range(number_of_clusters - 1):
         current_max = 0
         index_max = 0
         for i in range(len(clusters)):
@@ -174,49 +133,29 @@ def draw_tree(input_address):
                 current_max = int(clade_name.strip('Inner'))
                 index_max = i
 
-
-        if clusters[index_max].clades[0].branch_length + constructor._height_of(clusters[index_max].clades[0]) > distance_threshold:
+        if clusters[index_max].clades[0].branch_length + constructor._height_of(
+                clusters[index_max].clades[0]) > distance_threshold:
             break
         for i in clusters[index_max].clades:
             clusters.append(i)
 
         del clusters[index_max]
 
-    print(clusters)
-    cluster_names =  set([c.name for c in clusters])
+    cluster_names = set([c.name for c in clusters])
 
+    tree_DFS(upgmatree.clade, cluster_names)
 
-    # upgmatree.scale()
-    tree_ratio_address2 = 'files/treeRatio2.txt'
-    os.remove(tree_ratio_address2)
     #if 'Inner' in upgmatree.clade.name:
-    #    upgmatree.clade.name = ''
-    save_to_file(tree_DFS(upgmatree.clade, tree_ratio_address2, cluster_names), tree_ratio_address2)
-
-    print(type(upgmatree))
-    print('-->',dir(upgmatree))
-    # print('depths:',upgmatree.depths)
-    # upgmatree.unrooted
-    print(upgmatree.from_clade(2))
-
+    #    tree.clade.name=''
 
     Phylo.draw(upgmatree.clade, do_show=False)
-
-
-
     plt.savefig('files/canada2.png', dpi=100, format="png")
-    # plt.show()
 
-    # print('constructor', upgmatree)
 
-    # tree_ratio_address = 'files/treeRatio.txt'
-    # os.remove(tree_ratio_address)
-    # save_to_file(tree_DFS(tree.clade, tree_ratio_address), tree_ratio_address)
-
-    # tree.rooted = True
-    # Phylo.draw(tree, do_show=False)
-    # plt.savefig('files/canada.png', dpi=100)
-    plt.show()
+    #tree_DFS(tree.clade,set())
+    Phylo.draw(tree, do_show=False)
+    plt.savefig('files/canada.png', dpi=100, format="png")
+    #plt.show()
     plt.close()
 
 

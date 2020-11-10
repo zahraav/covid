@@ -176,7 +176,7 @@ def draw_tree(input_address):
     Phylo.draw(upgmatree.clade, do_show=False)
     clusters = [upgmatree.clade]
 
-    number_of_clusters=4
+    number_of_clusters=10
     for nc in range(number_of_clusters):
         current_max = 0
         index_max = 0
@@ -185,9 +185,13 @@ def draw_tree(input_address):
             if (clade_name.startswith('Inner')) and int(clade_name.strip('Inner')) > current_max:
                 current_max = int(clade_name.strip('Inner'))
                 index_max = i
+
+        if clusters[index_max].clades[0].branch_length +  constructor._height_of(clusters[index_max].clades[0]) > .1:
+            break
+
         for i in clusters[index_max].clades:
             clusters.append(i)
-        
+
         del clusters[index_max]
 
 

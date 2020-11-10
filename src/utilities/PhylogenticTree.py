@@ -7,18 +7,14 @@ import os
 import matplotlib.pyplot as plt
 from Bio import Phylo
 from Bio.Align.Applications import ClustalwCommandline
-from Bio.Phylo.TreeConstruction import DistanceCalculator
-from ruamel_yaml import constructor
 from Bio.Phylo.TreeConstruction import DistanceTreeConstructor
 from Bio.Phylo.TreeConstruction import DistanceCalculator
 from Bio import AlignIO
-from Bio.Cluster import treecluster
-from Bio.Cluster import Node, Tree
 
 logger = logging.getLogger(__name__)
 
 
-def save_to_file(data, address, newline=True):
+def save_to_file(data, address):
     try:
 
         with open(address, 'a', encoding='utf-8') as f1:
@@ -36,9 +32,6 @@ Convert a FASTA alignment to Phylip format.
 Dependenies: BioPython
 fasta_to_phylip --input-fasta file.fasta --output-phy file.phy
 """
-
-from Bio import AlignIO
-import argparse
 
 '''def parse_args(address):
     parser = argparse.ArgumentParser()
@@ -78,7 +71,6 @@ def make_new_fasta_file(address):
     phyaddress = address.replace('/', '/phy_')
     with open(address) as infile:
         for line in infile:
-            underscore = ''
             if line.__contains__('>'):
                 if line.__contains__('Nanopore'):
                     underscore = '_'
@@ -94,27 +86,27 @@ def make_new_fasta_file(address):
 def tree_DFS(branch, address):
     # (red,blue)
     if branch.is_terminal() is True:
-        #print(branch.name)
-        if '_' in branch.name: #'Nanopore' in branch.name:
+        # print(branch.name)
+        if '_' in branch.name:  # 'Nanopore' in branch.name:
             branch._set_color('red')
-            branch.name=''
+            branch.name = ''
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (1, 0)
-        else: # 'Illumina' in branch.name:
+        else:  # 'Illumina' in branch.name:
             branch._set_color('blue')
-            branch.name=''
+            branch.name = ''
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (0, 1)
         # else:
         #    branch._set_color('orange')
         # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
-    count = 0
-    color = -1
+    #count = 0
+    #color = -1
     (r_, b_) = (0, 0)
     for i in branch:
         (r, b) = tree_DFS(i, address)
-        if 'Inner' in i.name:
-            i.name=''
+        #if 'Inner' in i.name:
+        #    i.name = ''
 
         # print(' ', r, ' ', b)
         if r != 0 and b != 0 and r + b > 10:
@@ -122,15 +114,15 @@ def tree_DFS(branch, address):
 
         r_ = r_ + r
         b_ = b_ + b
-        #if color == -1 or str(i.color) == str(color):
+        # if color == -1 or str(i.color) == str(color):
         #    print(i.color,color)
         #    count += 1
         #    color = i.color
-    if r_+b_==r_ and b_==0:
-        branch.color='red'
-    elif r_+b_==r and r_==0:
-        branch.color='blue'
-    #if count == len(branch):
+    if r_ + b_ == r_ and b_ == 0:
+        branch.color = 'red'
+    elif r_ + b_ == r_ and r_ == 0:
+        branch.color = 'blue'
+    # if count == len(branch):
     #    branch.color = 'red'  # (color)
     return (r_, b_)
 
@@ -152,7 +144,7 @@ def draw_tree(input_address):
 
     # make fasta file for give Phylip
     newFastaAddress = input_address.replace('/', '/phy_')
-    newPhyAddress=newFastaAddress.replace('.fasta', '.phy')
+    newPhyAddress = newFastaAddress.replace('.fasta', '.phy')
     os.remove(newFastaAddress)
     os.remove(newPhyAddress)
     print(newFastaAddress)
@@ -170,12 +162,39 @@ def draw_tree(input_address):
     # upgmatree.scale()
     tree_ratio_address2 = 'files/treeRatio2.txt'
     os.remove(tree_ratio_address2)
-    if 'Inner' in upgmatree.clade.name:
-        upgmatree.clade.name=''
+    #if 'Inner' in upgmatree.clade.name:
+    #    upgmatree.clade.name = ''
     save_to_file(tree_DFS(upgmatree.clade, tree_ratio_address2), tree_ratio_address2)
 
     print(type(upgmatree))
-    Phylo.draw(upgmatree, do_show=False)
+    print('-->',dir(upgmatree))
+    # print('depths:',upgmatree.depths)
+    # upgmatree.unrooted
+    print(upgmatree.from_clade(2))
+
+
+    Phylo.draw(upgmatree.clade, do_show=False)
+    clusters = [upgmatree.clade]
+
+    number_of_clusters=4
+    for nc in range(number_of_clusters):
+        current_max = 0
+        index_max = 0
+        for i in range(len(clusters)):
+            clade_name = clusters[i].name
+            if (clade_name.startswith('Inner')) and int(clade_name.strip('Inner')) > current_max:
+                current_max = int(clade_name.strip('Inner'))
+                index_max = i
+        for i in clusters[index_max].clades:
+            clusters.append(i)
+        
+        del clusters[index_max]
+
+
+
+    print(clusters)
+
+
     plt.savefig('files/canada2.png', dpi=100, format="png")
     # plt.show()
 

@@ -83,18 +83,16 @@ def make_new_fasta_file(address):
             save_to_file(temp, phyaddress)
 
 
-def tree_DFS(branch, address):
+def tree_DFS(branch, address, clusters_name):
     # (red,blue)
     if branch.is_terminal() is True:
         # print(branch.name)
         if '_' in branch.name:  # 'Nanopore' in branch.name:
             branch._set_color('red')
-            branch.name = ''
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (1, 0)
         else:  # 'Illumina' in branch.name:
             branch._set_color('blue')
-            branch.name = ''
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
             return (0, 1)
         # else:
@@ -104,9 +102,11 @@ def tree_DFS(branch, address):
     #color = -1
     (r_, b_) = (0, 0)
     for i in branch:
-        (r, b) = tree_DFS(i, address)
-        #if 'Inner' in i.name:
-        #    i.name = ''
+        (r, b) = tree_DFS(i, address, clusters_name)
+        if  i.name in clusters_name:
+            i.name = '*'
+        else:
+            i.name = ''
 
         # print(' ', r, ' ', b)
         if r != 0 and b != 0 and r + b > 10:
@@ -159,12 +159,39 @@ def draw_tree(input_address):
 
     constructor = DistanceTreeConstructor()
     upgmatree = constructor.upgma(dm)
+
+    clusters = [upgmatree.clade]
+
+    number_of_clusters = 5
+    distance_threshold = .1
+
+    for nc in range(number_of_clusters-1):
+        current_max = 0
+        index_max = 0
+        for i in range(len(clusters)):
+            clade_name = clusters[i].name
+            if (clade_name.startswith('Inner')) and int(clade_name.strip('Inner')) > current_max:
+                current_max = int(clade_name.strip('Inner'))
+                index_max = i
+
+
+        if clusters[index_max].clades[0].branch_length + constructor._height_of(clusters[index_max].clades[0]) > distance_threshold:
+            break
+        for i in clusters[index_max].clades:
+            clusters.append(i)
+
+        del clusters[index_max]
+
+    print(clusters)
+    cluster_names =  set([c.name for c in clusters])
+
+
     # upgmatree.scale()
     tree_ratio_address2 = 'files/treeRatio2.txt'
     os.remove(tree_ratio_address2)
     #if 'Inner' in upgmatree.clade.name:
     #    upgmatree.clade.name = ''
-    save_to_file(tree_DFS(upgmatree.clade, tree_ratio_address2), tree_ratio_address2)
+    save_to_file(tree_DFS(upgmatree.clade, tree_ratio_address2, cluster_names), tree_ratio_address2)
 
     print(type(upgmatree))
     print('-->',dir(upgmatree))
@@ -174,29 +201,7 @@ def draw_tree(input_address):
 
 
     Phylo.draw(upgmatree.clade, do_show=False)
-    clusters = [upgmatree.clade]
 
-    number_of_clusters=10
-    for nc in range(number_of_clusters):
-        current_max = 0
-        index_max = 0
-        for i in range(len(clusters)):
-            clade_name = clusters[i].name
-            if (clade_name.startswith('Inner')) and int(clade_name.strip('Inner')) > current_max:
-                current_max = int(clade_name.strip('Inner'))
-                index_max = i
-
-        if clusters[index_max].clades[0].branch_length +  constructor._height_of(clusters[index_max].clades[0]) > .1:
-            break
-
-        for i in clusters[index_max].clades:
-            clusters.append(i)
-
-        del clusters[index_max]
-
-
-
-    print(clusters)
 
 
     plt.savefig('files/canada2.png', dpi=100, format="png")

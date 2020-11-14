@@ -1,5 +1,5 @@
 # Linux:
-from Bio.Align.Applications import ClustalwCommandline
+# from Bio.Align.Applications import ClustalwCommandline
 
 import sys
 import logging
@@ -72,11 +72,11 @@ def tree_DFS(branch, clusters_name):
     for i in branch:
         ratio = 0
         (r, b) = tree_DFS(i, clusters_name)
-
+        print(clusters_name)
         if i.name in clusters_name:
             ratio = r / (b + r)
             i.name = '* (' + str(ratio) + ')'
-            ratio_file_address='files/Ratio.txt'
+            ratio_file_address = 'files/Ratio.txt'
             save_to_file(('* Nanopore:' + str(r) + '   Illumina:' + str(b) + '  Ratio: ' + str(ratio)),
                          ratio_file_address)
         else:
@@ -95,15 +95,15 @@ def tree_DFS(branch, clusters_name):
 
 def draw_tree(input_address):
     # Linux:
-    cline = ClustalwCommandline("clustalw", infile=input_address, outfile=input_address.replace('.fasta','.aln'))
-    stdout, stderr = cline()
-    tree = Phylo.read(input_address.replace('.fasta','.dnd'), "newick")
+    # cline = ClustalwCommandline("clustalw", infile=input_address, outfile=input_address.replace('.fasta','.aln'))
+    # stdout, stderr = cline()
+    # tree = Phylo.read(input_address.replace('.fasta','.dnd'), "newick")
 
     # Windows:
-    #clustalw_exe = r"C:\Program Files (x86)\ClustalW2\clustalw2.exe"
-    #clustalw_cline = ClustalwCommandline(clustalw_exe, infile=input_address)
-    #assert os.path.isfile(clustalw_exe), "Clustal W executable missing"
-    #stdout, stderr = clustalw_cline()
+    clustalw_exe = r"C:\Program Files (x86)\ClustalW2\clustalw2.exe"
+    clustalw_cline = ClustalwCommandline(clustalw_exe, infile=input_address)
+    assert os.path.isfile(clustalw_exe), "Clustal W executable missing"
+    stdout, stderr = clustalw_cline()
 
     sys.setrecursionlimit(8000)
     tree = Phylo.read(input_address.replace('.fasta', '.dnd'), "newick")
@@ -128,7 +128,7 @@ def draw_tree(input_address):
     clusters = [upgmatree.clade]
 
     number_of_clusters = 5
-    distance_threshold = .1
+    distance_threshold = .001
 
     for nc in range(number_of_clusters - 1):
         current_max = 0
@@ -154,8 +154,8 @@ def draw_tree(input_address):
 
     tree_DFS(upgmatree.clade, cluster_names)
 
-    # if 'Inner' in upgmatree.clade.name:
-    #    tree.clade.name=''
+    if 'Inner' in upgmatree.clade.name:
+        upgmatree.clade.name = ''
 
     Phylo.draw(upgmatree.clade, do_show=False)
     plt.savefig('files/upgmatree.png', dpi=100, format="png")
@@ -163,8 +163,8 @@ def draw_tree(input_address):
     # tree_DFS(tree.clade,set())
     Phylo.draw(tree, do_show=False)
     plt.savefig('files/phylotree.png', dpi=100, format="png")
-    #plt.show()
+    plt.show()
     plt.close()
 
 
-#draw_tree('files/test.fasta')
+draw_tree('files/test.fasta')

@@ -2,7 +2,7 @@ from feature import Feature
 from feature import Info
 
 featuresDictionary = {}
-infoDictionary={}
+infoDictionary = {}
 dictionary_address = 'files/featuresDict'
 
 
@@ -11,12 +11,16 @@ def setcontext(seq, dictionary_counter):
     input: fasta sequence
     output: -
     """
+    print('seq',seq)
     i = 2
-    while i < len(seq) - 2:
-        f = Feature(seq[i], 0, seq[i - 2:i + 3:1], i + 1, "info")
+    while i < len(seq) - 3:
+        print('len:',len(seq))
+        f = Feature(seq[i], 0, seq[i - 2:i + 3 : 1], i + 1, "info")
         featuresDictionary[dictionary_counter] = f
         dictionary_counter += 1
+        print('dictcounter',dictionary_counter)
         i += 1
+        print('i:',i,seq[i - 2:i + 3:1])
     return dictionary_counter
 
 
@@ -29,6 +33,7 @@ def saveData(output_address, data):
 def savedict(in_dictionary):
     """This fuction pass elements of dictionary for saving to the saveData function"""
     for elem in in_dictionary:
+        #print(in_dictionary[elem]._print())
         saveData(dictionary_address, in_dictionary[elem]._print())
 
 
@@ -42,15 +47,17 @@ def readDate(fasta_address):
         for line in infile:
             # TODO Save info for every groups
             if '>' in line:
-                i=Info(line)
-                infoDictionary[dictionary_counter]=i
+                i = Info(line)
+                infoDictionary[dictionary_counter] = i
 
                 print(i._print())
-                #saveData(dictionary_address, line)
-                #savedict(infoDictionary)
+                # saveData(dictionary_address, line)
             else:
+                print('line',line)
                 dictionary_counter = setcontext(line, dictionary_counter)
 
+    savedict(infoDictionary)
     savedict(featuresDictionary)
+
 
 readDate('files/test.fasta')

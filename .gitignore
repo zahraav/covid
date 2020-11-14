@@ -4,7 +4,6 @@ Lib/*
 Lib/
 lib/
 lib/*
-files/*
 __pycache__/
 **/__pycache__/
 **/*.pyc

@@ -3,7 +3,7 @@ from feature import Info
 
 featuresDictionary = {}
 infoDictionary = {}
-dictionary_address = 'files/featuresDict'
+dictionary_address = 'files/featuresDictionary.txt'
 
 
 def setcontext(seq, dictionary_counter):

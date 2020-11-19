@@ -38,7 +38,7 @@ nucleotidesDictionary = {}
 
 nucleotide_dict_address = 'files/Canada_NucleotideDictionary.txt'
 nucleotid_count_dict_address = 'files/Canada_NucleotidcountDictionary.txt'
-feature_dict_address = 'files/Canada_FeatureDictionary1.txt'
+feature_dict_address = 'files/Canada_FeatureDictionary.txt'
 
 
 def setcontext(seq, dictionary_counter,line_counter):

@@ -36,9 +36,9 @@ featuresDictionary = {}
 infoDictionary = {}
 nucleotidesDictionary = {}
 
-nucleotide_dict_address = 'files/NucleotideDictionary1.txt'
-nucleotid_count_dict_address = 'files/NucleotidcountDictionary1.txt'
-feature_dict_address = 'files/FeatureDictionary1.txt'
+nucleotide_dict_address = 'files/Canada_NucleotideDictionary.txt'
+nucleotid_count_dict_address = 'files/Canada_NucleotidcountDictionary.txt'
+feature_dict_address = 'files/Canada_FeatureDictionary1.txt'
 
 
 def setcontext(seq, dictionary_counter,line_counter):
@@ -102,4 +102,4 @@ def readDate(fasta_address):
     save_dict(featuresDictionary, feature_dict_address)
     save_dict(nucleotidesDictionary, nucleotid_count_dict_address)
 
-readDate('files/test.fasta')
+readDate('files/aligned_canada_gisaid_hcov-19_2020_09_24_21.fasta')

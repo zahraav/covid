@@ -29,20 +29,21 @@ class Info:
         year_and_Month = line.rsplit('|')[2].rsplit('-')
         return year_and_Month[0] + '-' + year_and_Month[1]
 
-    def _print(self):
+    def toprint(self):
         return str(self.technology) + '  ' + str(self.protocol) + '  ' + str(self.country) + '  ' + str(
             self.region) + '  ' + str(self.date)+'\n'
 
 
 class Feature:
-    def __init__(self, groups, count, context, position, info_dictionary):
+    def __init__(self, groups, count, context, position, info_dictionary,line_nubmber):
         self.groups = groups
         self.count = count
         self.context = context
         self.position = position  # starts from 1
         # TODO change information , data structure!
         self.infoDictionary = info_dictionary
+        self.line_number=line_nubmber
 
-    def _print(self):
-        return str(self.groups) + '  ' + str(self.count) + '  ' + str(self.context) + '  ' + str(
+    def toprint(self):
+        return 'seq num: ' +str(self.line_number)+'  '+str(self.groups) + '  ' + str(self.count) + '  ' + str(self.context) + '  ' + str(
             self.position) + '  ' + '\n'  # str(self.infoDictionary.print_info) + '\n'

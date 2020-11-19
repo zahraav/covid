@@ -12,12 +12,11 @@ class Info:
             return 'I'
 
     def set_protocol(self, line):
-        protocol= line.rsplit('|')[4]
+        protocol = line.rsplit('|')[4]
         if 'v2' in protocol:
             return 'v2'
         else:
             return 'v1'
-
 
     def set_country_region(self, line):
         temp = line.rsplit('|')[0].rsplit('/')
@@ -27,23 +26,30 @@ class Info:
 
     def set_date(self, line):
         year_and_Month = line.rsplit('|')[2].rsplit('-')
-        return year_and_Month[0] + '-' + year_and_Month[1]
+        time = ''
+        if len(year_and_Month)>1:
+            if year_and_Month[1]:
+                time = '-' + year_and_Month[1]
+
+        time = year_and_Month[0] + time
+        return time
 
     def toprint(self):
         return str(self.technology) + '  ' + str(self.protocol) + '  ' + str(self.country) + '  ' + str(
-            self.region) + '  ' + str(self.date)+'\n'
+            self.region) + '  ' + str(self.date) + '\n'
 
 
 class Feature:
-    def __init__(self, groups, count, context, position, info_dictionary,line_nubmber):
+    def __init__(self, groups, count, context, position, info_dictionary, line_nubmber):
         self.groups = groups
         self.count = count
         self.context = context
         self.position = position  # starts from 1
         # TODO change information , data structure!
         self.infoDictionary = info_dictionary
-        self.line_number=line_nubmber
+        self.line_number = line_nubmber
 
     def toprint(self):
-        return 'seq num: ' +str(self.line_number)+'  '+str(self.groups) + '  ' + str(self.count) + '  ' + str(self.context) + '  ' + str(
+        return 'seq num: ' + str(self.line_number) + '  ' + str(self.groups) + '  ' + str(self.count) + '  ' + str(
+            self.context) + '  ' + str(
             self.position) + '  ' + '\n'  # str(self.infoDictionary.print_info) + '\n'

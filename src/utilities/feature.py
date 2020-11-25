@@ -5,11 +5,14 @@ class Info:
         self.country, self.region = self.set_country_region(line)  # state
         self.date = self.set_date(line)
 
+    def get_technology(self):
+        return self.technology
+
     def set_technology(self, line):
         if 'Nanopore' in line:
-            return 'N'
+            return 'Nanopore'
         else:
-            return 'I'
+            return 'Illumina'
 
     def set_protocol(self, line):
         protocol = line.rsplit('|')[4]

@@ -101,8 +101,7 @@ def setcontext(seq, dictionary_counter, line_counter):
     """
     i = 2
     while i < len(seq) - 3:
-        f = Feature(seq[i], 0, seq[i - 2:i + 3: 1], i + 1, "info", line_counter)
-        featuresDictionary[dictionary_counter] = f
+        featuresDictionary[dictionary_counter] = Feature(seq[i], 0, seq[i - 2:i + 3: 1], i + 1, "info", line_counter)
         dictionary_counter += 1
         i += 1
     return dictionary_counter
@@ -122,8 +121,6 @@ def save_dict(input_dictionary, in_address):
 
 def countNucleotides(line, tech):
     for i in range(2, len(line) - 2):
-        #        print(i,line[i])
-        #        nucleotidesDictionary[i] =NucleotideCount()
         nucleotidesDictionary[i].addNucleotidwith_tech(line[i], tech)
 
 

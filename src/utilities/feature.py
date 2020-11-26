@@ -21,7 +21,7 @@ class Info:
         else:
             return 'v1'
 
-    def set_country_region(self, line):
+    def set_country_region(self,line):
         temp = line.rsplit('|')[0].rsplit('/')
         country = temp[1]
         region = temp[2].rsplit('_')[0]  # state
@@ -30,7 +30,7 @@ class Info:
     def set_date(self, line):
         year_and_Month = line.rsplit('|')[2].rsplit('-')
         time = ''
-        if len(year_and_Month)>1:
+        if len(year_and_Month) > 1:
             if year_and_Month[1]:
                 time = '-' + year_and_Month[1]
 
@@ -43,14 +43,13 @@ class Info:
 
 
 class Feature:
-    def __init__(self, groups, count, context, position, info_dictionary, line_nubmber):
+    def __init__(self, groups, count, context, position, info_dictionary, line_number):
         self.groups = groups
         self.count = count
         self.context = context
         self.position = position  # starts from 1
-        # TODO change information , data structure!
         self.infoDictionary = info_dictionary
-        self.line_number = line_nubmber
+        self.line_number = line_number
 
     def to_print(self):
         return 'seq num: ' + str(self.line_number) + '  ' + str(self.groups) + '  ' + str(self.count) + '  ' + str(

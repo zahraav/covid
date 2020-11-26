@@ -4,7 +4,7 @@ import StatisticalTest
 import ReadAndWrite
 
 
-class ncount:
+class nucleotide:
     def __init__(self):
         self.count_of_nucleotid_in_illumina = 0
         self.count_of_nucleotid_in_nanopore = 0
@@ -14,22 +14,33 @@ class ncount:
         return self.count_of_nucleotid_in_illumina + self.count_of_nucleotid_in_nanopore
 
     def add_counter(self, tech):
+        """
+        Every time this function is called the counter of the nucleotide is increase by 1
+        :param tech:
+        :return:
+        """
         if tech == 'Nanopore':
             self.count_of_nucleotid_in_nanopore += 1
         else:
             self.count_of_nucleotid_in_illumina += 1
 
 
-class NucleotideCount:
+class NucleotidesCount:
     def __init__(self):
-        self.A = ncount()
-        self.C = ncount()
-        self.G = ncount()
-        self.T = ncount()
-        self.N = ncount()
-        self.Gap = ncount()
+        self.A = nucleotide()
+        self.C = nucleotide()
+        self.G = nucleotide()
+        self.T = nucleotide()
+        self.N = nucleotide()
+        self.Gap = nucleotide()
 
     def add_nucleotid(self, nucleotide, technology):
+        """
+        Every time this function is called the counter of the nucleotide is increase by 1
+        :param nucleotide:
+        :param technology:
+        :return:
+        """
         if nucleotide == 'A' or nucleotide == 'W':
             self.A.add_counter(technology)
         elif nucleotide == 'C' or nucleotide == 'Y':
@@ -46,6 +57,13 @@ class NucleotideCount:
             print('unkown character: ' + nucleotide)
 
     def not_nucleotide(self, nucleotide_count_nanopore, nucleotide_count_illumina):
+        """
+        This function calculate sum of nucleotides other than the nucleotide that recieved as input, and return the sum for using in
+        Fisher exact test
+        :param nucleotide_count_nanopore: nucleotide in sequences that the technology was Nanopore
+        :param nucleotide_count_illumina:  nucleotide in sequences that the technology was Illumina
+        :return: 2 output, sum of Nucleotides that technology were nanopore and Illumina
+        """
         illumina_sum = self.A.count_of_nucleotid_in_illumina + self.C.count_of_nucleotid_in_illumina + self.T.count_of_nucleotid_in_illumina + \
                        self.G.count_of_nucleotid_in_illumina + self.N.count_of_nucleotid_in_illumina + \
                        self.Gap.count_of_nucleotid_in_illumina - nucleotide_count_illumina
@@ -55,6 +73,11 @@ class NucleotideCount:
         return nanopore_sum, illumina_sum
 
     def fisher(self):
+        """
+        This function calculating data for table of Fisher's exact test. Then pass them for calculating Fisher's exact test to StatisticalTest
+        class and save them as p_value
+        :return: none
+        """
         not_A_nanopore, not_A_illumina = self.not_nucleotide(self.A.count_of_nucleotid_in_nanopore,
                                                              self.A.count_of_nucleotid_in_illumina)
         not_C_nanopore, not_C_illumina = self.not_nucleotide(self.C.count_of_nucleotid_in_nanopore,
@@ -78,18 +101,23 @@ class NucleotideCount:
                                                          not_T_illumina)
 
     def to_print(self):
+        """
+        This function generates a String that contains every element that we want to print in a file
+        :return: a string
+        """
         self.fisher()
         return 'N- A:' + str(self.A.count_of_nucleotid_in_nanopore) + '|C:' + str(
             self.C.count_of_nucleotid_in_nanopore) + '|G:' + str(self.G.count_of_nucleotid_in_nanopore) + '|T:' + str(
             self.T.count_of_nucleotid_in_nanopore) + '|N:' + str(self.N.count_of_nucleotid_in_nanopore) + '|Gap:' + str(
-            self.Gap.count_of_nucleotid_in_nanopore) + '--' + ' |illumina- A:' + str(
+            self.Gap.count_of_nucleotid_in_nanopore) + ' --|illumina- A:' + str(
             self.A.count_of_nucleotid_in_illumina) + '|C:' + str(self.C.count_of_nucleotid_in_illumina) + '|G:' + str(
             self.G.count_of_nucleotid_in_illumina) + '|T:' + str(self.T.count_of_nucleotid_in_illumina) + '|N:' + str(
             self.N.count_of_nucleotid_in_illumina) + '|Gap:' + str(
-            self.Gap.count_of_nucleotid_in_illumina) + '|pvalue: ' + str(self.A.pvalue) + '  ' + str(
-            self.C.pvalue) + '  ' + str(self.G.pvalue) + '  ' + str(self.T.pvalue) + '\n'
+            self.Gap.count_of_nucleotid_in_illumina) + ' --|pvalue: A: ' + str(self.A.p_value) + '  |C: ' + str(
+            self.C.p_value) + ' |G: ' + str(self.G.p_value) + ' |T: ' + str(self.T.p_value) + '\n'
 
-def setcontext(featuresDictionary,seq, dictionary_counter, line_counter, ):
+
+def setcontext(featuresDictionary, seq, dictionary_counter, line_counter, ):
     """
     This function set Feature in a dictionary and set context and group for the given sequence
     :param featuresDictionary:
@@ -134,7 +162,9 @@ def process_fasta_file(fasta_address):
     dictionary_counter = 0
     is_first_time_to_make_nucleotides_dictionary = True
     fastafile_line_counter = 0
-    nucleotide_within_every_line_counter = 0
+
+    """nucleotide_within_line_counter for context"""
+    nwl_context_counter = 0
 
     with open(fasta_address) as infile:
         for rline in infile:
@@ -142,49 +172,52 @@ def process_fasta_file(fasta_address):
             if '>' in line:
                 infoDictionary[fastafile_line_counter] = Info(line)
             else:
-                """ the first time  we see a line of sequence, we make a dictionary of [index of nucleotide, NucleotideCount()]
+                """ the first time  we see a line of sequence, we make a dictionary of [index of nucleotide, NucleotidesCount()]
                 with length len(line) -4 ( start from 2 , end at line -2 )  
                 """
                 if is_first_time_to_make_nucleotides_dictionary:
                     for i in range(2, len(line) - 2):
-                        nucleotidesDictionary[i] = NucleotideCount()
+                        nucleotidesDictionary[i] = NucleotidesCount()
                     is_first_time_to_make_nucleotides_dictionary = False
 
                 countNucleotides(nucleotidesDictionary, line, infoDictionary[fastafile_line_counter].technology)
+                nwl_context_counter = setcontext(featuresDictionary, line, nwl_context_counter, fastafile_line_counter)
 
-                nucleotide_within_every_line_counter = setcontext(featuresDictionary, line, nucleotide_within_every_line_counter,
-                                                                  fastafile_line_counter)
                 fastafile_line_counter += 1
 
+    """save data for all dictionaries in file """
     ReadAndWrite.save_dict_with_toprint(infoDictionary, nucleotide_dict_address)
     ReadAndWrite.save_dict_with_toprint(featuresDictionary, feature_dict_address)
     ReadAndWrite.save_dict_with_toprint(nucleotidesDictionary, nucleotid_count_dict_address)
 
+    """
+    calculate the percentage of p_value and significancy and save it in the file
+    """
     save_pvalue_address = 'files/Canada_Pvalues.txt'
-
-    signifcant_p_valuesA = [nucleotidesDictionary[v].Apvalue for v in nucleotidesDictionary if
-                            nucleotidesDictionary[v].Apvalue < 0.01]
+    significance_level=0.01
+    significant_p_valuesA = [nucleotidesDictionary[v].A.p_value for v in nucleotidesDictionary if
+                            nucleotidesDictionary[v].A.p_value < significance_level]
     ReadAndWrite.save_data(save_pvalue_address,
-                           '{0}  {1}  {2} \n'.format(str(str(len(signifcant_p_valuesA) / len(nucleotidesDictionary))),
-                                                     str(len(signifcant_p_valuesA)), str(len(nucleotidesDictionary))))
+                           'A: percentage: {0}  A_count: {1}  total: {2} \n'.format(str(str(len(significant_p_valuesA) / len(nucleotidesDictionary))),
+                                                     str(len(significant_p_valuesA)), str(len(nucleotidesDictionary))))
 
-    signifcant_p_valuesC = [nucleotidesDictionary[v].Cpvalue for v in nucleotidesDictionary if
-                            nucleotidesDictionary[v].Cpvalue < 0.01]
+    significant_p_valuesC = [nucleotidesDictionary[v].C.p_value for v in nucleotidesDictionary if
+                            nucleotidesDictionary[v].C.p_value < significance_level]
     ReadAndWrite.save_data(save_pvalue_address,
-                           '{0}  {1}  {2} \n'.format(str(str(len(signifcant_p_valuesC) / len(nucleotidesDictionary))),
-                                                     str(len(signifcant_p_valuesC)), str(len(nucleotidesDictionary))))
+                           'C: percentage: {0}  C_count: {1}  total: {2} \n'.format(str(str(len(significant_p_valuesC) / len(nucleotidesDictionary))),
+                                                     str(len(significant_p_valuesC)), str(len(nucleotidesDictionary))))
 
-    signifcant_p_valuesG = [nucleotidesDictionary[v].Gpvalue for v in nucleotidesDictionary if
-                            nucleotidesDictionary[v].Gpvalue < 0.01]
+    significant_p_valuesG = [nucleotidesDictionary[v].G.p_value for v in nucleotidesDictionary if
+                            nucleotidesDictionary[v].G.p_value < significance_level]
     ReadAndWrite.save_data(save_pvalue_address,
-                           '{0}  {1}  {2} \n'.format(str(str(len(signifcant_p_valuesG) / len(nucleotidesDictionary))),
-                                                     str(len(signifcant_p_valuesG)), str(len(nucleotidesDictionary))))
+                           'G: percentage: {0}  G_count: {1}  total: {2} \n'.format(str(str(len(significant_p_valuesG) / len(nucleotidesDictionary))),
+                                                     str(len(significant_p_valuesG)), str(len(nucleotidesDictionary))))
 
-    signifcant_p_valuesT = [nucleotidesDictionary[v].Tpvalue for v in nucleotidesDictionary if
-                            nucleotidesDictionary[v].Tpvalue < 0.01]
+    significant_p_valuesT = [nucleotidesDictionary[v].T.p_value for v in nucleotidesDictionary if
+                            nucleotidesDictionary[v].T.p_value < significance_level]
     ReadAndWrite.save_data(save_pvalue_address,
-                           '{0}  {1}  {2} \n'.format(str(str(len(signifcant_p_valuesT) / len(nucleotidesDictionary))),
-                                                     str(len(signifcant_p_valuesT)), str(len(nucleotidesDictionary))))
+                           'T: percentage: {0}  T_count: {1}  total: {2} \n'.format(str(str(len(significant_p_valuesT) / len(nucleotidesDictionary))),
+                                                     str(len(significant_p_valuesT)), str(len(nucleotidesDictionary))))
 
 
 process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21.fasta')

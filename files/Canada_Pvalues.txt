@@ -1,4 +1,4 @@
-0.9895833333333334  95  96 
-0.9895833333333334  95  96 
-0.90625  87  96 
-1.0  96  96 
+A: percentage: 0.9895833333333334  A_count: 95  total: 96 
+C: percentage: 0.9895833333333334  C_count: 95  total: 96 
+G: percentage: 0.90625  G_count: 87  total: 96 
+T: percentage: 1.0  T_count: 96  total: 96 

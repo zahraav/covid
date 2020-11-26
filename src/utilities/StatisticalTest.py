@@ -1,5 +1,5 @@
 import scipy.stats as stats
-import SaveToFile
+import ReadAndWrite
 
 
 def FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleotide_in_nanopore,
@@ -14,6 +14,9 @@ def FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleoti
     """
     oddsratio, p_value = stats.fisher_exact([[nucleotide_in_nanopore, nucleotide_in_illumina],
                                              [not_nucleotide_in_nanopore, not_nucleotide_in_illumina]])
-    SaveToFile.save_data()
-    # print(oddsratio)
+    p_value_file = 'files/p_value.txt'
+    str_pvalue_ = 'n_n: ' + str(nucleotide_in_nanopore) + '  n_i: ' + str(nucleotide_in_illumina) + '  nn_n: ' + str(
+        not_nucleotide_in_nanopore) + \
+                  '  nn_i: ' + str(not_nucleotide_in_illumina) + '  p_value: ' + str(p_value) + ' \n'
+    ReadAndWrite.save_data(p_value_file, str_pvalue_)
     return p_value

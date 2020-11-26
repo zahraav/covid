@@ -8,13 +8,13 @@ class Info:
     def get_technology(self):
         return self.technology
 
-    def set_technology(self, line):
+    def set_technology(self,line):
         if 'Nanopore' in line:
             return 'Nanopore'
         else:
             return 'Illumina'
 
-    def set_protocol(self, line):
+    def set_protocol(self,line):
         protocol = line.rsplit('|')[4]
         if 'v2' in protocol:
             return 'v2'
@@ -37,7 +37,7 @@ class Info:
         time = year_and_Month[0] + time
         return time
 
-    def toprint(self):
+    def to_print(self):
         return str(self.technology) + '  ' + str(self.protocol) + '  ' + str(self.country) + '  ' + str(
             self.region) + '  ' + str(self.date) + '\n'
 
@@ -52,7 +52,7 @@ class Feature:
         self.infoDictionary = info_dictionary
         self.line_number = line_nubmber
 
-    def toprint(self):
+    def to_print(self):
         return 'seq num: ' + str(self.line_number) + '  ' + str(self.groups) + '  ' + str(self.count) + '  ' + str(
             self.context) + '  ' + str(
-            self.position) + '  ' + '\n'  # str(self.infoDictionary.print_info) + '\n'
+            self.position) + '  ' + '\n'

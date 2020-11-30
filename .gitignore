@@ -7,10 +7,10 @@ lib/*
 __pycache__/
 **/__pycache__/
 **/*.pyc
-.idea
 .idea/*
 Scripts
 Scripts/*
 *.swp
+**/__pycache__/*
 
 !.gitignore

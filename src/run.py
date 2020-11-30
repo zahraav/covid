@@ -1,9 +1,7 @@
 import configparser
 import logging
-
-
 from utilities import DBConnection
-from utilities import PhylogenticTree
+from utilities import phylogeneticTree
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -35,8 +33,7 @@ def generate_new_header(covid_sequence):
     seq_assembly_method = DBConnection.get_assembly_method(table_name, "Accession_ID", covid_sequence.accession_id)
 
     return (str(covid_sequence.header).rstrip("\n") + "|" + str(seq_technology).rstrip("\n") + "|" + str(
-        seq_assembly_method).rstrip("\n")) \
-        .replace(' ', '_')
+        seq_assembly_method).rstrip("\n")).replace(' ', '_')
 
 
 class CovidSequence:
@@ -85,12 +82,12 @@ def change_fasta_header(output):
 def main():
     config = get_configs()
     is_db_access = config['databaseInfo'].get('is_db_access')
-    aligned_file = str(config['address'].get('input_fastafile')).replace("files/", "files/aligned_")
+    aligned_file = str(config['address'].get('input_fastafile')).replace("files/", "files/aligned_").replace(".fasta",
+                                                                                                             "_2.fasta")
 
-#    if is_db_access == True:
-    #change_fasta_header(aligned_file)
-    #else:
-    PhylogenticTree.draw_tree(aligned_file)
+    change_fasta_header(aligned_file)
+    # else:
+    # PhylogeneticTree.draw_tree(aligned_file)
 
 
 if __name__ == '__main__':

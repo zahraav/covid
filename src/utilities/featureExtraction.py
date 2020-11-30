@@ -155,9 +155,10 @@ def process_fasta_file(fasta_address):
     infoDictionary = {}
     nucleotidesDictionary = {}
 
-    nucleotide_dict_address = 'files/Canada_NucleotideDictionary.txt'
-    nucleotid_count_dict_address = 'files/Canada_NucleotidcountDictionary.txt'
-    feature_dict_address = 'files/Canada_FeatureDictionary.txt'
+    nucleotide_dict_address = 'files/Canada_NucleotideDictionary_2.txt'
+    nucleotid_count_dict_address = 'files/Canada_NucleotidcountDictionary_2.txt'
+    feature_dict_address = 'files/Canada_FeatureDictionary_2.txt'
+    save_pvalue_address = 'files/Canada_Pvalues_2.txt'
 
     dictionary_counter = 0
     is_first_time_to_make_nucleotides_dictionary = True
@@ -193,7 +194,7 @@ def process_fasta_file(fasta_address):
     """
     calculate the percentage of p_value and significancy and save it in the file
     """
-    save_pvalue_address = 'files/Canada_Pvalues.txt'
+
     significance_level=0.01
     significant_p_valuesA = [nucleotidesDictionary[v].A.p_value for v in nucleotidesDictionary if
                             nucleotidesDictionary[v].A.p_value < significance_level]
@@ -220,4 +221,4 @@ def process_fasta_file(fasta_address):
                                                      str(len(significant_p_valuesT)), str(len(nucleotidesDictionary))))
 
 
-process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21.fasta')
+process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21_2.fasta')

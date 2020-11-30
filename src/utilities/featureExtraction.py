@@ -72,7 +72,7 @@ class NucleotidesCount:
                        self.Gap.count_of_nucleotid_in_nanopore - nucleotide_count_nanopore
         return nanopore_sum, illumina_sum
 
-    def fisher(self):
+    def fisher(self,p_value_file_name):
         """
         This function calculating data for table of Fisher's exact test. Then pass them for calculating Fisher's exact test to StatisticalTest
         class and save them as p_value
@@ -89,24 +89,23 @@ class NucleotidesCount:
 
         self.A.p_value = StatisticalTest.FisherExactTest(self.A.count_of_nucleotid_in_nanopore,
                                                          self.A.count_of_nucleotid_in_illumina, not_A_nanopore,
-                                                         not_A_illumina)
+                                                         not_A_illumina,p_value_file_name)
         self.C.p_value = StatisticalTest.FisherExactTest(self.C.count_of_nucleotid_in_nanopore,
                                                          self.C.count_of_nucleotid_in_illumina, not_C_nanopore,
-                                                         not_C_illumina)
+                                                         not_C_illumina,p_value_file_name)
         self.G.p_value = StatisticalTest.FisherExactTest(self.G.count_of_nucleotid_in_nanopore,
                                                          self.G.count_of_nucleotid_in_illumina, not_G_nanopore,
-                                                         not_G_illumina)
+                                                         not_G_illumina,p_value_file_name)
         self.T.p_value = StatisticalTest.FisherExactTest(self.T.count_of_nucleotid_in_nanopore,
                                                          self.T.count_of_nucleotid_in_illumina, not_T_nanopore,
-                                                         not_T_illumina)
+                                                         not_T_illumina,p_value_file_name)
 
     def to_print(self):
         """
         This function generates a String that contains every element that we want to print in a file
         :return: a string
         """
-        self.fisher()
-        return 'N- A:' + str(self.A.count_of_nucleotid_in_nanopore) + '|C:' + str(
+        return 'Nanopore- A:' + str(self.A.count_of_nucleotid_in_nanopore) + '|C:' + str(
             self.C.count_of_nucleotid_in_nanopore) + '|G:' + str(self.G.count_of_nucleotid_in_nanopore) + '|T:' + str(
             self.T.count_of_nucleotid_in_nanopore) + '|N:' + str(self.N.count_of_nucleotid_in_nanopore) + '|Gap:' + str(
             self.Gap.count_of_nucleotid_in_nanopore) + ' --|illumina- A:' + str(
@@ -146,7 +145,7 @@ def countNucleotides(nucleotidesDictionary, line, tech):
         nucleotidesDictionary[i].add_nucleotid(line[i], tech)
 
 
-def process_fasta_file(fasta_address):
+def process_fasta_file(fasta_address,bp_number):
     """This function reads modified Fasta file and count number of nucleotides for every vertical cuts and also calculate p-value
     :param fasta_address: address of fasta file that we want to be read and processed
     :return: none
@@ -155,10 +154,11 @@ def process_fasta_file(fasta_address):
     infoDictionary = {}
     nucleotidesDictionary = {}
 
-    nucleotide_dict_address = 'files/Canada_NucleotideDictionary_2.txt'
-    nucleotid_count_dict_address = 'files/Canada_NucleotidcountDictionary_2.txt'
-    feature_dict_address = 'files/Canada_FeatureDictionary_2.txt'
-    save_pvalue_address = 'files/Canada_Pvalues_2.txt'
+    nucleotide_dict_address = 'files/Canada_NucleotideDictionary_.txt'.replace('.txt',str(bp_number)+'.txt')
+    nucleotide_count_dict_address = 'files/Canada_NucleotidcountDictionary_.txt'.replace('.txt',str(bp_number)+'.txt')
+    feature_dict_address = 'files/Canada_FeatureDictionary_.txt'.replace('.txt',str(bp_number)+'.txt')
+    save_pvalue_address = 'files/sum_of_significant_p_values_.txt'.replace('.txt',str(bp_number)+'.txt')
+    p_value_file_name = 'files/p_value_.txt'.replace('.txt',str(bp_number)+'.txt')
 
     dictionary_counter = 0
     is_first_time_to_make_nucleotides_dictionary = True
@@ -186,10 +186,13 @@ def process_fasta_file(fasta_address):
 
                 fastafile_line_counter += 1
 
+    for elem in nucleotidesDictionary:
+        nucleotidesDictionary[elem].fisher(p_value_file_name)
+
     """save data for all dictionaries in file """
     ReadAndWrite.save_dict_with_toprint(infoDictionary, nucleotide_dict_address)
     ReadAndWrite.save_dict_with_toprint(featuresDictionary, feature_dict_address)
-    ReadAndWrite.save_dict_with_toprint(nucleotidesDictionary, nucleotid_count_dict_address)
+    ReadAndWrite.save_dict_with_toprint(nucleotidesDictionary, nucleotide_count_dict_address)
 
     """
     calculate the percentage of p_value and significancy and save it in the file
@@ -221,4 +224,4 @@ def process_fasta_file(fasta_address):
                                                      str(len(significant_p_valuesT)), str(len(nucleotidesDictionary))))
 
 
-process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21_2.fasta')
+process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21_2.fasta',2)

@@ -89,9 +89,13 @@ class NucleotidesCount:
 
     def calculate_list_elements(self, ni, nSum):
         # if (ni<10 or nSum < 10):
-        print('ni:  ', ni, ' nsum:  ', nSum)
-        if ni == 0: return 0
-        return (ni / nSum) * math.log10(ni / nSum)
+        print('ni:  ', ni, ' nsum:  ', nSum , ' return: ')
+        if ni == 0:
+            print('ni:  ', ni, ' nsum:  ', nSum, ' return: ', 0 )
+            return 0
+        result=(ni / nSum) * math.log10(ni / nSum)
+        print('ni:  ', ni, ' nsum:  ', nSum, ' return: ',result)
+        return result
 
     def likelihoodRatioTest(self, savingfilename):
         # L1 is for nanopore:
@@ -114,20 +118,20 @@ class NucleotidesCount:
             self.sum()) + \
                   self.calculate_list_elements(
                       (self.C.count_of_nucleotid_in_nanopore + self.C.count_of_nucleotid_in_illumina),
-                      self.sumIllumina()) + \
+                      self.sum()) + \
                   self.calculate_list_elements(
                       (self.G.count_of_nucleotid_in_nanopore + self.G.count_of_nucleotid_in_illumina),
-                      self.sumIllumina()) + \
+                      self.sum()) + \
                   self.calculate_list_elements(
                       (self.T.count_of_nucleotid_in_nanopore + self.T.count_of_nucleotid_in_illumina),
-                      self.sumIllumina()) + \
+                      self.sum()) + \
                   self.calculate_list_elements(
                       (self.N.count_of_nucleotid_in_nanopore + self.N.count_of_nucleotid_in_illumina),
-                      self.sumIllumina()) + \
+                      self.sum()) + \
                   self.calculate_list_elements(
                       (self.Gap.count_of_nucleotid_in_nanopore + self.Gap.count_of_nucleotid_in_illumina),
-                      self.sumIllumina())
-
+                      self.sum())
+        print ('N1: ',self.sumNanopore(),'L1 : ',L1 ,'N2: ',self.sumIllumina(),' L2: ', L2 ,' L_joint: ', L_joint)
         # firstListCount, L1, secondListCount, L2, L_joint):
         StatisticalTest.LikelihoodRatioTest(self.sumNanopore(), L1, self.sumIllumina(), L2, L_joint, savingfilename)
 

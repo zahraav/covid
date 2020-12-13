@@ -1,3 +1,5 @@
+import math
+
 from feature import Feature
 from feature import Info
 import StatisticalTest
@@ -34,7 +36,20 @@ class NucleotidesCount:
         self.N = nucleotide()
         self.Gap = nucleotide()
 
-    def add_nucleotid(self, nucleotide, technology):
+    def sumIllumina(self):
+        return self.A.count_of_nucleotid_in_illumina + self.C.count_of_nucleotid_in_illumina + \
+               self.G.count_of_nucleotid_in_illumina + self.T.count_of_nucleotid_in_illumina + \
+               self.N.count_of_nucleotid_in_illumina + self.Gap.count_of_nucleotid_in_illumina
+
+    def sumNanopore(self):
+        return self.A.count_of_nucleotid_in_nanopore + self.C.count_of_nucleotid_in_nanopore + \
+               self.G.count_of_nucleotid_in_nanopore + self.T.count_of_nucleotid_in_nanopore + \
+               self.N.count_of_nucleotid_in_nanopore + self.Gap.count_of_nucleotid_in_nanopore
+
+    def sum(self):
+        return self.sumIllumina() + self.sumNanopore()
+
+    def add_nucleotide(self, nucleotide, technology):
         """
         Every time this function is called the counter of the nucleotide is increase by 1
         :param nucleotide:
@@ -72,7 +87,51 @@ class NucleotidesCount:
                        self.Gap.count_of_nucleotid_in_nanopore - nucleotide_count_nanopore
         return nanopore_sum, illumina_sum
 
-    def fisher(self,p_value_file_name):
+    def calculate_list_elements(self, ni, nSum):
+        # if (ni<10 or nSum < 10):
+        print('ni:  ', ni, ' nsum:  ', nSum)
+        if ni == 0: return 0
+        return (ni / nSum) * math.log10(ni / nSum)
+
+    def likelihoodRatioTest(self, savingfilename):
+        # L1 is for nanopore:
+        L1 = self.calculate_list_elements(self.A.count_of_nucleotid_in_nanopore, self.sumNanopore()) + \
+             self.calculate_list_elements(self.C.count_of_nucleotid_in_nanopore, self.sumNanopore()) + \
+             self.calculate_list_elements(self.G.count_of_nucleotid_in_nanopore, self.sumNanopore()) + \
+             self.calculate_list_elements(self.T.count_of_nucleotid_in_nanopore, self.sumNanopore()) + \
+             self.calculate_list_elements(self.N.count_of_nucleotid_in_nanopore, self.sumNanopore()) + \
+             self.calculate_list_elements(self.Gap.count_of_nucleotid_in_nanopore, self.sumNanopore())
+
+        L2 = self.calculate_list_elements(self.A.count_of_nucleotid_in_illumina, self.sumIllumina()) + \
+             self.calculate_list_elements(self.C.count_of_nucleotid_in_illumina, self.sumIllumina()) + \
+             self.calculate_list_elements(self.G.count_of_nucleotid_in_illumina, self.sumIllumina()) + \
+             self.calculate_list_elements(self.T.count_of_nucleotid_in_illumina, self.sumIllumina()) + \
+             self.calculate_list_elements(self.N.count_of_nucleotid_in_illumina, self.sumIllumina()) + \
+             self.calculate_list_elements(self.Gap.count_of_nucleotid_in_illumina, self.sumIllumina())
+
+        L_joint = self.calculate_list_elements(
+            (self.A.count_of_nucleotid_in_nanopore + self.A.count_of_nucleotid_in_illumina),
+            self.sum()) + \
+                  self.calculate_list_elements(
+                      (self.C.count_of_nucleotid_in_nanopore + self.C.count_of_nucleotid_in_illumina),
+                      self.sumIllumina()) + \
+                  self.calculate_list_elements(
+                      (self.G.count_of_nucleotid_in_nanopore + self.G.count_of_nucleotid_in_illumina),
+                      self.sumIllumina()) + \
+                  self.calculate_list_elements(
+                      (self.T.count_of_nucleotid_in_nanopore + self.T.count_of_nucleotid_in_illumina),
+                      self.sumIllumina()) + \
+                  self.calculate_list_elements(
+                      (self.N.count_of_nucleotid_in_nanopore + self.N.count_of_nucleotid_in_illumina),
+                      self.sumIllumina()) + \
+                  self.calculate_list_elements(
+                      (self.Gap.count_of_nucleotid_in_nanopore + self.Gap.count_of_nucleotid_in_illumina),
+                      self.sumIllumina())
+
+        # firstListCount, L1, secondListCount, L2, L_joint):
+        StatisticalTest.LikelihoodRatioTest(self.sumNanopore(), L1, self.sumIllumina(), L2, L_joint, savingfilename)
+
+    def fisher(self, p_value_file_name):
         """
         This function calculating data for table of Fisher's exact test. Then pass them for calculating Fisher's exact test to StatisticalTest
         class and save them as p_value
@@ -89,16 +148,16 @@ class NucleotidesCount:
 
         self.A.p_value = StatisticalTest.FisherExactTest(self.A.count_of_nucleotid_in_nanopore,
                                                          self.A.count_of_nucleotid_in_illumina, not_A_nanopore,
-                                                         not_A_illumina,p_value_file_name)
+                                                         not_A_illumina, p_value_file_name)
         self.C.p_value = StatisticalTest.FisherExactTest(self.C.count_of_nucleotid_in_nanopore,
                                                          self.C.count_of_nucleotid_in_illumina, not_C_nanopore,
-                                                         not_C_illumina,p_value_file_name)
+                                                         not_C_illumina, p_value_file_name)
         self.G.p_value = StatisticalTest.FisherExactTest(self.G.count_of_nucleotid_in_nanopore,
                                                          self.G.count_of_nucleotid_in_illumina, not_G_nanopore,
-                                                         not_G_illumina,p_value_file_name)
+                                                         not_G_illumina, p_value_file_name)
         self.T.p_value = StatisticalTest.FisherExactTest(self.T.count_of_nucleotid_in_nanopore,
                                                          self.T.count_of_nucleotid_in_illumina, not_T_nanopore,
-                                                         not_T_illumina,p_value_file_name)
+                                                         not_T_illumina, p_value_file_name)
 
     def to_print(self):
         """
@@ -142,10 +201,10 @@ def countNucleotides(nucleotidesDictionary, line, tech):
     :return: none
     """
     for i in range(2, len(line) - 2):
-        nucleotidesDictionary[i].add_nucleotid(line[i], tech)
+        nucleotidesDictionary[i].add_nucleotide(line[i], tech)
 
 
-def process_fasta_file(fasta_address,bp_number):
+def process_fasta_file(fasta_address, bp_number):
     """This function reads modified Fasta file and count number of nucleotides for every vertical cuts and also calculate p-value
     :param fasta_address: address of fasta file that we want to be read and processed
     :return: none
@@ -154,11 +213,14 @@ def process_fasta_file(fasta_address,bp_number):
     infoDictionary = {}
     nucleotidesDictionary = {}
 
-    nucleotide_dict_address = 'files/Canada_NucleotideDictionary_.txt'.replace('.txt',str(bp_number)+'.txt')
-    nucleotide_count_dict_address = 'files/Canada_NucleotidcountDictionary_.txt'.replace('.txt',str(bp_number)+'.txt')
-    feature_dict_address = 'files/Canada_FeatureDictionary_.txt'.replace('.txt',str(bp_number)+'.txt')
-    save_pvalue_address = 'files/sum_of_significant_p_values_.txt'.replace('.txt',str(bp_number)+'.txt')
-    p_value_file_name = 'files/p_value_.txt'.replace('.txt',str(bp_number)+'.txt')
+    nucleotide_dict_address = 'files/Canada_NucleotideDictionary_.txt'.replace('.txt', str(bp_number) + '.txt')
+    nucleotide_count_dict_address = 'files/Canada_NucleotidcountDictionary_.txt'.replace('.txt',
+                                                                                         str(bp_number) + '.txt')
+    feature_dict_address = 'files/Canada_FeatureDictionary_.txt'.replace('.txt', str(bp_number) + '.txt')
+    save_pvalue_address = 'files/sum_of_significant_p_values_.txt'.replace('.txt', str(bp_number) + '.txt')
+    p_value_file_name = 'files/p_value_.txt'.replace('.txt', str(bp_number) + '.txt')
+    likelihoodRatio_filename = 'files/likelihood.txt'.replace('.txt', str(bp_number) + '.txt')
+    likelihood_dictionary_address = 'files/likelihooddictionary.txt'.replace('.txt', str(bp_number) + '.txt')
 
     dictionary_counter = 0
     is_first_time_to_make_nucleotides_dictionary = True
@@ -185,19 +247,22 @@ def process_fasta_file(fasta_address,bp_number):
                 nwl_context_counter = setcontext(featuresDictionary, line, nwl_context_counter, fastafile_line_counter)
 
                 fastafile_line_counter += 1
-
+    likelihoodDictionary = {}
+    i = 0
     for elem in nucleotidesDictionary:
-        nucleotidesDictionary[elem].fisher(p_value_file_name)
+        likelihoodDictionary[i] = nucleotidesDictionary[elem].likelihoodRatioTest(likelihoodRatio_filename)
+        i += 1
 
     """save data for all dictionaries in file """
     ReadAndWrite.save_dict_with_toprint(infoDictionary, nucleotide_dict_address)
     ReadAndWrite.save_dict_with_toprint(featuresDictionary, feature_dict_address)
     ReadAndWrite.save_dict_with_toprint(nucleotidesDictionary, nucleotide_count_dict_address)
+    #ReadAndWrite.save_dict(likelihoodDictionary, likelihood_dictionary_address)
 
     """
     calculate the percentage of p_value and significancy and save it in the file
     """
-
+    '''
     significance_level=0.01
     significant_p_valuesA = [nucleotidesDictionary[v].A.p_value for v in nucleotidesDictionary if
                             nucleotidesDictionary[v].A.p_value < significance_level]
@@ -222,6 +287,7 @@ def process_fasta_file(fasta_address,bp_number):
     ReadAndWrite.save_data(save_pvalue_address,
                            'T: percentage: {0}  T_count: {1}  total: {2} \n'.format(str(str(len(significant_p_valuesT) / len(nucleotidesDictionary))),
                                                      str(len(significant_p_valuesT)), str(len(nucleotidesDictionary))))
+'''
 
 
-process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21_2.fasta',2)
+process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21_2.fasta', 1)

@@ -16,8 +16,12 @@ def save_dict(input_dictionary, saving_address):
     :param saving_address: Address of file which we want to save data
     :return: none
     """
-    for elem in input_dictionary:
-        save_data(saving_address, input_dictionary[elem])
+    print(len(input_dictionary))
+    for elem in input_dictionary.keys:
+        #print('-->', input_dictionary[elem])
+        for i in input_dictionary[elem]:
+            print('i: ', i )
+            save_data(saving_address, input_dictionary[elem]+'\n')
 
 
 def save_dict_with_toprint(input_dictionary, saving_address):

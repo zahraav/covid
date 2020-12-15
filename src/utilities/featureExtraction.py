@@ -168,15 +168,16 @@ class NucleotidesCount:
         This function generates a String that contains every element that we want to print in a file
         :return: a string
         """
-        return 'Nanopore- A:' + str(self.A.count_of_nucleotid_in_nanopore) + '|C:' + str(
-            self.C.count_of_nucleotid_in_nanopore) + '|G:' + str(self.G.count_of_nucleotid_in_nanopore) + '|T:' + str(
-            self.T.count_of_nucleotid_in_nanopore) + '|N:' + str(self.N.count_of_nucleotid_in_nanopore) + '|Gap:' + str(
-            self.Gap.count_of_nucleotid_in_nanopore) + ' --|illumina- A:' + str(
-            self.A.count_of_nucleotid_in_illumina) + '|C:' + str(self.C.count_of_nucleotid_in_illumina) + '|G:' + str(
-            self.G.count_of_nucleotid_in_illumina) + '|T:' + str(self.T.count_of_nucleotid_in_illumina) + '|N:' + str(
-            self.N.count_of_nucleotid_in_illumina) + '|Gap:' + str(
-            self.Gap.count_of_nucleotid_in_illumina) + ' --|pvalue: A: ' + str(self.A.p_value) + '  |C: ' + str(
-            self.C.p_value) + ' |G: ' + str(self.G.p_value) + ' |T: ' + str(self.T.p_value) + '\n'
+        return '1)Nanopore- sum : '+str(self.sumNanopore())+'  A: ' + str(self.A.count_of_nucleotid_in_nanopore) + '  C: ' + str(
+            self.C.count_of_nucleotid_in_nanopore) + '  G: ' + str(self.G.count_of_nucleotid_in_nanopore) + '  T: ' + str(
+            self.T.count_of_nucleotid_in_nanopore) + '  N: ' + str(self.N.count_of_nucleotid_in_nanopore) + '  Gap: ' + str(
+            self.Gap.count_of_nucleotid_in_nanopore) + '    |2) illumina- sum : '+str(self.sumIllumina())+'  A: ' + str(
+            self.A.count_of_nucleotid_in_illumina) + '  C: ' + str(self.C.count_of_nucleotid_in_illumina) + '  G: ' + str(
+            self.G.count_of_nucleotid_in_illumina) + '  T: ' + str(self.T.count_of_nucleotid_in_illumina) + '  N: ' + str(
+            self.N.count_of_nucleotid_in_illumina) + '  Gap: ' + str(
+            self.Gap.count_of_nucleotid_in_illumina)+'\n'
+               #+ ' --|pvalue: A: ' + str(self.A.p_value) + '  |C: ' + str(
+            #self.C.p_value) + ' |G: ' + str(self.G.p_value) + ' |T: ' + str(self.T.p_value) + '\n'
 
 
 def setcontext(featuresDictionary, seq, dictionary_counter, line_counter, ):

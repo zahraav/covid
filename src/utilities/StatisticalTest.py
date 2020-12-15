@@ -28,7 +28,7 @@ def LikelihoodRatioTest(firstListCount, L1, secondListCount, L2, L_joint, saving
     print('likelihood ratio result:', result)
 
     printstr = 'N1: '+str(firstListCount) + '  L1: ' + str(L1) + '  N2: ' + str(secondListCount) \
-               + '  L2: ' + str(L2) + '  L_joing: ' + str(L_joint) + '  T: ' + str(result)+'\n'
+               + '  L2: ' + str(L2) + '  L_joint: ' + str(L_joint) + '  T: ' + str(result)+'\n'
 
     ReadAndWrite.save_data(savingfilename, printstr)
 

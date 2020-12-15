@@ -45,10 +45,7 @@ def make_new_fasta_file(address):
     with open(address) as infile:
         for line in infile:
             if line.__contains__('>'):
-                if line.__contains__('Nanopore'):
-                    underscore = '_'
-                else:
-                    underscore = ''
+                underscore = '_' if line.__contains__('Nanopore') else underscore = ''
                 temp = '>' + line.rsplit('|')[1].rsplit('_')[2] + underscore
             else:
                 temp = str(line.rstrip("\r\n"))

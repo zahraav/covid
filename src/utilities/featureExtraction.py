@@ -11,7 +11,7 @@ class Nucleotide:
         self.name2 = name2
 
     def toPrint(self):
-        return self.name + ' : ' + str(self.count)
+        return self.name + ' : ' + str(self.count), self.count
 
 
 class Technology:
@@ -49,9 +49,12 @@ class Technology:
 
     def toPrint(self):
         printString = ' '
+        csvlist = [self.getSum()]
         for elem in self.nucleotide_count_list:
-            printString = printString + elem.toPrint() + ' '
-        return 'sum: ' + str(self.getSum()) + ' ' + printString
+            ncount, csvelem = elem.toPrint()
+            printString = printString + ncount + ' '
+            csvlist.append(csvelem)
+        return ('sum: ' + str(self.getSum()) + ' ' + printString), csvlist
 
 
 class VerticalCut:
@@ -76,17 +79,26 @@ class VerticalCut:
         else:
             self.illumina.increaseNucleotideCount(n)
 
-    def likelihoodRatioTest(self, filename):
+    def likelihoodRatioTest(self, filename, is_header):
         L_joint = 0
+
         for nelem, ielem in zip(self.nanopore.nucleotide_count_list, self.illumina.nucleotide_count_list):
             L_joint = L_joint + StatisticalTest.calculate_list_elements(nelem.count + ielem.count, self.getSum())
 
         StatisticalTest.LikelihoodRatioTest(N1=self.nanopore.getSum(), L1=self.nanopore.getL(),
                                             N2=self.illumina.getSum(), L2=self.illumina.getL(),
-                                            L_joint=L_joint, filename=filename)
+                                            L_joint=L_joint, filename=filename, is_header=is_header)
 
-    def to_print(self):
-        return '1)Nanopore-  ' + str(self.nanopore.toPrint()) + '   |2) illumina ' + str(self.illumina.toPrint()) + '\n'
+    def toPrint(self):
+        csvlist = []
+        nelem, nanocsv = self.nanopore.toPrint()
+        ielem, illucsv = self.illumina.toPrint()
+        for i in nanocsv:
+            csvlist.append(i)
+
+        for j in illucsv:
+            csvlist.append(j)
+        return '1)Nanopore-  ' + str(nelem) + '   |2) illumina ' + str(ielem) + '\n', csvlist
 
 
 def setcontext(featuresDictionary, seq, dictionary_counter, line_counter, ):
@@ -156,13 +168,17 @@ def process_fasta_file(fasta_address, bp_number):
 
                 fastafile_line_counter += 1
 
+    is_header = True
     for elem in nucleotidesDictionary:
-        nucleotidesDictionary[elem].likelihoodRatioTest(likelihoodRatio_filename)
+        nucleotidesDictionary[elem].likelihoodRatioTest(likelihoodRatio_filename, is_header)
+        is_header = False
 
     """save data for all dictionaries in file """
-    ReadAndWrite.save_dict_with_toprint(infoDictionary, nucleotide_dict_address)
-    ReadAndWrite.save_dict_with_toprint(featuresDictionary, feature_dict_address)
-    ReadAndWrite.save_dict_with_toprint(nucleotidesDictionary, nucleotide_count_dict_address)
+    ReadAndWrite.saveDictionaryWith_toPrint(infoDictionary, nucleotide_dict_address)
+    ReadAndWrite.saveDictionaryWith_toPrint(featuresDictionary, feature_dict_address)
+
+    ReadAndWrite.saveDictionaryWith_toprintAndCSV(nucleotidesDictionary, nucleotide_count_dict_address)
 
 
 process_fasta_file('files/aligned_canada_gisaid_hcov-19_2020_09_24_21_2.fasta', 1)
+# process_fasta_file('files/test.fasta', 1)

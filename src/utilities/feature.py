@@ -37,7 +37,7 @@ class Info:
         time = year_and_Month[0] + time
         return time
 
-    def to_print(self):
+    def toPrint(self):
         return str(self.technology) + '  ' + str(self.protocol) + '  ' + str(self.country) + '  ' + str(
             self.region) + '  ' + str(self.collection_date) + '\n'
 
@@ -51,7 +51,7 @@ class Feature:
         self.infoDictionary = info_dictionary
         self.line_number = line_number
 
-    def to_print(self):
+    def toPrint(self):
         return 'seq num: ' + str(self.line_number) + '  ' + str(self.groups) + '  ' + str(self.count) + '  ' + str(
             self.context) + '  ' + str(
             self.position) + '  ' + '\n'

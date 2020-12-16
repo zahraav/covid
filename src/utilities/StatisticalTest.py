@@ -27,7 +27,7 @@ def calculate_list_elements(ni, sum_):
     return 0 if prop == 0 else prop * math.log10(prop)
 
 
-def LikelihoodRatioTest(N1, L1, N2, L2, L_joint, filename, is_header):
+def LikelihoodRatioTest(N1, L1, N2, L2, L_joint, filename, is_header, csv_address):
     """
     T = 2 * [N_1 * L_1 + N_2 * L_2 - (N_1 + N_2) * L_{joint}]
     """
@@ -37,7 +37,7 @@ def LikelihoodRatioTest(N1, L1, N2, L2, L_joint, filename, is_header):
                '  T: ' + str(result) + '\n'
     ReadAndWrite.saveData(filename, printstr)
     csv_list = [str(N1), str(L1), str(N2), str(L2), str(L_joint), str(result)]
-    ReadAndWrite.saveToCsv('files/TestStaticticsResult.csv', csv_list, ['N1', 'L1', 'N2', 'L2', 'L_joint', 'result'],
+    ReadAndWrite.saveToCsv(csv_address, csv_list, ['N1', 'L1', 'N2', 'L2', 'L_joint', 'result'],
                            is_header)
 
     return result

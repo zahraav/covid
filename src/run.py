@@ -10,6 +10,7 @@ logging.basicConfig(filename="%s" % 'src/logs/logs.log',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+table_name = 'canada3'
 
 
 def get_configs():
@@ -25,7 +26,6 @@ def find_accession_id(header):
             return i
 
 
-table_name = 'canada'
 
 
 def generate_new_header(covid_sequence):
@@ -56,7 +56,7 @@ def next_data(fastafile):
             if line.__contains__('>'):
                 if count == 2:
                     count = 1
-                    temp_sequence = sequence[0:100:]
+                    temp_sequence = sequence[200:300:]
                     temp_header = header
                     sequence = ''
                     yield CovidSequence(temp_header, temp_sequence)

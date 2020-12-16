@@ -9,10 +9,12 @@ class Info:
         return self.technology
 
     def set_technology(self,line):
-        if 'Nanopore' in line:
-            return 'Nanopore'
-        else:
-            return 'Illumina'
+        if 'nanopore' in line.lower():
+            return 'nanopore'
+        elif 'illumina' in line.lower():
+            return 'illumina'
+        else :
+            return '-'
 
     def set_protocol(self,line):
         protocol = line.rsplit('|')[4]

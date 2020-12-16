@@ -12,7 +12,6 @@ def query_execute(query):
     my_cursor = mydb.cursor()
     my_cursor.execute(query)
     result = my_cursor.fetchone()
-
     if result is None:
         return ''
     return result[0]

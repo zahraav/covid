@@ -36,7 +36,7 @@ def saveDictionaryWith_toPrint(input_dictionary, saving_address):
         saveData(saving_address, input_dictionary[elem].toPrint())
 
 
-def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address):
+def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csv_adress):
     """
     This function pass elements of dictionary of specific classes for saving to the saveData function
     every elem in dictionary must have toprint() function, which gives a string
@@ -48,7 +48,7 @@ def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address):
     for elem in input_dictionary:
         temp, csvlist = input_dictionary[elem].toPrint()
         saveData(saving_address, temp)
-        saveToCsv('files/canadaNucleotidesCount.csv', csvlist,
+        saveToCsv(csv_adress, csvlist,
                   ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'], is_header)
 
         is_header = False

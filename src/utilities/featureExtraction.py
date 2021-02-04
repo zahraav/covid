@@ -140,10 +140,10 @@ def process_fasta_file(fasta_address, bp_number,prefix):
     featuresDictionary = {}
     infoDictionary = {}
     nucleotidesDictionary = {}
-    nucleotide_dict_address = 'files/'+prefix+'NucleotideDictionary_.txt'.replace('.txt', bp_number + '.txt')
-    nucleotide_count_dict_address = 'files/'+prefix+'NucleotidcountDictionary_.txt'.replace('.txt',
-                                                                                         bp_number + '.txt')
-    feature_dict_address = 'files/'+prefix+'FeatureDictionary_.txt'.replace('.txt', bp_number + '.txt')
+    #nucleotide_dict_address = 'files/'+prefix+'NucleotideDictionary_.txt'.replace('.txt', bp_number + '.txt')
+    #nucleotide_count_dict_address = 'files/'+prefix+'NucleotidcountDictionary_.txt'.replace('.txt',
+    #                                                                                     bp_number + '.txt')
+    #feature_dict_address = 'files/'+prefix+'FeatureDictionary_.txt'.replace('.txt', bp_number + '.txt')
     likelihoodRatio_filename = 'files/'+prefix+'TestStatisticsData_.txt'.replace('.txt', bp_number + '.txt')
     csv_address = 'files/'+prefix+'NucleotidesCount_.'.replace('.', bp_number + '.csv')
     Test_statistic_result_csv_address = 'files/'+prefix+'TestStaticticsResult_.'.replace('.', bp_number + '.csv')
@@ -170,7 +170,7 @@ def process_fasta_file(fasta_address, bp_number,prefix):
                     is_first_time_to_make_nucleotides_dictionary = False
 
                 countNucleotides(nucleotidesDictionary, line, infoDictionary[fastafile_line_counter].technology)
-                nwl_context_counter = setcontext(featuresDictionary, line, nwl_context_counter, fastafile_line_counter)
+                #nwl_context_counter = setcontext(featuresDictionary, line, nwl_context_counter, fastafile_line_counter)
 
                 fastafile_line_counter += 1
 
@@ -181,8 +181,8 @@ def process_fasta_file(fasta_address, bp_number,prefix):
         is_header = False
 
     """save data for all dictionaries in file """
-    ReadAndWrite.saveDictionaryWith_toPrint(infoDictionary, nucleotide_dict_address)
-    ReadAndWrite.saveDictionaryWith_toPrint(featuresDictionary, feature_dict_address)
+    #ReadAndWrite.saveDictionaryWith_toPrint(infoDictionary, nucleotide_dict_address)
+    #ReadAndWrite.saveDictionaryWith_toPrint(featuresDictionary, feature_dict_address)
 
-    ReadAndWrite.saveDictionaryWith_toprintAndCSV(nucleotidesDictionary, nucleotide_count_dict_address, csv_address)
+    #ReadAndWrite.saveDictionaryWith_toprintAndCSV(nucleotidesDictionary, nucleotide_count_dict_address, csv_address)
 

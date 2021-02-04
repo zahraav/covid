@@ -1,7 +1,5 @@
 import csv
 
-from utilities.DBConnection import makeTable
-
 
 def saveData(saving_address, data):
     """
@@ -38,7 +36,7 @@ def saveDictionaryWith_toPrint(input_dictionary, saving_address):
         saveData(saving_address, input_dictionary[elem].toPrint())
 
 
-def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csv_adress):
+def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csvAddress):
     """
     This function pass elements of dictionary of specific classes for saving to the saveData function
     every elem in dictionary must have toprint() function, which gives a string
@@ -48,9 +46,9 @@ def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csv_adress
     """
     is_header = True
     for elem in input_dictionary:
-        temp, csvlist = input_dictionary[elem].toPrint()
-        saveData(saving_address, temp)
-        saveToCsv(csv_adress, csvlist,
+        temp, csvList = input_dictionary[elem].toPrint()
+        #saveData(saving_address, temp)
+        saveToCsv(csvAddress, csvList,
                   ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'],
                   is_header)
 
@@ -59,9 +57,10 @@ def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csv_adress
 
 def saveToCsv(file_name, csvlist, fieldnames, is_header):
     x = {}
+    print(csvlist , fieldnames)
     for name, elem in zip(fieldnames, csvlist):
         x[name] = str(elem)
-
+    print('x:',x)
     with open(file_name, 'a+', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         if is_header:
@@ -69,7 +68,7 @@ def saveToCsv(file_name, csvlist, fieldnames, is_header):
         writer.writerow(x)
 
 
-def saveSeqAlignmentToCSV(input_dictionary, saving_address,csv_adress):
+def saveSeqAlignmentToCSV(input_dictionary, saving_address,csvAddress):
     """
     This function pass elements of dictionary of specific classes for saving to the saveData function
     every elem in dictionary must have toprint() function, which gives a string
@@ -81,29 +80,7 @@ def saveSeqAlignmentToCSV(input_dictionary, saving_address,csv_adress):
     for elem in input_dictionary:
         temp, csvlist = input_dictionary[elem].toPrint()
         saveData(saving_address, temp)
-        saveToCsv(csv_adress, csvlist,
+        saveToCsv(csvAddress, csvlist,
                   ['Accession_id', 'seq_alignment'],is_header)
 
         is_header = False
-
-def readTSVfile(inputFile):
-    isFirstLine=True
-    with open(inputFile) as tsvin:
-        tsvin = csv.reader(tsvin, delimiter='\t')
-        for row in tsvin:
-            if isFirstLine:
-                #firstLine=row
-                firstLine=changeRow(row).replace(' ','_')
-                isFirstLine=False
-            #print('firstLine:',firstLine)
-            print(changeRow(row))
-           #makeTable(tableName,firstLine,row)
-
-def changeRow(rowList):
-    rowStr=''
-    for i in rowList:
-        rowStr= rowStr+','+i
-    rowStr=rowStr[1::]
-    return rowStr
-
-#readTSVfile('files/file.tsv')

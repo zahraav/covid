@@ -1,5 +1,7 @@
 import csv
 
+from utilities.DBConnection import makeTable
+
 
 def saveData(saving_address, data):
     """
@@ -49,7 +51,8 @@ def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csv_adress
         temp, csvlist = input_dictionary[elem].toPrint()
         saveData(saving_address, temp)
         saveToCsv(csv_adress, csvlist,
-                  ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'], is_header)
+                  ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'],
+                  is_header)
 
         is_header = False
 
@@ -64,3 +67,43 @@ def saveToCsv(file_name, csvlist, fieldnames, is_header):
         if is_header:
             writer.writeheader()
         writer.writerow(x)
+
+
+def saveSeqAlignmentToCSV(input_dictionary, saving_address,csv_adress):
+    """
+    This function pass elements of dictionary of specific classes for saving to the saveData function
+    every elem in dictionary must have toprint() function, which gives a string
+    :param input_dictionary: Dictionary for saving in the file
+    :param saving_address: Address of file which we want to save data
+    :return: none
+    """
+    is_header = True
+    for elem in input_dictionary:
+        temp, csvlist = input_dictionary[elem].toPrint()
+        saveData(saving_address, temp)
+        saveToCsv(csv_adress, csvlist,
+                  ['Accession_id', 'seq_alignment'],is_header)
+
+        is_header = False
+
+def readTSVfile(inputFile):
+    isFirstLine=True
+    with open(inputFile) as tsvin:
+        tsvin = csv.reader(tsvin, delimiter='\t')
+        for row in tsvin:
+            if isFirstLine:
+                #firstLine=row
+                firstLine=changeRow(row).replace(' ','_')
+                isFirstLine=False
+            #print('firstLine:',firstLine)
+            print(changeRow(row))
+           #makeTable(tableName,firstLine,row)
+
+def changeRow(rowList):
+    rowStr=''
+    for i in rowList:
+        rowStr= rowStr+','+i
+    rowStr=rowStr[1::]
+    return rowStr
+
+#readTSVfile('files/file.tsv')

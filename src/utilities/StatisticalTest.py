@@ -1,6 +1,6 @@
 import math
 import scipy.stats as stats
-import ReadAndWrite
+from utilities import ReadAndWrite
 
 
 def FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleotide_in_nanopore,
@@ -23,6 +23,7 @@ def FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleoti
 
 
 def calculate_list_elements(ni, sum_):
+    if sum_==0: return 0
     prop = ni / sum_
     return 0 if prop == 0 else prop * math.log10(prop)
 

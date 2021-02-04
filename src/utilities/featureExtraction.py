@@ -1,7 +1,7 @@
-from feature import Feature
-from feature import Info
-import StatisticalTest
-import ReadAndWrite
+from utilities.feature import Feature
+from utilities.feature import Info
+from utilities import StatisticalTest
+from utilities import ReadAndWrite
 
 
 class Nucleotide:
@@ -39,13 +39,13 @@ class Technology:
             :param nucleotide:
             :return:
             """
-        if nucleotide not in ['A', 'W', 'M', 'D', 'V', 'C', 'Y', 'B', 'H', 'G', 'S', 'R', 'K', 'T', 'U', 'W', 'N', '.',
-                              '-']:
-            print(nucleotide)
 
         for elem in self.nucleotide_count_list:
             if elem.name == nucleotide or nucleotide in elem.name2:
                 elem.count += 1
+        if nucleotide not in ['A', 'W', 'M', 'D', 'V', 'C', 'Y', 'B', 'H', 'G', 'S', 'R', 'K', 'T', 'U', 'W', 'N', '.',
+                              '-']:
+            print(nucleotide)
 
     def getL(self):
         L = 0
@@ -131,7 +131,7 @@ def countNucleotides(nucleotidesDictionary, line, tech):
         nucleotidesDictionary[i].add_nucleotide(line[i], tech)
 
 
-def process_fasta_file(fasta_address, bp_number):
+def process_fasta_file(fasta_address, bp_number,prefix):
     """This function reads modified Fasta file and count number of nucleotides for every vertical cuts
     :param bp_number: it's an integer that shows the data belongs to first 100bp or second 100bp or ... of sequence
     :param fasta_address: address of fasta file that we want to be read and processed
@@ -140,14 +140,13 @@ def process_fasta_file(fasta_address, bp_number):
     featuresDictionary = {}
     infoDictionary = {}
     nucleotidesDictionary = {}
-
-    nucleotide_dict_address = 'files/Canada_NucleotideDictionary_.txt'.replace('.txt', str(bp_number) + '.txt')
-    nucleotide_count_dict_address = 'files/Canada_NucleotidcountDictionary_.txt'.replace('.txt',
-                                                                                         str(bp_number) + '.txt')
-    feature_dict_address = 'files/Canada_FeatureDictionary_.txt'.replace('.txt', str(bp_number) + '.txt')
-    likelihoodRatio_filename = 'files/TestStatisticsData_.txt'.replace('.txt', str(bp_number) + '.txt')
-    csv_address = 'files/canadaNucleotidesCount_.'.replace('.', str(bp_number) + '.csv')
-    Test_statistic_result_csv_address = 'files/TestStaticticsResult_.'.replace('.', str(bp_number) + '.csv')
+    nucleotide_dict_address = 'files/'+prefix+'NucleotideDictionary_.txt'.replace('.txt', bp_number + '.txt')
+    nucleotide_count_dict_address = 'files/'+prefix+'NucleotidcountDictionary_.txt'.replace('.txt',
+                                                                                         bp_number + '.txt')
+    feature_dict_address = 'files/'+prefix+'FeatureDictionary_.txt'.replace('.txt', bp_number + '.txt')
+    likelihoodRatio_filename = 'files/'+prefix+'TestStatisticsData_.txt'.replace('.txt', bp_number + '.txt')
+    csv_address = 'files/'+prefix+'NucleotidesCount_.'.replace('.', bp_number + '.csv')
+    Test_statistic_result_csv_address = 'files/'+prefix+'TestStaticticsResult_.'.replace('.', bp_number + '.csv')
 
     is_first_time_to_make_nucleotides_dictionary = True
     fastafile_line_counter = 0
@@ -187,6 +186,3 @@ def process_fasta_file(fasta_address, bp_number):
 
     ReadAndWrite.saveDictionaryWith_toprintAndCSV(nucleotidesDictionary, nucleotide_count_dict_address, csv_address)
 
-
-process_fasta_file('files/aligned_gisaid_hcov-19_2020_12_16_02_1.fasta', 1)
-# process_fasta_file('files/test.fasta', 1)

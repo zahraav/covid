@@ -1,17 +1,17 @@
-import mysql.connector
+'''import mysql.connector
 
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
     database="19_1_2021_seq_tech_metadata_canada_world"
-)
+)'''
 
 
 def query_execute(query):
     #print('query:',query)
 
-    my_cursor = mydb.cursor()
+    '''my_cursor = mydb.cursor()
     print(query)
 
     my_cursor.execute(query)
@@ -19,18 +19,19 @@ def query_execute(query):
     mydb.commit()
 
     if result is None:
-        return ''
-    return result[0]
-    # return 'a'
+        return
+    return result[0]'''
+    return 'a'
 
 
 def query_execute_all(query):
-    my_cursor = mydb.cursor()
+    '''my_cursor = mydb.cursor()
     my_cursor.execute(query)
     result = my_cursor.fetchone()
 
     return result
-    # return 'a'
+'''
+    return 'a'
 
 
 def query():

@@ -4,7 +4,7 @@ import math
 from ReadAndWrite import saveToCsv
 
 is_header=True
-inputFile='files/test_MSA_2.csv'
+inputFile='files/outputCanada_msa_0120.csv'
 with open(inputFile, 'r') as file:
     reader = csv.reader(file)
     isReadHeader = False

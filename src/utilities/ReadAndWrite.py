@@ -57,10 +57,8 @@ def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csvAddress
 
 def saveToCsv(file_name, csvlist, fieldnames, is_header):
     x = {}
-    print(csvlist , fieldnames)
     for name, elem in zip(fieldnames, csvlist):
         x[name] = str(elem)
-    print('x:',x)
     with open(file_name, 'a+', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         if is_header:

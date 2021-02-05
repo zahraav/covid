@@ -12,6 +12,8 @@ def query_execute(query):
     #print('query:',query)
 
     my_cursor = mydb.cursor()
+    print(query)
+
     my_cursor.execute(query)
     result = my_cursor.fetchone()
     mydb.commit()
@@ -64,11 +66,8 @@ def get_ratio_Nano_to_Illu():
 
 # get_assembly_method("north_america", "Accession_ID", "EPI_ISL_413557")
 
-def readSeqTech(table, accessionId, continent, country):
+def readSeqTech(table, accessionId):
     return query_execute("SELECT Sequencing_technology FROM "+table+" WHERE Accession_ID='"+accessionId+"'")
-    #return query_execute("SELECT Sequencing_technology FROM " + table + " WHERE Accession_ID='" + accessionId +
-     #                    "' AND Location LIKE '%" + continent + "%' and Location LIKE '%" + country + "%' ")
-
 
 def readMetadata(accessionID, tableName):
     return query_execute("SELECT * FROM " + tableName + " WHERE gisaid_epi_isl= `" + accessionID + "`")

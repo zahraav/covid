@@ -98,19 +98,19 @@ def main():
 
 
     #aligned_file_name = config['address'].get('folder')+"aligned_"+\
-     #              table_name+ config['address'].get('input_fastafile')\
-     #                  .replace(".fasta","_"+basePairCount+".fasta")
+    #              table_name+ config['address'].get('input_fastafile')\
+    #                  .replace(".fasta","_"+basePairCount+".fasta")
 
 
     #basePairCount=int(basePairCount)
-    is_header=True;
+    is_header=True
     #change_fasta_header(aligned_file_name,basePairCount,input_fasta_file,is_header)
 
-   # align_seq(input_fasta_file)
+    #align_seq(input_fasta_file)
 
-   # parseFastaFile('Canada','files/canada_msa_0120-Copy.fasta','files/outputCanada_msa_0120-Copy.fasta')
-   # addSeqTechToMSAMetaData()
-    process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
+    parseFastaFile('Canada','files/msa_0203.fasta','files/output_msa_0203.fasta')
+    #addSeqTechToMSAMetaData()
+    #process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
 
 
 if __name__ == '__main__':

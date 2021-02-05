@@ -47,13 +47,13 @@ def parseFastaFile(countryFilter, inputFastaFile, outputFastaFile):
                 else:
                     virusName, country, accessionId, collectionDate, continent = parseHeader(header)
 
-                    technology = findSequenceByCountryDB(accessionId, continent, country)
+                    technology = findSeqTechByID(accessionId)
                     newHeader = header.rstrip() + '|' + technology
                     f1.write(str(newHeader) + '\n' + str(seq) + '\n')
                     saveToCsv('files/MSAAlignedMatrix.csv', [accessionId, seq],
                               ['Accession id', 'Seq align'], isHeader)
                     isHeader = False
-                    updateSeqTechInTable(tableName, accessionId, technology)
+                    #updateSeqTechInTable(tableName, accessionId, technology)
 
     except MemoryError as e:
         logger.error(e)
@@ -80,13 +80,8 @@ def parseHeader(header):
     return virusName, country, accessionId, collectionDate, continent
 
 
-def findSequenceByCountryDB(accessionId, continent, country):
-    if continent.__contains__('NorthAmerica'):
-        continent = 'North America'
-    elif continent.__contains__('SouthAmerica'):
-        continent = 'South America'
-
-    return readSeqTech(country, accessionId, continent, country)
+def findSeqTechByID(accessionId):
+    return readSeqTech('worldtest',accessionId)
 
 
 def addSeqTechToMSAMetaData(tableName):

@@ -7,7 +7,7 @@ def run_queries(file_name):
             count = count + 1
             try:
                 if count > 282240:
-                    print(line);
+                    print(line)
 
             except:
                 pass

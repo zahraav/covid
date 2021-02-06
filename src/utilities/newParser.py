@@ -25,22 +25,22 @@ def analyze_fasta(file_name):
             headerLine = 0
             header = line.strip().rstrip().split("|")
             type = header[-1]
-        print(stats)
+       # print(stats)
         return stats
 
-
-is_header = True
-inputFile = 'files/test_MSA_2.fasta'
-stats = analyze_fasta(inputFile)
-for nelem, ielem in zip(stats['Nanopore'], stats['Illumina']):
-    csvList = [sum(nelem)]
-    for k in nelem:
-        csvList.append(k)
-    csvList.append(sum(ielem))
-    for n in ielem:
-        csvList.append(n)
-    saveToCsv(inputFile.replace('.fasta', '.csv'), csvList,
-              ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2',
-               'GAP2'],
-              is_header)
-    is_header = False
+def parse(inputFile):
+    is_header = True
+    #inputFile = 'files/test_MSA_2.fasta'
+    stats = analyze_fasta(inputFile)
+    for nelem, ielem in zip(stats['Nanopore'], stats['Illumina']):
+        csvList = [sum(nelem)]
+        for k in nelem:
+            csvList.append(k)
+        csvList.append(sum(ielem))
+        for n in ielem:
+            csvList.append(n)
+        saveToCsv(inputFile.replace('.fasta', '.csv'), csvList,
+                  ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2',
+                   'GAP2'],
+                  is_header)
+        is_header = False

@@ -25,7 +25,7 @@ def analyze_fasta(file_name):
             headerLine = 0
             header = line.strip().rstrip().split("|")
             type = header[-1]
-       # print(stats)
+        print(stats)
         return stats
 
 def parse(inputFile):

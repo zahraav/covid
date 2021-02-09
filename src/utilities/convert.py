@@ -14,7 +14,7 @@ def convertTsvToSQL(file_name, table_name):
                 attributes = ','.join(attrList)
                 data = "CREATE TABLE {table} ({attribute_types});".format(table=table_name, attribute_types=",".join(
                     [attr + " VARCHAR(100)" for attr in attrList]))
-                print(data)
+                #print(data)
 
                 saveData(file_name.replace('.tsv', '_' + table_name + '.txt'), data)
             else:

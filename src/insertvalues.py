@@ -6,13 +6,13 @@ def run_queries(file_name):
         for line in file:
             count = count + 1
             try:
-                if count > 282240:
+                if count > 1442929:
                     print(line)
 
             except:
                 pass
 
 
-run_queries('outputascii.sql')
+run_queries('newoutputascii2.sql')
 
 

@@ -1,7 +1,9 @@
 import os
 from newParser import parse
+
+
 def addCSVFiles():
-    directory = os.path.join("c:\\","path")
+    directory = os.path.join('files/allfiles',"path")
     for root,dirs,files in os.walk(directory):
         for file in files:
             if file.endswith(".csv"):

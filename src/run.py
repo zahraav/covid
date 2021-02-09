@@ -108,7 +108,7 @@ def main():
 
     #align_seq(input_fasta_file)
 
-    parseFastaFile('Canada','files/msa_0203.fasta','files/output_msa_0203.fasta')
+    parseFastaFile('files/msa_0206.fasta','files/output_msa_0206.fasta.fasta')
     #addSeqTechToMSAMetaData()
     #process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
 

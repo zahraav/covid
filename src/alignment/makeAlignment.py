@@ -1,13 +1,13 @@
 import logging
 
 from utilities.DBConnection import readSeqTech, readMetadata
-from utilities.DBConnection import addColumnToTable, updateTable
+from utilities.DBConnection import addColumnToTable
 from utilities.ReadAndWrite import saveToCsv
 
 logger = logging.getLogger(__name__)
 
 
-def nextData(fastaFile, countryFilter):
+def nextData(fastaFile):
     sequence = ''
     header = ''
     with open(fastaFile) as infile:
@@ -16,7 +16,7 @@ def nextData(fastaFile, countryFilter):
             if line == '':
                 return
             if line.__contains__('>'):
-                if line.split('|')[0].split('/')[1].lower().__contains__(str(countryFilter).lower()):
+                if line.split('|')[0].split('/')[1].lower():
                     header = line
                 else:
                     header = None
@@ -33,13 +33,13 @@ def nextData(fastaFile, countryFilter):
                 yield temph, tempseq
 
 
-def parseFastaFile(countryFilter, inputFastaFile, outputFastaFile):
-    tableName='worldtest'
+def parseFastaFile(inputFastaFile, outputFastaFile):
+    tableName='world'
     #addSeqTechToMSAMetaData(tableName)
     isHeader = True
     try:
         with open(outputFastaFile, 'w', encoding='utf-8') as f1:
-            for header, seq in nextData(inputFastaFile, countryFilter):
+            for header, seq in nextData(inputFastaFile):
 
                 if header is None:
                     continue
@@ -48,12 +48,11 @@ def parseFastaFile(countryFilter, inputFastaFile, outputFastaFile):
                     virusName, country, accessionId, collectionDate, continent = parseHeader(header)
 
                     technology = findSeqTechByID(accessionId)
-                    newHeader = header.rstrip() + '|' + technology
+                    newHeader = str(header.rstrip()) + '|' + str(technology)
                     f1.write(str(newHeader) + '\n' + str(seq) + '\n')
                     saveToCsv('files/MSAAlignedMatrix.csv', [accessionId, seq],
                               ['Accession id', 'Seq align'], isHeader)
                     isHeader = False
-                    #updateSeqTechInTable(tableName, accessionId, technology)
 
     except MemoryError as e:
         logger.error(e)
@@ -81,12 +80,9 @@ def parseHeader(header):
 
 
 def findSeqTechByID(accessionId):
-    return readSeqTech('worldtest',accessionId)
+    return readSeqTech('world',accessionId)
 
 
 def addSeqTechToMSAMetaData(tableName):
     addColumnToTable(tableName, 'Sequencing_technology')
 
-
-def updateSeqTechInTable(tableName, accessionId, value):
-    updateTable(tableName,'gisaid_epi_isl', accessionId, 'Sequencing_technology', value)

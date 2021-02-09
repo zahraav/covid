@@ -1,18 +1,23 @@
 
 
-def run_queries(file_name):
+def run_queries(file_name,output_name):
     count = 0
     with open(file_name, 'r') as file:
         for line in file:
             count = count + 1
-            try:
-                if count > 1442929:
-                    print(line)
-
-            except:
+            if count > 3:
+                #print(line)
+                writ_queries(output_name,line)
+            else:
                 pass
 
 
-run_queries('newoutputascii2.sql')
+def writ_queries(file_name,line):
+    with open(file_name, "a") as output_handle:
+        output_handle.write(line)
+
+
+file_name='test.txt'
+run_queries(file_name,file_name.replace('.sql','_.sql'))
 
 

@@ -1,17 +1,21 @@
 #import mysql.connector
-import MySQLdb
-"""
+import mysql.connector
+
+#import MySQLdb
+
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="world2"
-)"""
+    database="world"
+)
+'''
 mydb = MySQLdb.connect(
         host="localhost",
         user="root",
         password="",
         db="world")    
+'''
 
 def query_execute(query):
     #print('query:',query)

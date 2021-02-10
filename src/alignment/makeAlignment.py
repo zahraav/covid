@@ -34,7 +34,7 @@ def nextData(fastaFile):
 
 
 def parseFastaFile(inputFastaFile, outputFastaFile):
-    tableName='world'
+    tableName='world2'
     #addSeqTechToMSAMetaData(tableName)
     isHeader = True
     try:
@@ -80,7 +80,7 @@ def parseHeader(header):
 
 
 def findSeqTechByID(accessionId):
-    return readSeqTech('world',accessionId)
+    return readSeqTech('world2',accessionId)
 
 
 def addSeqTechToMSAMetaData(tableName):

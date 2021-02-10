@@ -5,7 +5,7 @@ def run_queries(file_name,output_name):
     with open(file_name, 'r') as file:
         for line in file:
             count = count + 1
-            if count > 3:
+            if count > 8084:
                 #print(line)
                 writ_queries(output_name,line)
             else:
@@ -17,7 +17,7 @@ def writ_queries(file_name,line):
         output_handle.write(line)
 
 
-file_name='test.txt'
-run_queries(file_name,file_name.replace('.sql','_.sql'))
+file_name='files//ascii_output__2.txt'
+run_queries(file_name,file_name.replace('2.txt','3.txt'))
 
 

@@ -18,6 +18,7 @@ def nextData(fastaFile):
             if line.__contains__('>'):
                 if header != '':
                     yield header, sequence
+                    sequence=''
                 header = line
             else:
                 sequence = sequence.rstrip("\n") + line.rstrip("\n")
@@ -29,8 +30,7 @@ def nextData(fastaFile):
         yield header, sequence
 
 
-def parseFastaFile(inputFastaFile, outputFastaFile):
-    tableName='world2'
+def parseFastaFile(tableName,inputFastaFile, outputFastaFile):
     #addSeqTechToMSAMetaData(tableName)
     isHeader = True
     try:
@@ -43,7 +43,7 @@ def parseFastaFile(inputFastaFile, outputFastaFile):
                 else:
                     #virusName, country, accessionId, collectionDate, continent = parseHeader(header)
                     accessionId = header.split('|')[1]
-                    technology = findSeqTechByID(accessionId)
+                    technology = findSeqTechByID(tableName,accessionId)
                     #newHeader = header.rstrip() + '|' + str(technology)
                     f1.write(header.rstrip())
                     f1.write('|')
@@ -80,8 +80,8 @@ def parseHeader(header):
     return virusName, country, accessionId, collectionDate, continent
 
 
-def findSeqTechByID(accessionId):
-    return readSeqTech('world2',accessionId)
+def findSeqTechByID(tableName,accessionId):
+    return readSeqTech(tableName,accessionId)
 
 
 def addSeqTechToMSAMetaData(tableName):

@@ -16,21 +16,17 @@ def nextData(fastaFile):
             if line == '':
                 return
             if line.__contains__('>'):
-                if line.split('|')[0].split('/')[1].lower():
-                    header = line
-                else:
-                    header = None
+                if header != '':
+                    yield header, sequence
+                header = line
             else:
-                if header is None:
-                    sequence = None
-                else:
-                    sequence = str(sequence).rstrip("\n") + str(line).rstrip("\n")
+                sequence = sequence.rstrip("\n") + line.rstrip("\n")
 
-                tempseq = sequence
-                temph = header
-                header = ''
-                sequence = ''
-                yield temph, tempseq
+              #  tempseq = sequence
+              #  temph = header
+              #  header = ''
+              #  sequence = ''
+        yield header, sequence
 
 
 def parseFastaFile(inputFastaFile, outputFastaFile):
@@ -45,11 +41,16 @@ def parseFastaFile(inputFastaFile, outputFastaFile):
                     continue
 
                 else:
-                    virusName, country, accessionId, collectionDate, continent = parseHeader(header)
-
+                    #virusName, country, accessionId, collectionDate, continent = parseHeader(header)
+                    accessionId = header.split('|')[1]
                     technology = findSeqTechByID(accessionId)
-                    newHeader = str(header.rstrip()) + '|' + str(technology)
-                    f1.write(str(newHeader) + '\n' + str(seq) + '\n')
+                    #newHeader = header.rstrip() + '|' + str(technology)
+                    f1.write(header.rstrip())
+                    f1.write('|')
+                    f1.write(str(technology))
+                    f1.write('\n')
+                    f1.write(seq)
+                    f1.write('\n')
                     saveToCsv('files/MSAAlignedMatrix.csv', [accessionId, seq],
                               ['Accession id', 'Seq align'], isHeader)
                     isHeader = False

@@ -25,13 +25,15 @@ def analyze_fasta(file_name):
             headerLine = 0
             header = line.strip().rstrip().split("|")
             type = header[-1]
-        print(stats)
+        #print(stats)
         return stats
 
 def parse(inputFile):
     is_header = True
     #inputFile = 'files/test_MSA_2.fasta'
+
     stats = analyze_fasta(inputFile)
+    #print(stats)
     for nelem, ielem in zip(stats['Nanopore'], stats['Illumina']):
         csvList = [sum(nelem)]
         for k in nelem:
@@ -44,3 +46,5 @@ def parse(inputFile):
                    'GAP2'],
                   is_header)
         is_header = False
+
+parse('files/output_test_22.fasta')

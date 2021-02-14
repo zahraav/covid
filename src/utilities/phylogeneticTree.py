@@ -160,11 +160,11 @@ def draw_tree(input_address):
     Phylo.draw(upgmatree.clade, do_show=False)
     plt.savefig('files/upgmatree.png', dpi=100, format="png")
 
-    # tree_DFS(tree.clade,set())
+    tree_DFS(tree.clade,set())
     Phylo.draw(tree, do_show=False)
     plt.savefig('files/phylotree.png', dpi=100, format="png")
     plt.show()
     plt.close()
 
 
-#draw_tree('files/test.fasta')
+#draw_tree('files/output_test_22.fasta')

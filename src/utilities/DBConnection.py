@@ -20,7 +20,7 @@ mydb = MySQLdb.connect(
 def query_execute(query):
     #print('query:',query)
 
-    my_cursor = mydb.cursor()
+    my_cursor = mydb.cursor(buffered=True)
     #print(query)
 
     my_cursor.execute(query)

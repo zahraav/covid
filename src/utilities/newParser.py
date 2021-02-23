@@ -41,7 +41,17 @@ def parse(inputFile):
         csvList.append(sum(ielem))
         for n in ielem:
             csvList.append(n)
-        saveToCsv(inputFile.replace('.fasta', '.csv'), csvList,
+        percentCsvList = csvList.copy()
+        for i in range(1 ,6,):
+            percentCsvList[i] = percentCsvList[i]/percentCsvList[0]*100
+            percentCsvList[i+7]=percentCsvList[i+7]/percentCsvList[7]*100
+
+        print(csvList)
+        saveToCsv(inputFile.replace('.fasta', '_normal.csv'), csvList,
+                  ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2',
+                   'GAP2'],
+                  is_header)
+        saveToCsv(inputFile.replace('.fasta', '_percent.csv'), percentCsvList,
                   ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2',
                    'GAP2'],
                   is_header)

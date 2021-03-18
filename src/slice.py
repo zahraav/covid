@@ -1,6 +1,6 @@
 inputFile='files/output_test_22.fasta'
 saving_address='files/output_slice_seq.fasta'
-head=2
+head=113
 tail=3
 count=0
 with open(saving_address, "a") as output:

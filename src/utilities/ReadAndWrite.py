@@ -55,13 +55,16 @@ def saveDictionaryWith_toprintAndCSV(input_dictionary, saving_address,csvAddress
         is_header = False
 
 
-def saveToCsv(file_name, csvlist, fieldnames, is_header):
+def saveToCsv(fileName, csvList, fieldNames, isHeader):
+    # is_header should set to true for the first time then it should set to false for rest of calls
+    # this print the header in CSV file.
+    # if it doesn't set to false it will print the header for every line.
     x = {}
-    for name, elem in zip(fieldnames, csvlist):
+    for name, elem in zip(fieldNames, csvList):
         x[name] = str(elem)
-    with open(file_name, 'a+', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        if is_header:
+    with open(fileName, 'a+', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldNames)
+        if isHeader:
             writer.writeheader()
         writer.writerow(x)
 

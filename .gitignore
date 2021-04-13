@@ -13,5 +13,5 @@ Scripts/*
 *.swp
 **/__pycache__/*
 */__pycache__/*
-
+*.ipynb
 !.gitignore

@@ -8,7 +8,7 @@ def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
 
 fastaFile = "files/test_2.fasta"
 firstTimeUsingHeader = True
-nucleotideList = ['A', 'C', 'G', 'T', '.', '-']
+nucleotideList = ['A', 'C', 'G', 'T', 'N', '-']
 with open(fastaFile) as infile:
     for line in infile:
         line = line.rstrip()

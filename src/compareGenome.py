@@ -2,7 +2,7 @@ from utilities.ReadAndWrite import saveToCsv
 
 
 def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
-    fieldNames = ['id', 'reference', 'seq', 'index']
+    fieldNames = ['id', 'reference', 'seq','date', 'location', 'technology', 'index']
     saveToCsv(fileName, csvList, fieldNames, isFirstTimeUsingHeader)
 
 
@@ -20,7 +20,7 @@ with open(referenceFasta) as referenceFile:
 
 firstTimeUsingHeader = True
 
-indexCounter = 0
+
 with open(fastaFile) as infile:
     for fLine in infile:
         fLine = fLine.rstrip()
@@ -29,10 +29,15 @@ with open(fastaFile) as infile:
             headerSplit = header.split(r'|')
             print(headerSplit)
             seqId = headerSplit[1]
+            date = headerSplit[2]
+            location = headerSplit[3]
+            technology = headerSplit[4]
+
         else:
+            indexCounter = 0
             for referenceNucleotide, N in zip(referenceSeq, fLine):
                 if referenceNucleotide != N:
-                    saveCSV(compareFile,[seqId, referenceNucleotide, N, indexCounter],firstTimeUsingHeader)
+                    saveCSV(compareFile,[seqId, referenceNucleotide, N, date, location, technology, indexCounter],firstTimeUsingHeader)
                     firstTimeUsingHeader = False
 
                 indexCounter += 1

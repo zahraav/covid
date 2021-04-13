@@ -7,6 +7,7 @@ def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
 
 
 fastaFile = "files/test_2.fasta"
+outFastaFile=fastaFile.replace(".fasta", "_withExtraLetter.fasta")
 firstTimeUsingHeader = True
 nucleotideList = ['A', 'C', 'G', 'T', 'N', '-']
 with open(fastaFile) as infile:
@@ -35,7 +36,7 @@ with open(fastaFile) as infile:
 
             if letterIndicesForFile != ' ':
                 letterIndicesForFile = letterIndicesForFile.lstrip()
-                with open(fastaFile.replace(".fasta", "_withExtraLetter.fasta"), 'a', encoding='utf-8') as f1:
+                with open(outFastaFile, 'a', encoding='utf-8') as f1:
                     f1.write(str(letterIndicesForFile))
                     f1.write(' | ')
                     f1.write(seqId)

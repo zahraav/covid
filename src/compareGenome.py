@@ -6,7 +6,8 @@ def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
     saveToCsv(fileName, csvList, fieldNames, isFirstTimeUsingHeader)
 
 
-referenceFasta = "files/reftest_2.fasta"
+
+referenceFasta = "files/ReferenceSequence.fasta"
 fastaFile = "files/test_2.fasta"
 referenceSeq = ''
 compareFile = fastaFile.replace(".fasta", "_compareToReference.csv")
@@ -15,8 +16,8 @@ with open(referenceFasta) as referenceFile:
         if rLine.__contains__('>'):
             continue
         else:
-            referenceSeq = rLine.rstrip()
-
+            referenceSeq = referenceSeq+ rLine.rstrip()
+            print(referenceSeq)
 
 firstTimeUsingHeader = True
 
@@ -27,7 +28,6 @@ with open(fastaFile) as infile:
         if fLine.__contains__('>'):
             header = fLine
             headerSplit = header.split(r'|')
-            print(headerSplit)
             seqId = headerSplit[1]
             date = headerSplit[2]
             location = headerSplit[3]
@@ -35,11 +35,13 @@ with open(fastaFile) as infile:
 
         else:
             indexCounter = 0
+
             for referenceNucleotide, N in zip(referenceSeq, fLine):
+                print(indexCounter)
                 if referenceNucleotide != N:
                     saveCSV(compareFile,[seqId, referenceNucleotide, N, date, location, technology, indexCounter],firstTimeUsingHeader)
                     firstTimeUsingHeader = False
-
+                    print(N)
                 indexCounter += 1
 
 

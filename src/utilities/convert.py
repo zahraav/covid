@@ -25,4 +25,4 @@ def convertTsvToSQL(file_name, table_name):
                 saveData(file_name.replace('.tsv', '_' + table_name + '.txt'), data)
 
 
-convertTsvToSQL('files/file.tsv', 'myTable')
+convertTsvToSQL('../files/file.tsv', 'myTable')

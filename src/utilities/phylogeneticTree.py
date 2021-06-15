@@ -76,7 +76,7 @@ def tree_DFS(branch, clusters_name):
         if i.name in clusters_name:
             ratio = r / (b + r)
             i.name = '* (' + str(ratio) + ')'
-            ratio_file_address = 'files/Ratio.txt'
+            ratio_file_address = '../files/Ratio.txt'
             save_to_file(('* Nanopore:' + str(r) + '   Illumina:' + str(b) + '  Ratio: ' + str(ratio)),
                          ratio_file_address)
         else:
@@ -149,7 +149,7 @@ def draw_tree(input_address):
 
     cluster_names = set([c.name for c in clusters])
 
-    ratio_file_address = 'files/Ratio.txt'
+    ratio_file_address = '../files/Ratio.txt'
     os.remove(ratio_file_address)
 
     tree_DFS(upgmatree.clade, cluster_names)

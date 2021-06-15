@@ -26,7 +26,7 @@ def parseFastafile(fasta_address):
                 #for i in range(2, len(line) - 2):
                 print('a', seqTech)
 
-    with open('files/csvTest.csv') as csv_file:
+    with open('../files/csvTest.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:

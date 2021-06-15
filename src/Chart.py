@@ -85,7 +85,7 @@ def barChart(columnDict, columnNumber):
         xAxis = columnDict.keys()
         plt.xlabel('Ids')
         plt.ylabel('Count')
-
+        plt.title('Id of sequences with ')
     elif columnNumber == 3:  # Technology
         BarOutputAddress = 'files/BarCharts/technologyBar.png'
         yAxis = columnDict.values()
@@ -94,9 +94,9 @@ def barChart(columnDict, columnNumber):
         plt.ylabel('Count')
 
     elif columnNumber == 4:  # indices
-        BarOutputAddress = 'files/BarCharts/indicesBar_2.png'
+        BarOutputAddress = 'files/BarCharts/indicesBar.png'
         for elem in columnDict.keys():
-            if columnDict[elem] >= 200:
+            if columnDict[elem] >= 1000:
                 yAxis.append(columnDict[elem])
                 xAxis.append(elem)
 
@@ -104,42 +104,40 @@ def barChart(columnDict, columnNumber):
         plt.ylabel('Count')
 
     elif columnNumber == 5:  # letter
-        BarOutputAddress = 'files/BarCharts/LetterBar_2.png'
+        BarOutputAddress = 'files/BarCharts/LetterBar.png'
         yAxis = columnDict.values()
         xAxis = columnDict.keys()
         plt.xlabel('Letter')
         plt.ylabel('Count')
 
     plt.bar(xAxis, yAxis)
-    plt.savefig(BarOutputAddress, dpi=400)
+    plt.savefig(BarOutputAddress, dpi=800)
     plt.show()
 
 
-def simpleBars(inputfile):
-    columnNumber = 0  # id
+def simpleBars(inputFile_):
+    # columnNumber = 0  # id
     # columnNumber=1 # date
     # columnNumber=2 # location
     # columnNumber = 3  # technology
     # columnNumber = 4  # index
-    # columnNumber = 5 # Letter
+    columnNumber = 5  # Letter
 
     columnDictionary = {}
     if columnNumber == 0 or columnNumber == 4 or columnNumber == 5:
-        columnDictionary = returnColumnDictionary(inputFile, columnNumber)
+        columnDictionary = returnColumnDictionary(inputFile_, columnNumber)
     elif columnNumber == 3:
         techDictionary = {'Nanopore': 0, 'Illumina': 0}
-        columnDictionary = returnDictionaryById(inputFile, columnNumber, techDictionary)
+        columnDictionary = returnDictionaryById(inputFile_, columnNumber, techDictionary)
 
     savingAddress = 'files/BarCharts/column_' + str(columnNumber) + '_Dictionary.txt'
     saveSimpleDictionary(columnDictionary, savingAddress)
     barChart(columnDictionary, columnNumber)
 
 
-def TechnologyLetterBarChart():
-    # simpleBars(inputFile)
-    savingAddress = "files/BarCharts/relationBitweenTechAndLetter_Dictionary.txt"
-    columnDictionary = returnDictionaryByTechnologyLetter(inputFile)
-    # saveDictionary(columnDictionary, "files/BarCharts/relationBitweenTechAndLetter_Dictionary.txt")
+def TechnologyLetterBarChart(inputFile_):
+    savingAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
+    columnDictionary = returnDictionaryByTechnologyLetter(inputFile_)
 
     with open(savingAddress, "a") as output_handle:
         for elem in columnDictionary.keys():
@@ -157,23 +155,23 @@ def TechnologyLetterBarChart():
         illuminaList.append(columnDictionary[elem]['Illumina'])
 
     # create plot
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     index = np.arange(n_groups)
     bar_width = 0.35
     opacity = 0.8
 
-    rects1 = plt.bar(index, nanoporeList, bar_width, alpha=opacity, color='b', label='Nonopore')
+    rects1 = plt.bar(index, nanoporeList, bar_width, alpha=opacity, color='b', label='Nanopore')
     rects2 = plt.bar(index + bar_width, illuminaList, bar_width, alpha=opacity, color='g', label='Illumina')
 
     plt.xlabel('Letter')
     plt.ylabel('Count')
-    plt.title('Technoloty Letter ')
+    plt.title('Technology Letter ')
     plt.xticks(index + bar_width, columnDictionary.keys())
     plt.legend()
 
     plt.tight_layout()
-    BarOutputAddress = 'files/BarCharts/LetterBar_tech.png'
-    plt.savefig(BarOutputAddress, dpi=400)
+    BarOutputAddress = 'files/BarCharts/Letter_technology.png'
+    plt.savefig(BarOutputAddress, dpi=800)
 
     plt.show()
 
@@ -182,4 +180,5 @@ def TechnologyLetterBarChart():
 inputFile = 'files/Msa_NoSpace_withExtraLetter.csv'
 # test
 # inputFile = 'files/test_2_withExtraLetter.csv'
-simpleBars(inputFile)
+# simpleBars(inputFile)
+TechnologyLetterBarChart(inputFile)

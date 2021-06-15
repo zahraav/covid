@@ -1,0 +1,73 @@
+(echo "sample,r1_path,r2_path"
+
+for i in SRR*; do
+
+        nfiles=`ls $i/ | wc -l`
+
+        if ((nfiles==2)) ; then
+                echo -n "$i"; for j in `ls $i` ; do echo -n ",$PWD$j.gz" ;  done; echo "";
+                for j in `ls $i` ; do gzip --keep $i/$j ; done
+        fi
+done
+)  > $1
+
+
+##############################
+(echo "sample,r1_path,r2_path"
+
+for i in SRR*; do
+
+        nfiles=`ls $i/ | wc -l`
+
+        if ((nfiles==3))
+        then
+                #echo -n "$i"; for j in `ls $i` ; do echo -n ",$PWD$j.gz" ;  done; echo "";
+                echo -n "$i" ; for j in `ls $i` ; do if [ "${j: -3}" == ".gz" ]; then echo -n ",$PWD/$j"; fi done; echo "" ;
+
+
+
+        fi
+
+done
+)  > $1
+
+####################################
+for converting .SRA file to .fastq files
+
+~/convertSRAtoFastq:
+for i in SRR*; do
+
+        nfiles=`ls $i/ | wc -l`
+
+        if ((nfiles==1))
+        then
+                #echo -n "$i"; for j in `ls $i` ; do echo -n ",$PWD$j.gz" ;  done; echo "";
+                #echo -n "$i" ; for j in `ls $i` ; do if [ "${j: -3}" == ".gz" ]; then echo -n ",$PWD/$i/$j"; fi done; echo "" ;
+                for j in `ls $i` ; do
+                        cd $i
+                        fastq-dump --split-3 $j ;
+                        cd ..
+                done
+        fi
+done
+
+
+####### gzip
+(echo "sample,r1_path,r2_path"
+
+for i in SRR*; do
+
+        nfiles=`ls $i/ | wc -l`
+        if ((nfiles==3))
+        then
+                for j in `ls $i` ; do
+                        if [ "${j: -4}" != ".sra" ]; then
+                                echo "${j: -4}";
+                                gzip --keep $i/$j ;
+
+                        fi
+                done
+      fi
+
+done
+)  > $1

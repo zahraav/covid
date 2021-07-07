@@ -7,32 +7,65 @@ color = {}
 
 CollectionDateArray = [0, 0]  # min,max
 collectionDateList = []
-MinMaxCollectionDateDictionary = {}
-minMaxArray = [0, datetime.now(), datetime.strptime("2019-01-01", "%Y-%m-%d")]  # leaf, min, max
+collectionDateDictionary = {}  # {cluster: [count,min,max],..}
+
+
+def printCollectionDataDictionaryToFile():
+    with open(DateFile, '+a') as dateFile:
+        for mmd in collectionDateDictionary:
+            dateFile.write(str(mmd))
+            dateFile.write('  : ')
+            dateFile.write(str(collectionDateDictionary[mmd][1]))
+            dateFile.write(', ')
+            dateFile.write(str(collectionDateDictionary[mmd][2]))
+            dateFile.write(', ')
+            dateFile.write(str(collectionDateDictionary[mmd][0]))
+            dateFile.write('\n')
+
+
+def printClustersToFile():
+    with open(outputFile, '+a') as outfile:
+        for cl in color:
+            outfile.write(cl)
+            outfile.write('  : ')
+            outfile.write(str(color[cl]))
+            outfile.write('\n')
 
 
 def analyzeTree(DFSTreeDictionary, CSVDictionary):
+    """
+    this Method fill collectionDateDictionary , keys are clusters and the values are minimum Date and
+    Maximum Date for every cluster
+    :param DFSTreeDictionary:
+    :param CSVDictionary:
+    :return:
+    """
 
     for leaf in DFSTreeDictionary:  # from Tree [leaf, cluster]
-        # for CSVNode in CSVDictionary:  # csv file [leaf, [metadata->[info, collectionDate]]
         if CSVDictionary.keys().__contains__(leaf):
             minDate = datetime.now()
             maxDate = datetime.strptime("2019-01-01", "%Y-%m-%d")
 
-            if MinMaxCollectionDateDictionary != {} and\
-                    MinMaxCollectionDateDictionary.keys().__contains__(DFSTreeDictionary[leaf]):
+            if collectionDateDictionary != {} and \
+                    collectionDateDictionary.keys().__contains__(DFSTreeDictionary[leaf]):
                 # {cluster: [minDate , MaxDate]}
-                minDate = MinMaxCollectionDateDictionary[DFSTreeDictionary[leaf]][1]
-                maxDate = MinMaxCollectionDateDictionary[DFSTreeDictionary[leaf]][2]
+                minDate = collectionDateDictionary[DFSTreeDictionary[leaf]][1]
+                maxDate = collectionDateDictionary[DFSTreeDictionary[leaf]][2]
+
             else:
-                MinMaxCollectionDateDictionary[DFSTreeDictionary[leaf]] = [DFSTreeDictionary[leaf], minDate,
-                                                                           maxDate]
+                collectionDateDictionary[DFSTreeDictionary[leaf]] = [0, minDate,
+                                                                     maxDate]
 
             date_dt3 = datetime.strptime(CSVDictionary[leaf][1], '%Y-%m-%d')
+
             if minDate > date_dt3:  # min > collection date[leaf]
-                MinMaxCollectionDateDictionary[DFSTreeDictionary[leaf]][1] = date_dt3
+                collectionDateDictionary[DFSTreeDictionary[leaf]][1] = date_dt3
             if maxDate < date_dt3:  # max < collection date[leaf]
-                MinMaxCollectionDateDictionary[DFSTreeDictionary[leaf]][2] = date_dt3
+                collectionDateDictionary[DFSTreeDictionary[leaf]][2] = date_dt3
+
+            collectionDateDictionary[DFSTreeDictionary[leaf]][0] = collectionDateDictionary[DFSTreeDictionary[leaf]][
+                                                                       0] + 1
+
 
 def returnCSVList(inputCSV):
     """
@@ -83,13 +116,11 @@ def readNewickTree(inputFile):
 
 treeData = readNewickTree('files/GISAID-hCoV-19-phylogeny-2021-06-03/global.tree')
 CSVInfo = returnCSVList('files/GISAID-hCoV-19-phylogeny-2021-06-03/metadata.csv')
-# print(CSVInfo)
 
-#treeData = "(EPI_ISL_406801:0,((EPI_ISL_1712380:0.000133812)0.10:20,EPI_ISL_578194:22):0);"
+# treeData = "(EPI_ISL_406801:0,((EPI_ISL_1712380:0.000133812)0.10:20,EPI_ISL_578194:22):0);"
 
 tree = Phylo.read(StringIO(treeData), "newick")
 # Phylo.draw_ascii(tree)
-
 # Phylo.draw(tree)
 
 lenForCount = 1e-04
@@ -97,27 +128,8 @@ for cld in tree.clade:
     DFS(cld, lenForCount, 0)
 
 outputFile = 'files/GISAID-hCoV-19-phylogeny-2021-06-03/output.txt'
-DateFile = 'files/GISAID-hCoV-19-phylogeny-2021-06-03/output_CollectionDate.txt'
-with open(outputFile, '+a') as outfile:
-    for cl in color:
-        outfile.write(cl)
-        outfile.write('  : ')
-        outfile.write(str(color[cl]))
-        outfile.write('\n')
-        # print(cl, color[cl])
-    # print(color)
+DateFile = 'files/GISAID-hCoV-19-phylogeny-2021-06-03/output_CollectionDate_count.txt'
 
+printClustersToFile()
 analyzeTree(color, CSVInfo)
-#print(color)
-with open(DateFile, '+a') as dateFile:
-    for mmd in MinMaxCollectionDateDictionary:
-        dateFile.write(str(mmd))
-        dateFile.write('  : ')
-        dateFile.write(str(MinMaxCollectionDateDictionary[mmd][1]))
-        dateFile.write(', ')
-        dateFile.write(str(MinMaxCollectionDateDictionary[mmd][2]))
-        dateFile.write('\n')
-
-
-#print(MinMaxCollectionDateDictionary)
-#Phylo.draw_ascii(tree)
+printCollectionDataDictionaryToFile()

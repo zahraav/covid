@@ -2,34 +2,70 @@ from Bio import Phylo
 from io import StringIO
 import csv
 from datetime import datetime
+import matplotlib.pyplot as plt
+import numpy as np
 
 color = {}
-
-CollectionDateArray = [0, 0]  # min,max
-collectionDateList = []
 collectionDateDictionary = {}  # {cluster: [count,min,max],..}
 
 
-def printCollectionDataDictionaryToFile():
+def getContinents():
+    print('a')
+
+
+def printCollectionDataDictionaryToFile(DateDictionary):
     with open(DateFile, '+a') as dateFile:
-        for mmd in collectionDateDictionary:
-            dateFile.write(str(mmd))
+        for mmd in DateDictionary:
+            dateFile.write(str(mmd))  # clusterNum
             dateFile.write('  : ')
-            dateFile.write(str(collectionDateDictionary[mmd][1]))
+            dateFile.write(str(DateDictionary[mmd][1]))  # minDate
             dateFile.write(', ')
-            dateFile.write(str(collectionDateDictionary[mmd][2]))
+            dateFile.write(str(DateDictionary[mmd][2]))  # maxDAte
             dateFile.write(', ')
-            dateFile.write(str(collectionDateDictionary[mmd][0]))
+            dateFile.write(str(DateDictionary[mmd][0]))  # count
             dateFile.write('\n')
 
 
-def printClustersToFile():
+def printClustersToFile(clusterDictionary):
     with open(outputFile, '+a') as outfile:
-        for cl in color:
+        for cl in clusterDictionary:
             outfile.write(cl)
             outfile.write('  : ')
-            outfile.write(str(color[cl]))
+            outfile.write(str(clusterDictionary[cl]))
             outfile.write('\n')
+
+
+def printListOfCountries(countriesDictionary):
+    with open(CountryFile, '+a') as cFile:
+        for cc in countriesDictionary:
+            cFile.write(str(cc))
+            cFile.write(': ')
+            cFile.write(str(collectionDateDictionary[cc][0]))
+            cFile.write(str(countriesDictionary[cc]))
+            cFile.write('\n')
+
+
+def drawPieChart(countryCountList, myLabels, fileName):
+    y = np.array(countryCountList)  # [35, 25, 25, 15, 5]
+    # myLabels = ["Apples", "Bananas", "Cherries", "Dates", "haha"]
+
+    plt.pie(y, labels=myLabels, startangle=90)
+    plt.legend(bbox_to_anchor=(0.85, 1.025), loc="upper left")
+
+    plt.show()
+    plt.savefig('files/GISAID-hCoV-19-phylogeny-2021-06-03/Plot/books_read_' + str(fileName) + '.png')
+
+
+def Makeplots(countriesDictionary):
+    for cluster in countriesDictionary:
+        valueList = []
+        for it in countriesDictionary[cluster].values():
+            #print(valueList, '   ',it)
+
+            valueList.append(str(it))
+
+        #print(countriesDictionary[cluster].keys())
+        drawPieChart(valueList, countriesDictionary[cluster].keys(), cluster)
 
 
 def analyzeTree(DFSTreeDictionary, CSVDictionary):
@@ -82,27 +118,18 @@ def returnCSVList(inputCSV):
             if len(row[2]) == 10:
                 if row[2][0:4] in years:
                     csvDict[row[0]] = [row[1], row[2]]
-
     return csvDict
 
 
 def DFS(v, cutLength, colour):
-    # print('---', v.name, v.branch_length)
-    # color[v]=v.branch_length
     if v.is_terminal():
-        # print(type(v.name))
         color[v.name] = colour
-        # print(colour)
-        # print(v, v.branch_length, colour)
     else:
         for node in v:
-            # print('----',type(node.branch_length), node.branch_length, node, node.is_terminal())
-
             if node.branch_length < cutLength:
                 DFS(node, cutLength, colour)
             else:
                 colour += 1
-                # print(colour)
                 DFS(node, cutLength, colour)
 
 
@@ -114,22 +141,46 @@ def readNewickTree(inputFile):
     return output
 
 
+def listOfCountries(idCluster, csvInfo):
+    countryDictionary = {}
+
+    for node in idCluster:
+        if csvInfo.get(node) != None:
+            country = csvInfo.__getitem__(node)[0].split('/')[1]
+            if countryDictionary.__contains__(idCluster[node]):
+                if countryDictionary[idCluster[node]].keys().__contains__(country):
+                    count = countryDictionary[idCluster[node]][country]
+                    countryDictionary[idCluster[node]][country] = count + 1
+                else:
+                    countryDictionary[idCluster[node]][country] = 1
+            else:
+                countryDictionary[idCluster[node]] = {country: 1}
+    return countryDictionary
+
+
 treeData = readNewickTree('files/GISAID-hCoV-19-phylogeny-2021-06-03/global.tree')
 CSVInfo = returnCSVList('files/GISAID-hCoV-19-phylogeny-2021-06-03/metadata.csv')
 
-# treeData = "(EPI_ISL_406801:0,((EPI_ISL_1712380:0.000133812)0.10:20,EPI_ISL_578194:22):0);"
+#treeData = "(EPI_ISL_406801:0,((EPI_ISL_1712380:0.000133812)0.10:20,EPI_ISL_578194:22,EPI_ISL_2035877:3):0);"
+
 
 tree = Phylo.read(StringIO(treeData), "newick")
 # Phylo.draw_ascii(tree)
 # Phylo.draw(tree)
 
-lenForCount = 1e-04
+lenForCount = 1e-4
 for cld in tree.clade:
     DFS(cld, lenForCount, 0)
 
 outputFile = 'files/GISAID-hCoV-19-phylogeny-2021-06-03/output.txt'
 DateFile = 'files/GISAID-hCoV-19-phylogeny-2021-06-03/output_CollectionDate_count.txt'
+CountryFile = 'files/GISAID-hCoV-19-phylogeny-2021-06-03/country.txt'
 
-printClustersToFile()
+printClustersToFile(color)
+# print(color)  # id : clusterNum
 analyzeTree(color, CSVInfo)
-printCollectionDataDictionaryToFile()
+printCollectionDataDictionaryToFile(collectionDateDictionary)
+# print(collectionDateDictionary)  # cluster: count, minDate, MaxDate
+CountryDictionary = listOfCountries(color, CSVInfo)
+printListOfCountries(CountryDictionary)  # cluster: {countriesName: count,...} , ....
+Makeplots(CountryDictionary)

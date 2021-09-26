@@ -25,15 +25,13 @@ def analyze_fasta(file_name):
             headerLine = 0
             header = line.strip().rstrip().split("|")
             type = header[-1]
-        #print(stats)
         return stats
+
 
 def parse(inputFile):
     is_header = True
-    #inputFile = 'files/test_MSA_2.fasta'
 
     stats = analyze_fasta(inputFile)
-    #print(stats)
     for nelem, ielem in zip(stats['Nanopore'], stats['Illumina']):
         csvList = [sum(nelem)]
         for k in nelem:
@@ -46,7 +44,6 @@ def parse(inputFile):
             percentCsvList[i] = percentCsvList[i]/percentCsvList[0]*100
             percentCsvList[i+7]=percentCsvList[i+7]/percentCsvList[7]*100
 
-        print(csvList)
         saveToCsv(inputFile.replace('.fasta', '_normal.csv'), csvList,
                   ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2',
                    'GAP2'],
@@ -57,4 +54,4 @@ def parse(inputFile):
                   is_header)
         is_header = False
 
-parse('files/output_test_22.fasta')
+parse('files/test_MSA_2.fasta')

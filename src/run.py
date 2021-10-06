@@ -23,12 +23,13 @@ def main():
     config = get_configs()
 
     inputFastaFile = config['address'].get('inputFastaFile')
-
-    # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
-
     tsvFolder = config['address'].get('TSVFolder')
     outFastaFile = config['address'].get('outFastaFile')
+
+    # this method call the first module of the pipeline.
     analyseSeqTechnologyBias(tsvFolder, inputFastaFile, outFastaFile)
+
+    # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
 
     # parseFastaFile("", 'files/test_MSA_2.fasta', 'files/output_Test_MSA_22.fasta')
     # addSeqTechToMSAMetaData()

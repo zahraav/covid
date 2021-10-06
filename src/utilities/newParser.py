@@ -1,4 +1,4 @@
-from ReadAndWrite import saveToCsv
+"""from ReadAndWrite import saveToCsv
 
 
 code = {'A': 0, 'W': 0, 'M': 0, 'D': 0, 'V': 0, 'C': 1, 'Y': 1,
@@ -54,4 +54,6 @@ def parse(inputFile):
                   is_header)
         is_header = False
 
+
 parse('files/test_MSA_2.fasta')
+"""

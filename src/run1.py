@@ -1,4 +1,4 @@
-import configparser
+"""import configparser
 import logging
 
 from alignment.makeAlignment import parseFastaFile, addSeqTechToMSAMetaData
@@ -117,3 +117,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+"""

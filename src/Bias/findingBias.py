@@ -140,7 +140,6 @@ def analyzeFasta(inFastaFile, codesDictionary):
             header = line.strip().rstrip().split("|")
             type_ = header[-1]
 
-        print('analyze', stats)
         return stats
 
 
@@ -166,8 +165,6 @@ def saveToCsv(fileName, csvList, fieldNames, isHeader):
 
 
 def printStats(stats, header, fileName, isHeader, numberOfElement):
-    # print('printStat', header, fileName)
-    print(stats['Nanopore'], '      ', stats['Illumina'])
     for nElem, iElem in zip(stats['Nanopore'], stats['Illumina']):
         csvList = [sum(nElem)]
         for k in nElem:
@@ -176,8 +173,6 @@ def printStats(stats, header, fileName, isHeader, numberOfElement):
         for n in iElem:
             csvList.append(n)
         percentCsvList = csvList.copy()
-
-        # print(header.__len__(), ' length')
 
         for i in range(1, numberOfElement - 1, ):
             if percentCsvList[0] == 0:
@@ -208,11 +203,11 @@ def parse(inputFile):
     isHeader = True
     stats = analyzeFasta(inputFile, ChangedIUPACNucleotideCodes)
     iupacStats = analyzeFasta(inputFile, IUPACNucleotideCodes)
-    # print(stats)
-    printStats(stats,
-               ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1',
-                '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2',
-                'N2', 'GAP2'], inputFile, isHeader, 7)
+
+    printStats(stats, ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1',
+                       '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'],
+               inputFile, isHeader, 7)
+
     iupacHeader = ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'U1', 'R1', 'Y1',
                    'S1', 'W1', 'K1',
                    'M1', 'B1', 'D1', 'H1', 'V1', 'N1', 'Gap1',

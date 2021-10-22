@@ -1,6 +1,21 @@
 import csv
 import os
 
+NanoporeNamesList = ["Oxford Nanopore Artic", "ONT_ARTIC", "Oxford Nanopore", "Oxford Nanopore GridION",
+                     "Oxford Nanopore ARTIC", "MinION Oxford Nanopore", "Nanopore MinION", "MinION", "Nanopore ARTIC",
+                     "GridION", "Nanopore MinIon", "Ion Torrent", "ONT ARTIC", "Nanopore minION",
+                     "Nanopore MinION Mk1C",
+                     "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol", "Oxford Nanopore MinION", "Nanopore"]
+
+IlluminaNamesList = ["Illumina NextSeq", "MiSeq", "Illumina NexteraFlex", "Illumina MiniSeq, MiSeq, or HiSeq",
+                     "Illumina Miseq, 1200bp", "NextSeq 550", "Illumina_NexteraFlex", "Illumina HiSeq",
+                     "Illumina Miseq", "Illumina NextSeq 2000", "Illumina MiSeq", "NovaSeq 6000", "Illumina Nextseq",
+                     "Illumina MiniSeq", "Illumina nextSeq", "Illumina NovaSeq 6000", "Illumina MiSeq, 1200bp",
+                     "Illumina Nextera Flex", "Illumina NextSeq 550", "Illumina", "Illumina iSeq 100",
+                     "Illumina NovaSeq"]
+
+unknownSequencerList = ["MGI CleanPlex", "MGI", "unknown"]
+
 
 def makeDictionaryOfSeqTech(tsvFile):
     """
@@ -52,16 +67,23 @@ def find_accession_id(header):
             return i
 
 
-# def modifySeqTechInFastaFile():
-#    print('a')
+def alterSeqTechnologiesName(seqDictionary):
+    updatedSeqTech = {}
+    for a in seqDictionary:
+        if NanoporeNamesList.__contains__(seqDictionary[a]):
+            updatedSeqTech[a] = 'Nanopore'
+        elif IlluminaNamesList.__contains__(seqDictionary[a]):
+            updatedSeqTech[a] = 'Illumina'
+    return updatedSeqTech
 
 
-def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
+def addSeqTechToFastaFile(seqTechFile, newFastaAddress, tsvFolder, inFastaFile):
     """
     This method make a new fasta file and insert the seq technology from
     {accessionId :sequenceTechnology} dictionary that generated in the
     makeDictionaryOfSeqTechForEachFile(tsvFolder) method
     header, using accession Id
+    :param seqTechFile: File that contains all the seqTechnology that used for sequencing;
     :param newFastaAddress: New fasta file name
     :param tsvFolder: Name of TSV folder containing all TSV files
     :param inFastaFile: Address of input Fasta File
@@ -69,6 +91,12 @@ def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
     """
 
     seqDictionary = makeDictionaryOfSeqTechForEachFile(tsvFolder)
+    for a in seqDictionary:
+        if not NanoporeNamesList.__contains__(seqDictionary[a])and not IlluminaNamesList.__contains__(seqDictionary[a]) and not unknownSequencerList.__contains__(seqDictionary[a]):
+            print(seqDictionary[a])
+
+    seqDictionary = alterSeqTechnologiesName(seqDictionary)
+
     f = open(newFastaAddress, "w")
 
     isContainsSeq = False
@@ -125,6 +153,7 @@ def analyzeFasta(inFastaFile, codesDictionary):
         for line in fasta_file:
             if headerLine == 0:
                 headerLine = 1
+
                 if type_ != 'Nanopore' and type_ != 'Illumina':
                     continue
                 pos = 0
@@ -217,9 +246,10 @@ def parse(inputFile):
     printStats(iupacStats, iupacHeader, inputFile.replace('.fasta', 'IUPAC.fasta'), isHeader, 18)
 
 
-def analyseSeqTechnologyBias(TSVFolder, fastaFile, outFastaFile):
-    addSeqTechToFastaFile(outFastaFile, TSVFolder, fastaFile)
+def analyseSeqTechnologyBias(seqTechFile, TSVFolder, fastaFile, outFastaFile):
+    addSeqTechToFastaFile(seqTechFile, outFastaFile, TSVFolder, fastaFile)
     parse(outFastaFile)
 
-# analyseSeqTechnologyBias("files/26-9-2021-lastVersion/TSV", "files/26-9-2021-lastVersion/input/test_MSA_2.fasta",
-#                         "files/26-9-2021-lastVersion/test_MSAWithSequenceTechnology.fasta")
+# analyseSeqTechnologyBias("files/26-9-2021-lastVersion/output/seqTech.txt","files/26-9-2021-lastVersion/input/TSV",
+#                         "files/26-9-2021-lastVersion/input/test_MSA_2.fasta",
+#                         "files/26-9-2021-lastVersion/output/test_MSAWithSequenceTechnology.fasta")

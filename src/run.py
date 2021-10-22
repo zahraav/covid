@@ -25,9 +25,9 @@ def main():
     inputFastaFile = config['address'].get('inputFastaFile')
     tsvFolder = config['address'].get('TSVFolder')
     outFastaFile = config['address'].get('outFastaFile')
-
+    seqTechnologyFile = config['address'].get('sequenceTechnologyLists')
     # this method call the first module of the pipeline.
-    analyseSeqTechnologyBias(tsvFolder, inputFastaFile, outFastaFile)
+    analyseSeqTechnologyBias(seqTechnologyFile, tsvFolder, inputFastaFile, outFastaFile)
 
     # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
 

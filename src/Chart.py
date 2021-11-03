@@ -137,7 +137,7 @@ def simpleBars(inputFile_):
 
 def TechnologyLetterBarChart(inputFile_):
     savingAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
-    columnDictionary = returnDictionaryByTechnologyLetter(inputFile_)
+    columnDictionary = returnDictionaryByTechnologyLetter(inputFile_) # columnDict[letter] = {'Nanopore': 0, 'Illumina': 0}
 
     with open(savingAddress, "a") as output_handle:
         for elem in columnDictionary.keys():

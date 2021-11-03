@@ -77,23 +77,28 @@ def alterSeqTechnologiesName(seqDictionary):
     return updatedSeqTech
 
 
-def addSeqTechToFastaFile(seqTechFile, newFastaAddress, tsvFolder, inFastaFile):
+def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
     """
     This method make a new fasta file and insert the seq technology from
     {accessionId :sequenceTechnology} dictionary that generated in the
     makeDictionaryOfSeqTechForEachFile(tsvFolder) method
     header, using accession Id
-    :param seqTechFile: File that contains all the seqTechnology that used for sequencing;
     :param newFastaAddress: New fasta file name
     :param tsvFolder: Name of TSV folder containing all TSV files
     :param inFastaFile: Address of input Fasta File
     :return:
     """
-
     seqDictionary = makeDictionaryOfSeqTechForEachFile(tsvFolder)
+    firstTime = True
     for a in seqDictionary:
-        if not NanoporeNamesList.__contains__(seqDictionary[a])and not IlluminaNamesList.__contains__(seqDictionary[a]) and not unknownSequencerList.__contains__(seqDictionary[a]):
-            print(seqDictionary[a])
+        if not NanoporeNamesList.__contains__(seqDictionary[a]) and \
+                not IlluminaNamesList.__contains__(seqDictionary[a]) and \
+                not unknownSequencerList.__contains__(seqDictionary[a]):
+            if firstTime:
+                print("newSeqTechnologies: please add them to the list in class FindingBiass:")
+                firstTime = False
+            else:
+                print(seqDictionary[a])
 
     seqDictionary = alterSeqTechnologiesName(seqDictionary)
 
@@ -193,7 +198,7 @@ def saveToCsv(fileName, csvList, fieldNames, isHeader):
         writer.writerow(x)
 
 
-def printStats(stats, header, fileName, isHeader, numberOfElement):
+def printStats(stats, header, csvFile, isHeader, numberOfElement):
     for nElem, iElem in zip(stats['Nanopore'], stats['Illumina']):
         csvList = [sum(nElem)]
         for k in nElem:
@@ -215,17 +220,18 @@ def printStats(stats, header, fileName, isHeader, numberOfElement):
                 percentCsvList[i + numberOfElement] = \
                     percentCsvList[i + numberOfElement] / percentCsvList[numberOfElement] * 100
 
-        saveToCsv(fileName.replace('.fasta', 'Normal.csv'), csvList, header, isHeader)
-        saveToCsv(fileName.replace('.fasta', 'Percentage.csv'), percentCsvList, header, isHeader)
+        saveToCsv(csvFile, csvList, header, isHeader)
+        saveToCsv(csvFile.replace('.csv', 'Percentage.csv'), percentCsvList, header, isHeader)
         isHeader = False
 
 
-def parse(inputFile):
+def parse(inputFile, csvFile):
     """
     This method get a fasta file as an input , then send the file to analyzeFasta() method and as result
     it gets an dictionary full of nucleotide's count in every index in sequence for different sequence
     technology. And save them in two files, one CSV file that contains count and another CSV file which
     contains the percentage.
+    :param csvFile:
     :param inputFile: fasta file (MSA file)
     :return:
     """
@@ -235,7 +241,7 @@ def parse(inputFile):
 
     printStats(stats, ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1',
                        '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'],
-               inputFile, isHeader, 7)
+               csvFile, isHeader, 7)
 
     iupacHeader = ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'U1', 'R1', 'Y1',
                    'S1', 'W1', 'K1',
@@ -243,13 +249,168 @@ def parse(inputFile):
                    '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'U2', 'R2', 'Y2',
                    'S2', 'W2', 'K2',
                    'M2', 'B2', 'D2', 'H2', 'V2', 'N2', 'Gap2']
-    printStats(iupacStats, iupacHeader, inputFile.replace('.fasta', 'IUPAC.fasta'), isHeader, 18)
+
+    printStats(iupacStats, iupacHeader, csvFile.replace('.csv', 'IUPAC.csv'), isHeader, 18)
 
 
-def analyseSeqTechnologyBias(seqTechFile, TSVFolder, fastaFile, outFastaFile):
-    addSeqTechToFastaFile(seqTechFile, outFastaFile, TSVFolder, fastaFile)
-    parse(outFastaFile)
+def getConsensus(maxNucleotide):
+    """
+    This method take a list of Nucleotides that have the same count in the one cut and return the consensus for that
+    index.
+    :param maxNucleotide: List of nucleotides with same count in a cut
+    :return: IUPAC code of the nucleotides
+    in the list
+    """
+    if maxNucleotide.__len__() == 2:
+        if maxNucleotide.__contains__('A1') or maxNucleotide.__contains__('A2'):
+            if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):  # ['A','G']-->'R'
+                return 'R'
 
-# analyseSeqTechnologyBias("files/26-9-2021-lastVersion/output/seqTech.txt","files/26-9-2021-lastVersion/input/TSV",
+            if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):  # ['A','T']-->'W'
+                return 'W'
+
+            if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):  # ['C','A']-->'M'
+                return 'M'
+
+        if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):
+            if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):  # ['C','T']-->'Y'
+                return 'Y'
+
+        if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):
+            if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):  # ['C','G']-->'S'
+                return 'S'
+
+        if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):
+            if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):  # ['T','G']-->'K'
+                return 'K'
+
+    if maxNucleotide.__len__() == 3:
+        if maxNucleotide.__contains__('A1') or maxNucleotide.__contains__('A2'):
+            if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):
+                if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):  # ['A','G','T]-->'D'
+                    return 'D'
+
+        if maxNucleotide.__contains__('A1') or maxNucleotide.__contains__('A2'):
+            if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):
+                if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):  # ['A','C','T]-->'H'
+                    return 'H'
+
+        if maxNucleotide.__contains__('A1') or maxNucleotide.__contains__('A2'):
+            if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):
+                if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):  # ['A','C','G]-->'V'
+                    return 'V'
+
+        if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):
+            if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):
+                if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):  # ['T','C','G]-->'B'
+                    return 'B'
+
+    if maxNucleotide.__len__() == 4:
+        if maxNucleotide.__contains__('A1') or maxNucleotide.__contains__('A2'):
+            if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):
+                if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):
+                    if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):
+                        #print(maxNucleotide)
+                        return 'N'
+    return '.'
+
+
+def returnCorrectValue(i):
+    header = ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1',
+              '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2']
+
+    if header.__contains__(i):
+        # for converting A1,A2,C1,C2 which remained from csv to ... to A,A,C, ...
+        return i[0]
+    else:
+        return i
+
+
+def transfacGenerator(csvFile, transfacFile):
+    header = ['index', 'A1', 'C1', 'G1', 'T1', 'consensus1', 'A2', 'C2', 'G2', 'T2', ' consensus2']
+    lineCounter = 0
+    with open(transfacFile, 'w') as outFile:
+
+        outFile.write("XX")
+        outFile.write("\n")
+        outFile.write("ID  .....")
+        outFile.write("\n")
+        outFile.write("XX")
+        outFile.write("\n")
+
+        with open(csvFile, newline='') as csvFile:
+
+            for row in csv.reader(csvFile):
+                columnCount = 1
+                maxNucleotide = []
+                if lineCounter == 0:  # header Line
+                    # newCsvLine.append('PO')
+                    outFile.write('P0')
+                    outFile.write("\t")
+                    maxNucleotide = ['-']
+                else:
+                    # newCsvLine = [str(lineCounter)]
+                    outFile.write(str(lineCounter))
+                    outFile.write("\t")
+                maxInLine = 0
+                for i in row[1:5]:
+                    if lineCounter != 0:
+                        if int(i) > int(maxInLine):
+                            maxInLine = i
+                            maxNucleotide = [header[columnCount]]
+                        elif int(i) == int(maxInLine):
+                            maxNucleotide.append(header[columnCount])
+
+                    outFile.write(returnCorrectValue(i))
+                    outFile.write("\t")
+                    # newCsvLine.append(i)
+                    columnCount = columnCount + 1
+
+                if maxNucleotide.__len__() > 1:
+                    maxNucleotide = [getConsensus(maxNucleotide)]
+
+                outFile.write(maxNucleotide[0][0])
+                outFile.write("\t")
+
+                maxNucleotide = ['-']
+                maxInLine = 0
+                columnCount = 6
+                for i in row[8:12]:
+                    if lineCounter != 0:
+                        if int(i) > int(maxInLine):
+                            maxInLine = i
+                            maxNucleotide = [header[columnCount]]
+                        elif int(i) == int(maxInLine):
+                            maxNucleotide.append(header[columnCount])
+
+                    outFile.write(returnCorrectValue(i))
+                    outFile.write("\t")
+                    columnCount = columnCount + 1
+
+                if maxNucleotide.__len__() > 1:
+                    maxNucleotide = [getConsensus(maxNucleotide)]
+
+                outFile.write(maxNucleotide[0][0])
+                outFile.write("\n")
+                # newCsvLine.append(maxNucleotide[0][0])
+
+                lineCounter = lineCounter + 1
+
+        outFile.write("XX")
+        outFile.write("\n")
+        outFile.write("CC Program: ")
+        outFile.write("\n")
+        outFile.write("XX")
+        outFile.write("\n")
+        outFile.write("\\\\")
+        outFile.write("\n")
+
+
+def analyseSeqTechnologyBias(TSVFolder, fastaFile, outFastaFile, transfacFile, csvFile):
+    addSeqTechToFastaFile(outFastaFile, TSVFolder, fastaFile)
+    parse(outFastaFile, csvFile)
+
+    transfacGenerator(csvFile, transfacFile)
+# analyseSeqTechnologyBias("files/26-9-2021-lastVersion/input/TSV",
 #                         "files/26-9-2021-lastVersion/input/test_MSA_2.fasta",
 #                         "files/26-9-2021-lastVersion/output/test_MSAWithSequenceTechnology.fasta")

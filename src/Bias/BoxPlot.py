@@ -12,9 +12,9 @@ IlluminaCountDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 
 
 def addToDictionary(line):
     # print(line)
-    if not ['A','C','G','T'].__contains__(line[5]):
+    if not ['A', 'C', 'G', 'T'].__contains__(line[5]):
         NanoporeCountDictionary[line[5]] = NanoporeCountDictionary[line[5]] + 1
-    if not ['A','C','G','T'].__contains__(line[10]):
+    if not ['A', 'C', 'G', 'T'].__contains__(line[10]):
         IlluminaCountDictionary[line[10]] = IlluminaCountDictionary[line[10]] + 1
 
 
@@ -44,7 +44,7 @@ def plotBar():
     plt.legend()
 
     plt.tight_layout()
-    BarOutputAddress = 'files/BarCharts/Letter_technology.png'
+    BarOutputAddress = 'files/output/BarCharts/Letter_technology.png'
     plt.savefig(BarOutputAddress, dpi=800)
 
     plt.show()
@@ -55,4 +55,4 @@ def BarChart(txtFile):
     plotBar()
 
 
-BarChart('files/26-9-2021-lastVersion/output/test.txt')
+BarChart('files/26-9-2021-lastVersion/output/test/test.txt')

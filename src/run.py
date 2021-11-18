@@ -1,8 +1,10 @@
 import configparser
 import logging
 
-from alignment.makeAlignment import parseFastaFile
+# from alignment.makeAlignment import parseFastaFile
 from Bias.findingBias import analyseSeqTechnologyBias
+from mutationAnalysis.Mutation import mutationAnalysis
+from Bias.graphGenome import makeGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -22,22 +24,33 @@ def get_configs():
 def main():
     config = get_configs()
 
-    inputFastaFile = config['address'].get('inputFastaFile')
-    tsvFolder = config['address'].get('TSVFolder')
+    """
+    this method call the first module of the pipeline.
+    Bias:
+    """
+    inputFastaFile = config['inputAddresses'].get('inputFastaFile')
+    tsvFolder = config['inputAddresses'].get('TSVFolder')
 
-    outFastaFile = config['output'].get('outFastaFile')
-
-    transfacFile = config['output'].get('TransfacFile')
-    csvFile = config['output'].get('csvFile')
-
-    # this method call the first module of the pipeline.
-    analyseSeqTechnologyBias(tsvFolder, inputFastaFile, outFastaFile, transfacFile, csvFile)
+    # analyseSeqTechnologyBias(tsvFolder, inputFastaFile)
 
     # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
-
     # parseFastaFile("", 'files/test_MSA_2.fasta', 'files/output_Test_MSA_22.fasta')
     # addSeqTechToMSAMetaData()
     # process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
+
+    """
+    Mutation Analysis
+    """
+
+    # globalTree = config['inputAddresses'].get('globalTree')
+    # metadataFile = config['inputAddresses'].get('metaDate')
+    # mutationAnalysis(globalTree, metadataFile)
+
+    """
+    Graph Genome
+    """
+    fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
+    makeGraphGenome(fastaFileWithSequenceTechnology)
 
 
 if __name__ == '__main__':

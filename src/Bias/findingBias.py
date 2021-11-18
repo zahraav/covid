@@ -1,11 +1,25 @@
 import csv
 import os
+import configparser
+import datetime
+
+CONFIG_FILE = r'config/config.cfg'
+
+
+def get_configs():
+    app_config = configparser.RawConfigParser()
+    app_config.read(CONFIG_FILE)
+    return app_config
+
+
+config = get_configs()
 
 NanoporeNamesList = ["Oxford Nanopore Artic", "ONT_ARTIC", "Oxford Nanopore", "Oxford Nanopore GridION",
                      "Oxford Nanopore ARTIC", "MinION Oxford Nanopore", "Nanopore MinION", "MinION", "Nanopore ARTIC",
                      "GridION", "Nanopore MinIon", "Ion Torrent", "ONT ARTIC", "Nanopore minION",
-                     "Nanopore MinION Mk1C",
-                     "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol", "Oxford Nanopore MinION", "Nanopore"]
+                     "Nanopore MinION Mk1C", "Oxford Nanopore Technologies ARTIC"
+                     "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol", "Oxford Nanopore MinION", "Nanopore",
+                     "Oxford Nanopore - Artic", "Nanopore GridION", "Oxford Nanopore Technologies ARTIC"]
 
 IlluminaNamesList = ["Illumina NextSeq", "MiSeq", "Illumina NexteraFlex", "Illumina MiniSeq, MiSeq, or HiSeq",
                      "Illumina Miseq, 1200bp", "NextSeq 550", "Illumina_NexteraFlex", "Illumina HiSeq",
@@ -55,16 +69,47 @@ def makeDictionaryOfSeqTechForEachFile(folderName):
     return sequenceTechnologyDictionary
 
 
-def find_accession_id(header):
+def getAccessionId(header):
     """
-    This method get a header line of a fasta file and returns the accession Id of the header.
+    This method get a header line of a fasta file and returns the accession Id from the header.
     :param header: A header line of a fasta file
     :return: accessionID
     """
-    split_header = header.split('|')
-    for i in split_header:
+    splitHeader = header.split('|')
+    for i in splitHeader:
         if i.__contains__('EPI'):
             return i
+
+
+def getDateFromHeaderLine(header):
+    """
+    date in yyyy/mm/dd format
+    This method get a header line of a fasta file and returns the collectionDate from the header.
+    :param header: A header line of a fasta file
+    :return: CollectionDate
+    """
+    splitHeader = header.split('|')
+    x = getDate(splitHeader[2])
+    return x
+
+
+def getDate(tempDate):
+    """
+    temp Date is Date but in string format, so this method make a date from tempDate and return it
+    :param tempDate:
+    :return: Date
+    """
+    cd = tempDate.split('-')
+    if cd.__len__() == 2 or int(cd[2]) == 0:  # some collection dates in GisAid doesn't have day.
+        cd[2] = 1
+    if int(cd[1]) == 0:
+        cd[1] = 1
+
+    return datetime.datetime(int(cd[0]), int(cd[1]), int(cd[2]))
+
+
+def isInThePeak(peak, tempTime):
+    return True if peak[0] < tempTime < peak[1] else False
 
 
 def alterSeqTechnologiesName(seqDictionary):
@@ -77,17 +122,19 @@ def alterSeqTechnologiesName(seqDictionary):
     return updatedSeqTech
 
 
-def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
+def addSeqTechToFastaFile(tsvFolder, inFastaFile):
     """
     This method make a new fasta file and insert the seq technology from
     {accessionId :sequenceTechnology} dictionary that generated in the
     makeDictionaryOfSeqTechForEachFile(tsvFolder) method
     header, using accession Id
-    :param newFastaAddress: New fasta file name
     :param tsvFolder: Name of TSV folder containing all TSV files
     :param inFastaFile: Address of input Fasta File
-    :return:
+    :return: Fasta file containing sequencing technology
     """
+
+    outFastaFile = config['outputAddresses'].get('fullFastaFile')
+
     seqDictionary = makeDictionaryOfSeqTechForEachFile(tsvFolder)
     firstTime = True
     for a in seqDictionary:
@@ -95,14 +142,14 @@ def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
                 not IlluminaNamesList.__contains__(seqDictionary[a]) and \
                 not unknownSequencerList.__contains__(seqDictionary[a]):
             if firstTime:
-                print("newSeqTechnologies: please add them to the list in class FindingBiass:")
+                print("newSeqTechnologies: please add them to the list in class FindingBias:")
                 firstTime = False
             else:
                 print(seqDictionary[a])
 
     seqDictionary = alterSeqTechnologiesName(seqDictionary)
 
-    f = open(newFastaAddress, "w")
+    f = open(outFastaFile, "w")
 
     isContainsSeq = False
 
@@ -110,7 +157,7 @@ def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
         for line in inFastaFile:
             if line.__contains__('>'):
 
-                accessionId = find_accession_id(line)
+                accessionId = getAccessionId(line)
                 if seqDictionary.__contains__(accessionId):
                     f.write(line.strip())
                     f.write("|")
@@ -122,7 +169,8 @@ def addSeqTechToFastaFile(newFastaAddress, tsvFolder, inFastaFile):
                 f.write(line)
                 isContainsSeq = False
     f.close()
-    # modifySeqTechInFastaFile()
+
+    return outFastaFile
 
 
 """
@@ -177,12 +225,12 @@ def analyzeFasta(inFastaFile, codesDictionary):
         return stats
 
 
-def saveToCsv(fileName, csvList, fieldNames, isHeader):
+def saveToCsv(csvFile, csvList, fieldNames, isHeader):
     """
      is_header should set to true for the first time then it should set to false for rest of calls
     this print the header in CSV file.
      if it doesn't set to false it will print the header for every line.
-    :param fileName:
+    :param csvFile:
     :param csvList:
     :param fieldNames:
     :param isHeader:
@@ -191,14 +239,26 @@ def saveToCsv(fileName, csvList, fieldNames, isHeader):
     x = {}
     for name, elem in zip(fieldNames, csvList):
         x[name] = str(elem)
-    with open(fileName, 'a+', newline='') as file:
+    with open(csvFile, 'a+', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldNames)
         if isHeader:
             writer.writeheader()
         writer.writerow(x)
 
 
-def printStats(stats, header, csvFile, isHeader, numberOfElement):
+def printStats(stats, header, isHeader, numberOfElement, isIupacCode):
+    """
+    :param isIupacCode: show if the codes are from IUPAC code or not
+    :param stats:
+    :param header:
+    :param isHeader:
+    :param numberOfElement:
+    :return: CSV File
+    """
+    csvFile = config['outputAddresses'].get('csvFile')
+    if isIupacCode:
+        csvFile = csvFile.replace('.csv', 'IUPAC.csv')
+
     for nElem, iElem in zip(stats['Nanopore'], stats['Illumina']):
         csvList = [sum(nElem)]
         for k in nElem:
@@ -206,51 +266,51 @@ def printStats(stats, header, csvFile, isHeader, numberOfElement):
         csvList.append(sum(iElem))
         for n in iElem:
             csvList.append(n)
-        percentCsvList = csvList.copy()
+        percentCSVList = csvList.copy()
 
         for i in range(1, numberOfElement - 1, ):
-            if percentCsvList[0] == 0:
-                percentCsvList[i] = 0
+            if percentCSVList[0] == 0:
+                percentCSVList[i] = 0
             else:
-                percentCsvList[i] = percentCsvList[i] / percentCsvList[0] * 100
+                percentCSVList[i] = percentCSVList[i] / percentCSVList[0] * 100
 
-            if percentCsvList[numberOfElement] == 0:
-                percentCsvList[i + numberOfElement] = 0
+            if percentCSVList[numberOfElement] == 0:
+                percentCSVList[i + numberOfElement] = 0
             else:
-                percentCsvList[i + numberOfElement] = \
-                    percentCsvList[i + numberOfElement] / percentCsvList[numberOfElement] * 100
+                percentCSVList[i + numberOfElement] = \
+                    percentCSVList[i + numberOfElement] / percentCSVList[numberOfElement] * 100
 
         saveToCsv(csvFile, csvList, header, isHeader)
-        saveToCsv(csvFile.replace('.csv', 'Percentage.csv'), percentCsvList, header, isHeader)
+        saveToCsv(csvFile.replace(".csv", "Percentage.csv"), percentCSVList, header, isHeader)
         isHeader = False
+    return csvFile
 
 
-def parse(inputFile, csvFile):
+def parse(inputFile):
     """
     This method get a fasta file as an input , then send the file to analyzeFasta() method and as result
     it gets an dictionary full of nucleotide's count in every index in sequence for different sequence
     technology. And save them in two files, one CSV file that contains count and another CSV file which
     contains the percentage.
-    :param csvFile:
     :param inputFile: fasta file (MSA file)
-    :return:
+    :return: CSV file
     """
     isHeader = True
     stats = analyzeFasta(inputFile, ChangedIUPACNucleotideCodes)
     iupacStats = analyzeFasta(inputFile, IUPACNucleotideCodes)
 
-    printStats(stats, ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1',
-                       '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2'],
-               csvFile, isHeader, 7)
+    csvFile = printStats(stats,
+                         ['nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1', 'Illumina- sum', 'A2', 'C2', 'G2',
+                          'T2', 'N2',
+                          'GAP2'], isHeader, 7, False)
 
-    iupacHeader = ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'U1', 'R1', 'Y1',
-                   'S1', 'W1', 'K1',
-                   'M1', 'B1', 'D1', 'H1', 'V1', 'N1', 'Gap1',
-                   '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'U2', 'R2', 'Y2',
-                   'S2', 'W2', 'K2',
-                   'M2', 'B2', 'D2', 'H2', 'V2', 'N2', 'Gap2']
+    iupacHeader = ['nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'U1', 'R1', 'Y1', 'S1', 'W1', 'K1',
+                   'M1', 'B1', 'D1', 'H1', 'V1', 'N1', 'Gap1', 'Illumina- sum', 'A2', 'C2',
+                   'G2', 'T2', 'U2', 'R2', 'Y2', 'S2', 'W2', 'K2', 'M2', 'B2', 'D2', 'H2', 'V2',
+                   'N2', 'Gap2']
 
-    printStats(iupacStats, iupacHeader, csvFile.replace('.csv', 'IUPAC.csv'), isHeader, 18)
+    printStats(iupacStats, iupacHeader, isHeader, 18, True)
+    return csvFile
 
 
 def getConsensus(maxNucleotide):
@@ -310,7 +370,6 @@ def getConsensus(maxNucleotide):
             if maxNucleotide.__contains__('C1') or maxNucleotide.__contains__('C2'):
                 if maxNucleotide.__contains__('G1') or maxNucleotide.__contains__('G2'):
                     if maxNucleotide.__contains__('T1') or maxNucleotide.__contains__('T2'):
-                        #print(maxNucleotide)
                         return 'N'
     return '.'
 
@@ -326,9 +385,10 @@ def returnCorrectValue(i):
         return i
 
 
-def transfacGenerator(csvFile, transfacFile):
+def transfacGenerator(csvFile):
     header = ['index', 'A1', 'C1', 'G1', 'T1', 'consensus1', 'A2', 'C2', 'G2', 'T2', ' consensus2']
     lineCounter = 0
+    transfacFile = config['outputAddresses'].get('TransfacFile')
     with open(transfacFile, 'w') as outFile:
 
         outFile.write("XX")
@@ -363,7 +423,6 @@ def transfacGenerator(csvFile, transfacFile):
 
                     outFile.write(returnCorrectValue(i))
                     outFile.write("\t")
-                    # newCsvLine.append(i)
                     columnCount = columnCount + 1
 
                 if maxNucleotide.__len__() > 1:
@@ -372,7 +431,7 @@ def transfacGenerator(csvFile, transfacFile):
                 outFile.write(maxNucleotide[0][0])
                 outFile.write("\t")
 
-                maxNucleotide = ['-']
+                maxNucleotide.clear()
                 maxInLine = 0
                 columnCount = 6
                 for i in row[8:12]:
@@ -389,7 +448,8 @@ def transfacGenerator(csvFile, transfacFile):
 
                 if maxNucleotide.__len__() > 1:
                     maxNucleotide = [getConsensus(maxNucleotide)]
-
+                if maxNucleotide.__len__() == 0:
+                    maxNucleotide = ['-']
                 outFile.write(maxNucleotide[0][0])
                 outFile.write("\n")
                 # newCsvLine.append(maxNucleotide[0][0])
@@ -406,11 +466,75 @@ def transfacGenerator(csvFile, transfacFile):
         outFile.write("\n")
 
 
-def analyseSeqTechnologyBias(TSVFolder, fastaFile, outFastaFile, transfacFile, csvFile):
-    addSeqTechToFastaFile(outFastaFile, TSVFolder, fastaFile)
-    parse(outFastaFile, csvFile)
+def separatePeaks(fastaFile, peakOneDates, peakTwoDates, peakThreeDates):
+    """
+    This Function separate sequences in every peak and save them in a different file,
+    so That we can make a charts and other analysis by using each of these files.
+    :param fastaFile: The main fasta file containing all data.
+    :param peakOneDates: The list for first peak [start Date,end Date]
+    :param peakTwoDates: The list for second peak [start Date,end Date]
+    :param peakThreeDates: The list for third peak [start Date,end Date]
+    :return:
+    """
 
-    transfacGenerator(csvFile, transfacFile)
-# analyseSeqTechnologyBias("files/26-9-2021-lastVersion/input/TSV",
-#                         "files/26-9-2021-lastVersion/input/test_MSA_2.fasta",
-#                         "files/26-9-2021-lastVersion/output/test_MSAWithSequenceTechnology.fasta")
+    firstPeakFasta = config['outputAddresses'].get('firstPeak')
+    secondPeakFasta = config['outputAddresses'].get('secondPeak')
+    thirdPeakFasta = config['outputAddresses'].get('thirdPeak')
+
+    firstPeak = open(firstPeakFasta, "w")
+    secondPeak = open(secondPeakFasta, "w")
+    thirdPeak = open(thirdPeakFasta, "w")
+
+    flag = 0
+
+    with open(fastaFile) as mainFastaFile:
+        for line in mainFastaFile:
+            if line.__contains__('>'):
+
+                collectionDate = getDateFromHeaderLine(line)
+                if isInThePeak(peakOneDates, collectionDate):
+                    firstPeak.write(line)
+                    flag = 1
+
+                if isInThePeak(peakTwoDates, collectionDate):
+                    secondPeak.write(line)
+                    flag = 2
+
+                if isInThePeak(peakThreeDates, collectionDate):
+                    thirdPeak.write(line)
+                    flag = 3
+
+            elif flag is not 0:
+                if flag == 1:
+                    firstPeak.write(line)
+                    flag = 0
+                elif flag == 2:
+                    secondPeak.write(line)
+                    flag = 0
+                elif flag == 3:
+                    thirdPeak.write(line)
+                    flag = 0
+
+    firstPeak.close()
+    secondPeak.close()
+    thirdPeak.close()
+
+
+def analyseSeqTechnologyBias(TSVFolder, fastaFile):
+    outFastaFile = addSeqTechToFastaFile(TSVFolder, fastaFile)
+
+    firstPeak = config['peaks'].get('firstPeakDate').split(",")
+    secondPeak = config['peaks'].get('secondPeakDate').split(",")
+    thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
+
+    separatePeaks(outFastaFile,
+                  [getDate(firstPeak[0]), getDate(firstPeak[1])],
+                  [getDate(secondPeak[0]), getDate(secondPeak[1])],
+                  [getDate(thirdPeak[0]), getDate(thirdPeak[1])]
+                  )
+
+    csvFile = parse(outFastaFile)
+
+    # testTransfacGenerator:
+    # csvFile = config['outputAddresses'].get('csvFile')
+    transfacGenerator(csvFile)

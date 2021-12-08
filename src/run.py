@@ -5,7 +5,7 @@ import logging
 from Bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.Mutation import mutationAnalysis
 from Bias.graphGenome import makeGraphGenome
-from Bias.test4 import drawGraphGenome
+from Bias.graphGenome_ import drawGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
 

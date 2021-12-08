@@ -58,21 +58,9 @@ def drawLine(yLists, rGenome):
                     plt.plot(index, nu, 'ro', color=pointColor)  # make points
             index = index + 1
 
-        """for nu in li[0]:
-            #print (nu,'   ',colorList.keys().__contains__(nu))
-            if nucleotideDictLists[index].__getitem__()==nu:
-                nucleotideDictLists[index].
-            if colorList.__contains__(:
-                pointColor = colorList[nu]
-                plt.plot(index, nu, 'ro', color=pointColor)  # make points
-            index=index+1
-"""
         # plt.plot(xList, li[0], 'ro')  # make points
 
         plt.plot(xList, li[0], 'k-', color=clr)  # make lines
-
-        # print(xList)
-        # print(li)
 
     plt.xticks(xList, rGenome)
     yLabel = [' '] * 17
@@ -87,7 +75,6 @@ def drawLine(yLists, rGenome):
 
 
 def makeY(seq, referenceGenome):
-    # print(seq[0])
     newLine = [0] * referenceGenome.__len__()
     startAt = 0
     for nu in seq[0]:
@@ -100,7 +87,6 @@ def makeY(seq, referenceGenome):
 
             newLine[startAt] = temp
         startAt = startAt + 1
-    # print('-------->', nucleotideDictLists)
 
     return [newLine, seq[1]]
 
@@ -111,15 +97,10 @@ listOfYDictionary = {}
 def makeYDictionary(sequence, rGenome):
     newList = [0] * rGenome.__len__()
     count = 0
-    # for r in rGenome:
-
-    # print('-------->', listOfYDictionary.get(count), '   ', listOfYDictionary.get(count).keys().__contains__(r),
-    # listOfYDictionary.get(count).get(r))
     for seq in sequence:
         r = rGenome[count]
         if listOfYDictionary.get(count) is None:
             listOfYDictionary[count] = {r: 0}
-        #        print(r is seq ,'    ', r,'   ', seq)
         if r is seq:
             newList[count] = 0
         elif listOfYDictionary.get(count).__contains__(seq):
@@ -128,10 +109,6 @@ def makeYDictionary(sequence, rGenome):
             newList[count] = listOfYDictionary[count][seq] = listOfYDictionary[count].__len__()
         count = count + 1
 
-    #    print("***************")
-    #    print(listOfYDictionary)
-    #    print(newList)
-    #    print("***************")
     return newList
 
 
@@ -163,8 +140,6 @@ def drawGraphGenome(inFile):
     for li in seqList:
         yAxis = makeY(li, rGenome)
         yLists.append(yAxis)
-    print(yLists)
     drawLine(yLists, rGenome)
 
-# print(yAxis)
 # drawLine(yAxis)

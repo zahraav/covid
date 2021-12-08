@@ -18,7 +18,8 @@ NanoporeNamesList = ["Oxford Nanopore Artic", "ONT_ARTIC", "Oxford Nanopore", "O
                      "Oxford Nanopore ARTIC", "MinION Oxford Nanopore", "Nanopore MinION", "MinION", "Nanopore ARTIC",
                      "GridION", "Nanopore MinIon", "Ion Torrent", "ONT ARTIC", "Nanopore minION",
                      "Nanopore MinION Mk1C", "Oxford Nanopore Technologies ARTIC"
-                     "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol", "Oxford Nanopore MinION", "Nanopore",
+                                             "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol",
+                     "Oxford Nanopore MinION", "Nanopore",
                      "Oxford Nanopore - Artic", "Nanopore GridION", "Oxford Nanopore Technologies ARTIC"]
 
 IlluminaNamesList = ["Illumina NextSeq", "MiSeq", "Illumina NexteraFlex", "Illumina MiniSeq, MiSeq, or HiSeq",
@@ -527,11 +528,8 @@ def analyseSeqTechnologyBias(TSVFolder, fastaFile):
     secondPeak = config['peaks'].get('secondPeakDate').split(",")
     thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
 
-    separatePeaks(outFastaFile,
-                  [getDate(firstPeak[0]), getDate(firstPeak[1])],
-                  [getDate(secondPeak[0]), getDate(secondPeak[1])],
-                  [getDate(thirdPeak[0]), getDate(thirdPeak[1])]
-                  )
+    # separatePeaks(outFastaFile,[getDate(firstPeak[0]), getDate(firstPeak[1])],
+    #              [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
 
     csvFile = parse(outFastaFile)
 

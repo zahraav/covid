@@ -1,5 +1,7 @@
 import configparser
 import matplotlib.pyplot as plt
+from datetime import datetime
+
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -65,5 +67,50 @@ def makeLinePlot(inFastaFile):
     plt.close()
 
 
-def makeGraphGenome(FastaFile):
-    makeLinePlot(FastaFile)
+def makeGraphGenome(inFile):
+    # makeLinePlot(FastaFile)
+    graphGenome = config['outputAddresses'].get('graphGenome')
+
+    makeTimeChartGraph(inFile, graphGenome)
+
+
+def getCountry(line):
+    """
+    This method returns the country for a line in the
+    """
+    return line.split('|')[0].split('/')[1].strip()
+
+
+def getDateOf(line):
+    """
+    This method returns the country for a line in the
+    """
+    return line.split('|')[2].strip()
+
+
+def makeTimeChartGraph(inFastaFile,graphGenome):
+    countries = {}
+    with open(inFastaFile) as inFastaFile:
+        for line in inFastaFile:
+            if line.__contains__('>'):
+                country = getCountry(line)
+                date = getDateOf(line)
+                if country in countries:
+                    countries[country].append(date)
+                else:
+                    countries[country] = [date]
+
+    for (country, dates) in countries.items():
+
+        dates = [datetime(int(dd.split('-')[0]), int(dd.split('-')[1]), int(dd.split('-')[2]), 0) for dd in dates]
+        dates = sorted(dates)
+        plt.plot(dates, [x+1 for x in range(len(dates))], label=str(country))
+
+    plt.legend(loc='best')
+
+    plt.gcf().autofmt_xdate()
+
+    plt.savefig(graphGenome)
+    plt.close()
+
+

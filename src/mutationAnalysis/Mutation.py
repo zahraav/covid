@@ -52,8 +52,8 @@ def printClustersToFile(clusterDictionary):
 
 
 def printCountryDictionary(inputDictionary, outputFileName):
-    #print('-->', inputDictionary , '    ', outputFileName)
-    #print('==>',collectionDateDictionary)
+    # print('-->', inputDictionary , '    ', outputFileName)
+    # print('==>',collectionDateDictionary)
     with open(outputFileName, 'w') as cFile:
         for cc in inputDictionary:
             cFile.write(str(cc))
@@ -65,7 +65,7 @@ def printCountryDictionary(inputDictionary, outputFileName):
 
 
 def printDictionary(inputDictionary, outputFileName):
-    print('-->',inputDictionary)
+    print('-->', inputDictionary)
     with open(outputFileName, 'w') as cFile:
         for cc in inputDictionary:
             cFile.write(str(cc))
@@ -196,7 +196,7 @@ def listOfCountries(idCluster, csvInfo):
     countryDictionary = {}
 
     for node in idCluster:
-        if csvInfo.get(node) is not None:  # csvFile containts that node
+        if csvInfo.get(node) is not None:  # csvFile contains that node
             country = csvInfo.__getitem__(node)[0].split('/')[1]
             collectionDate = csvInfo[node][1]
 

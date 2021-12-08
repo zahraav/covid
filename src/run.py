@@ -5,6 +5,7 @@ import logging
 from Bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.Mutation import mutationAnalysis
 from Bias.graphGenome import makeGraphGenome
+from Bias.test4 import drawGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -31,7 +32,7 @@ def main():
     inputFastaFile = config['inputAddresses'].get('inputFastaFile')
     tsvFolder = config['inputAddresses'].get('TSVFolder')
 
-    # analyseSeqTechnologyBias(tsvFolder, inputFastaFile)
+    #analyseSeqTechnologyBias(tsvFolder, inputFastaFile)
 
     # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
     # parseFastaFile("", 'files/test_MSA_2.fasta', 'files/output_Test_MSA_22.fasta')
@@ -50,7 +51,13 @@ def main():
     Graph Genome
     """
     fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
-    makeGraphGenome(fastaFileWithSequenceTechnology)
+    inFasta = config['outputAddresses'].get('fullFastaFile')
+
+    # makeGraphGenome(inFasta)
+
+    # makeGraphGenome(config,fastaFileWithSequenceTechnology)
+
+    drawGraphGenome(fastaFileWithSequenceTechnology)
 
 
 if __name__ == '__main__':

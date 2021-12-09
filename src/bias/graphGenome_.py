@@ -23,7 +23,7 @@ def getReferenceGenomeList():
                 continue
             else:
                 rGenome = rGenome+line.strip()
-    return list(rGenome[0, 1000])
+    return list(rGenome[0:1000])
 
 
 colorList = {'A': 'red', 'C': 'green', 'G': 'blue', 'T': 'black', 'U': 'orange', 'R': 'violet', 'Y': 'gold',

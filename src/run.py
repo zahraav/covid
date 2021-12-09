@@ -2,10 +2,10 @@ import configparser
 import logging
 
 # from alignment.makeAlignment import parseFastaFile
-from Bias.findingBias import analyseSeqTechnologyBias
+from bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.Mutation import mutationAnalysis
-from Bias.graphGenome import makeGraphGenome
-from Bias.graphGenome_ import drawGraphGenome
+from bias.graphGenome import makeGraphGenome
+from bias.graphGenome_ import drawGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -51,7 +51,8 @@ def main():
     Graph Genome
     """
     fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
-    inFasta = config['outputAddresses'].get('fullFastaFile')
+    # inFasta = config['outputAddresses'].get('fullFastaFile')
+    inFasta = config['separateFiles'].get('outputFastaFile')
 
     # makeGraphGenome(inFasta)
 

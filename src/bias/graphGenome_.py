@@ -16,13 +16,14 @@ config = get_configs()
 
 def getReferenceGenomeList():
     referenceGenomeFile = config['inputAddresses'].get('referenceGenome')
-
+    rGenome=''
     with open(referenceGenomeFile) as rFile:
         for line in rFile:
             if line.__contains__('>'):
                 continue
             else:
-                return list(line.strip())
+                rGenome = rGenome+line.strip()
+    return list(rGenome[0, 1000])
 
 
 colorList = {'A': 'red', 'C': 'green', 'G': 'blue', 'T': 'black', 'U': 'orange', 'R': 'violet', 'Y': 'gold',
@@ -77,8 +78,8 @@ def drawLine(yLists, rGenome):
 def makeY(seq, referenceGenome):
     newLine = [0] * referenceGenome.__len__()
     startAt = 0
-    for nu in seq[0]:
 
+    for nu in seq[0]:
         if list(nucleotideDictLists[startAt].keys()).__contains__(nu):
             newLine[startAt] = nucleotideDictLists[startAt][nu]
         else:

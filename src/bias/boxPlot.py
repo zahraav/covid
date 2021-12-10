@@ -55,4 +55,4 @@ def BarChart(txtFile):
     plotBar()
 
 
-BarChart('files/26-9-2021-lastVersion/output/test/test.txt')
+BarChart('files/output/test/test.txt')

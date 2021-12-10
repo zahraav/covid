@@ -3,7 +3,7 @@ import logging
 
 # from alignment.makeAlignment import parseFastaFile
 from bias.findingBias import analyseSeqTechnologyBias
-from mutationAnalysis.Mutation import mutationAnalysis
+from mutationAnalysis.mutation import mutationAnalysis
 from bias.graphGenome import makeGraphGenome
 from bias.graphGenome_ import drawGraphGenome
 
@@ -57,8 +57,8 @@ def main():
     # makeGraphGenome(inFasta)
 
     # makeGraphGenome(config,fastaFileWithSequenceTechnology)
-
-    drawGraphGenome(fastaFileWithSequenceTechnology)
+    # drawGraphGenome(fastaFileWithSequenceTechnology)
+    drawGraphGenome(inFasta)
 
 
 if __name__ == '__main__':

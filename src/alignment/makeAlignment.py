@@ -1,7 +1,5 @@
 import logging
 
-from utilities.DBConnection import readSeqTech, readMetadata
-from utilities.DBConnection import addColumnToTable
 from utilities.ReadAndWrite import saveToCsv
 
 logger = logging.getLogger(__name__)
@@ -41,7 +39,6 @@ def parseFastaFile(tableName,inputFastaFile, outputFastaFile):
                     continue
 
                 else:
-                    #virusName, country, accessionId, collectionDate, continent = parseHeader(header)
                     accessionId = header.split('|')[1]
                     technology = findSeqTechByID(tableName,accessionId)
                     #newHeader = header.rstrip() + '|' + str(technology)
@@ -59,14 +56,6 @@ def parseFastaFile(tableName,inputFastaFile, outputFastaFile):
         logger.error(e)
 
 
-def updateHeader(header, accessionId):
-    return header + '|' + readSeqTech(accessionId)
-
-
-def getMetadata(accessionID):
-    return readMetadata(accessionID)
-
-
 def parseHeader(header):
     headerSplitList = header.split('|')
     virusNameSplitList = headerSplitList[0].split('/')
@@ -79,11 +68,4 @@ def parseHeader(header):
 
     return virusName, country, accessionId, collectionDate, continent
 
-
-def findSeqTechByID(tableName,accessionId):
-    return readSeqTech(tableName,accessionId)
-
-
-def addSeqTechToMSAMetaData(tableName):
-    addColumnToTable(tableName, 'Sequencing_technology')
 

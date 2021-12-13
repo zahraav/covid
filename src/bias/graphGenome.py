@@ -86,7 +86,7 @@ def drawLine(yLists, rGenome):
     ax.spines['bottom'].set_position('zero')
     ax.spines['left'].set_position('zero')
     plt.axis('off')
-
+    plt.hsv()
     plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=300)
     plt.close()
     plt.show()

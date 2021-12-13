@@ -1,10 +1,12 @@
-from Bio import Phylo
-from io import StringIO
 import csv
-from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import configparser
+
+from Bio import Phylo
+from io import StringIO
+from datetime import datetime
+from utilities.Read import getContentOfFile
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -25,8 +27,13 @@ def getContinents():
     print('a')
 
 
-def printCollectionDataDictionaryToFile(DateDictionary):
-    DateFile = config['outputAddresses'].get('DateFile')
+def printCollectionDataDictionaryToFile(DateDictionary, DateFile):
+    """
+    This program Method print the Collection Data dictionary into Datefile,
+    :param DateDictionary:
+    :param DateFile: Address of file containing the Date information( minDate, maxDate, count of
+    :return:
+    """
 
     with open(DateFile, '+a') as dateFile:
         for mmd in DateDictionary:
@@ -41,6 +48,11 @@ def printCollectionDataDictionaryToFile(DateDictionary):
 
 
 def printClustersToFile(clusterDictionary):
+    """
+    This method prints every cluster to different files.
+    :param clusterDictionary:  different clusters data are stored in this dictionary
+    :return:
+    """
     outputFile = config['outputAddresses'].get('country')
 
     with open(outputFile, '+a') as outfile:
@@ -52,8 +64,12 @@ def printClustersToFile(clusterDictionary):
 
 
 def printCountryDictionary(inputDictionary, outputFileName):
-    # print('-->', inputDictionary , '    ', outputFileName)
-    # print('==>',collectionDateDictionary)
+    """
+    This method prints dictionary containing info from different countries in clusters in  output files
+    :param inputDictionary:
+    :param outputFileName:
+    :return:
+    """
     with open(outputFileName, 'w') as cFile:
         for cc in inputDictionary:
             cFile.write(str(cc))
@@ -64,37 +80,41 @@ def printCountryDictionary(inputDictionary, outputFileName):
             cFile.write('\n')
 
 
-def printDictionary(inputDictionary, outputFileName):
-    print('-->', inputDictionary)
-    with open(outputFileName, 'w') as cFile:
-        for cc in inputDictionary:
-            cFile.write(str(cc))
-            cFile.write('\n')
-
-
 def drawPieChart(countryCountList, myLabels, cluster):
+    """
+    This method gets a country lists and lable for the pie chart.
+    Then draw pieChart for different countries in the clusters.
+    :param countryCountList: List of different countries and the number of variants in that country in a cluster
+    :param myLabels: lables for the pieCart sample
+    # myLabels = ["Apples", "Bananas", "Cherries", "Dates", "haha"]
+    :param cluster: cluster number
+    :return:
+    """
     pieChartsFolder = config['outputAddresses'].get('pieChartsFolder')
 
     y = np.array(countryCountList)  # [35, 25, 25, 15, 5]
-    # myLabels = ["Apples", "Bananas", "Cherries", "Dates", "haha"]
 
     plt.pie(y, labels=myLabels, startangle=90)
     plt.legend(bbox_to_anchor=(0.85, 1.025), loc="upper left")
 
     # plt.show()
+    # saving the pie chart in the pieChartFolder.
     plt.savefig(pieChartsFolder + "pieChart_" + str(cluster) + '.png')
     plt.close()
 
 
 def MakePlots(countriesDictionary):
+    """
+    This method iterate on Dictionary and plot send clusters' data to drawPieChart method one by one.
+    :param countriesDictionary:
+    :return:
+    """
     for cluster in countriesDictionary:
         valueList = []
         for it in countriesDictionary[cluster].values():
-            # print(valueList, '   ',it)
 
             valueList.append(str(it))
 
-        # print(countriesDictionary[cluster].keys())
         drawPieChart(valueList, countriesDictionary[cluster].keys(), cluster)
 
 
@@ -165,19 +185,6 @@ def DFS(v, cutLength, colour):
                 DFS(node, cutLength, colour)
 
 
-def getContentOfFile(inputFile):
-    """
-    This method read the input file and return the data in the file.
-    :param inputFile: Input file
-    :return: String contains all the data in the file
-    """
-    output = ''
-    with open(inputFile) as infile:
-        for line in infile:
-            output += line
-    return output
-
-
 def saveToFile(cluster, collectionDate, country, accessionId):
     timeChartFolder = config['outputAddresses'].get('timeChartCluster')  # for countries
 
@@ -191,6 +198,12 @@ def saveToFile(cluster, collectionDate, country, accessionId):
 
 
 def listOfCountries(idCluster, csvInfo):
+    """
+
+    :param idCluster:
+    :param csvInfo:
+    :return:
+    """
     # accessionId - country -collectionDate
 
     countryDictionary = {}
@@ -219,8 +232,8 @@ def mutationAnalysis(globalTree, metadataFile):
     """
     This method gets a phylogeneticTree and metadata File related to phylogenetic Tree.
     Phylogenetic Tree is on the newick format.
-    :param globalTree:
-    :param metadataFile:
+    :param globalTree: Phylogenetic tree in Newick format
+    :param metadataFile: metadata related to the phylogenetic tree
     :return:
     """
     treeData = getContentOfFile(globalTree)

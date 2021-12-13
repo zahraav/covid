@@ -19,6 +19,11 @@ def addToDictionary(line):
 
 
 def readFile(inFile):
+    """
+    This method read the input fasta file and generate a dictionary of nucleotides
+    :param inFile:
+    :return:
+    """
     with open(inFile) as f:
         lines = f.readlines()
         for line in lines:

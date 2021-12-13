@@ -91,3 +91,17 @@ def saveSeqAlignmentToCSV(inputDictionary, savingAddress, csvAddress):
                   ['Accession_id', 'seq_alignment'], is_header)
 
         is_header = False
+
+
+
+def printDictionary(inputDictionary, outputFileName):
+    """
+    This method prints data of a dictionary into file
+    :param inputDictionary:
+    :param outputFileName:
+    :return:
+    """
+    with open(outputFileName, 'w') as cFile:
+        for cc in inputDictionary:
+            cFile.write(str(cc))
+            cFile.write('\n')

@@ -19,5 +19,3 @@ def writ_queries(file_name,line):
 
 file_name='files//ascii_output__2.txt'
 run_queries(file_name,file_name.replace('2.txt','3.txt'))
-
-

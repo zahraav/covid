@@ -14,73 +14,6 @@ def get_configs():
 
 config = get_configs()
 
-NanoporeNamesList = ["Oxford Nanopore Artic", "ONT_ARTIC", "Oxford Nanopore", "Oxford Nanopore GridION",
-                     "Oxford Nanopore ARTIC", "MinION Oxford Nanopore", "Nanopore MinION", "MinION", "Nanopore ARTIC",
-                     "GridION", "Nanopore MinIon", "Ion Torrent", "ONT ARTIC", "Nanopore minION",
-                     "Nanopore MinION Mk1C", "Oxford Nanopore Technologies ARTIC"
-                                             "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol",
-                     "Oxford Nanopore MinION", "Nanopore",
-                     "Oxford Nanopore - Artic", "Nanopore GridION", "Oxford Nanopore Technologies ARTIC"]
-
-IlluminaNamesList = ["Illumina NextSeq", "MiSeq", "Illumina NexteraFlex", "Illumina MiniSeq, MiSeq, or HiSeq",
-                     "Illumina Miseq, 1200bp", "NextSeq 550", "Illumina_NexteraFlex", "Illumina HiSeq",
-                     "Illumina Miseq", "Illumina NextSeq 2000", "Illumina MiSeq", "NovaSeq 6000", "Illumina Nextseq",
-                     "Illumina MiniSeq", "Illumina nextSeq", "Illumina NovaSeq 6000", "Illumina MiSeq, 1200bp",
-                     "Illumina Nextera Flex", "Illumina NextSeq 550", "Illumina", "Illumina iSeq 100",
-                     "Illumina NovaSeq"]
-
-unknownSequencerList = ["MGI CleanPlex", "MGI", "unknown"]
-
-
-def makeDictionaryOfSeqTech(tsvFile):
-    """
-    This method make a dictionary of sequence Technologies in the given TSV file
-    and return the dictionary.seqTecDictionary
-    :param tsvFile: tsv file that used for returning dictionary of {accessionId: SequenceTechnology}
-    """
-
-    firstRow = True
-    with open(tsvFile) as fd:
-        # {[Accession Id , sequence Technology]}
-        seqTecDictionary = {}
-
-        rd = csv.reader(fd, delimiter="\t", quotechar='"')
-        for row in rd:
-            if firstRow:
-                firstRow = False
-                continue
-            else:
-                seqTecDictionary[row[1]] = row[8]
-
-    return seqTecDictionary
-
-
-def makeDictionaryOfSeqTechForEachFile(folderName):
-    """
-    This method check the folderName and send every TSV file to makeDictionaryOfSeqTech method
-    to make one dictionary of {accessionID: SeqTechnology}
-    :param folderName: folder that contains TSV files
-    :return:
-    """
-    sequenceTechnologyDictionary = {}
-    for fileName in os.listdir(folderName):
-        fileName = folderName + "/" + fileName
-        sequenceTechnologyDictionary.update(makeDictionaryOfSeqTech(fileName))
-
-    return sequenceTechnologyDictionary
-
-
-def getAccessionId(header):
-    """
-    This method get a header line of a fasta file and returns the accession Id from the header.
-    :param header: A header line of a fasta file
-    :return: accessionID
-    """
-    splitHeader = header.split('|')
-    for i in splitHeader:
-        if i.__contains__('EPI'):
-            return i
-
 
 def getDateFromHeaderLine(header):
     """
@@ -111,67 +44,6 @@ def getDate(tempDate):
 
 def isInThePeak(peak, tempTime):
     return True if peak[0] < tempTime < peak[1] else False
-
-
-def alterSeqTechnologiesName(seqDictionary):
-    updatedSeqTech = {}
-    for a in seqDictionary:
-        if NanoporeNamesList.__contains__(seqDictionary[a]):
-            updatedSeqTech[a] = 'Nanopore'
-        elif IlluminaNamesList.__contains__(seqDictionary[a]):
-            updatedSeqTech[a] = 'Illumina'
-    return updatedSeqTech
-
-
-def addSeqTechToFastaFile(tsvFolder, inFastaFile):
-    """
-    This method make a new fasta file and insert the seq technology from
-    {accessionId :sequenceTechnology} dictionary that generated in the
-    makeDictionaryOfSeqTechForEachFile(tsvFolder) method
-    header, using accession Id
-    :param tsvFolder: Name of TSV folder containing all TSV files
-    :param inFastaFile: Address of input Fasta File
-    :return: Fasta file containing sequencing technology
-    """
-
-    outFastaFile = config['outputAddresses'].get('fullFastaFile')
-
-    seqDictionary = makeDictionaryOfSeqTechForEachFile(tsvFolder)
-    firstTime = True
-    for a in seqDictionary:
-        if not NanoporeNamesList.__contains__(seqDictionary[a]) and \
-                not IlluminaNamesList.__contains__(seqDictionary[a]) and \
-                not unknownSequencerList.__contains__(seqDictionary[a]):
-            if firstTime:
-                print("newSeqTechnologies: please add them to the list in class FindingBias:")
-                firstTime = False
-            else:
-                print(seqDictionary[a])
-
-    seqDictionary = alterSeqTechnologiesName(seqDictionary)
-
-    f = open(outFastaFile, "w")
-
-    isContainsSeq = False
-
-    with open(inFastaFile) as inFastaFile:
-        for line in inFastaFile:
-            if line.__contains__('>'):
-
-                accessionId = getAccessionId(line)
-                if seqDictionary.__contains__(accessionId):
-                    f.write(line.strip())
-                    f.write("|")
-                    f.write(seqDictionary[accessionId])
-                    f.write('\n')
-                    isContainsSeq = True
-
-            elif isContainsSeq:
-                f.write(line)
-                isContainsSeq = False
-    f.close()
-
-    return outFastaFile
 
 
 """
@@ -376,6 +248,12 @@ def getConsensus(maxNucleotide):
 
 
 def returnCorrectValue(i):
+    """
+    This method check if the data is on the header or is a normal data
+    then if it's from header change the header from csv to header to save in the transfacformat txt file
+    :param i: the header item
+    :return: header in transfac format or data
+    """
     header = ['1-nanopore- sum', 'A1', 'C1', 'G1', 'T1', 'N1', 'GAP1',
               '2-Illumina- sum', 'A2', 'C2', 'G2', 'T2', 'N2', 'GAP2']
 
@@ -386,11 +264,16 @@ def returnCorrectValue(i):
         return i
 
 
-def transfacGenerator(csvFile):
+def transfacGenerator(csvFile, transfacFileAddress ):
+    """
+    This Method gets a csv file as an input and generate a transfac format file
+    :param transfacFileAddress: transfac format file which is going to saved on the transfacFileAddress
+    :param csvFile: input file, contains all data to transfer into csv format
+    :return:
+    """
     header = ['index', 'A1', 'C1', 'G1', 'T1', 'consensus1', 'A2', 'C2', 'G2', 'T2', ' consensus2']
     lineCounter = 0
-    transfacFile = config['outputAddresses'].get('TransfacFile')
-    with open(transfacFile, 'w') as outFile:
+    with open(transfacFileAddress, 'w') as outFile:
 
         outFile.write("XX")
         outFile.write("\n")
@@ -521,8 +404,14 @@ def separatePeaks(fastaFile, peakOneDates, peakTwoDates, peakThreeDates):
     thirdPeak.close()
 
 
-def analyseSeqTechnologyBias(TSVFolder, fastaFile):
-    outFastaFile = addSeqTechToFastaFile(TSVFolder, fastaFile)
+def analyseSeqTechnologyBias(fastaFile):
+    """
+    This method Analyse the sequences
+    and CSV files related to the MSA (multiple sequence alignment) and find bias for 3 major
+    peak of SARS-COV-2
+    :param fastaFile: fasta file containing sequence technology
+    :return:
+    """
 
     firstPeak = config['peaks'].get('firstPeakDate').split(",")
     secondPeak = config['peaks'].get('secondPeakDate').split(",")
@@ -531,8 +420,10 @@ def analyseSeqTechnologyBias(TSVFolder, fastaFile):
     # separatePeaks(outFastaFile,[getDate(firstPeak[0]), getDate(firstPeak[1])],
     #              [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
 
-    csvFile = parse(outFastaFile)
+    csvFile = parse(fastaFile)
 
     # testTransfacGenerator:
     # csvFile = config['outputAddresses'].get('csvFile')
-    transfacGenerator(csvFile)
+    transfacFile = config['outputAddresses'].get('TransfacFile')
+
+    transfacGenerator(csvFile, transfacFile)

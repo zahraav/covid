@@ -16,20 +16,20 @@ def nextData(fastaFile):
             if line.__contains__('>'):
                 if header != '':
                     yield header, sequence
-                    sequence=''
+                    sequence = ''
                 header = line
             else:
                 sequence = sequence.rstrip("\n") + line.rstrip("\n")
 
-              #  tempseq = sequence
-              #  temph = header
-              #  header = ''
-              #  sequence = ''
+            #  tempseq = sequence
+            #  temph = header
+            #  header = ''
+            #  sequence = ''
         yield header, sequence
 
 
-def parseFastaFile(tableName,inputFastaFile, outputFastaFile):
-    #addSeqTechToMSAMetaData(tableName)
+def parseFastaFile(tableName, inputFastaFile, outputFastaFile):
+    # addSeqTechToMSAMetaData(tableName)
     isHeader = True
     try:
         with open(outputFastaFile, 'w', encoding='utf-8') as f1:
@@ -40,8 +40,8 @@ def parseFastaFile(tableName,inputFastaFile, outputFastaFile):
 
                 else:
                     accessionId = header.split('|')[1]
-                    technology = findSeqTechByID(tableName,accessionId)
-                    #newHeader = header.rstrip() + '|' + str(technology)
+                    technology = findSeqTechByID(tableName, accessionId)
+                    # newHeader = header.rstrip() + '|' + str(technology)
                     f1.write(header.rstrip())
                     f1.write('|')
                     f1.write(str(technology))
@@ -67,5 +67,3 @@ def parseHeader(header):
     continent = headerSplitList[3]
 
     return virusName, country, accessionId, collectionDate, continent
-
-

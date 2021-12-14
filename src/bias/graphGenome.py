@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import configparser
 
+from run import getSequenceTechnology
+
 CONFIG_FILE = r'config/config.cfg'
 
 
@@ -121,6 +123,7 @@ def makeY(seq, referenceGenome):
 
     return [newLine, seq[1]]
 
+
 # Dictionary containing the lications and the dictionary of nucleotide on that location
 # example
 # {0:{'A':0,'C':1},1:{'C':0},...}
@@ -149,15 +152,6 @@ def makeYDictionary(sequence, rGenome):
         count = count + 1
 
     return newList
-
-
-def getSequenceTechnology(header):
-    """
-    This method get a header line of a fasta file and returns the sequence technology from the header.
-    :param header: A header line of a fasta file
-    :return: Sequence Technology
-    """
-    return header.split("|")[4].strip()
 
 
 nucleotideDictLists = {}
@@ -189,7 +183,7 @@ def drawGraphGenome(inFile):
                 #
                 seqList.append([list(line.strip()), seqTech])
 
-    rGenome = getReferenceGenomeList()
+    rGenome = getReferenceGenomeList(1000)
     yAxis = [0] * rGenome.__len__()
     yLists = [[yAxis, '-']]
 

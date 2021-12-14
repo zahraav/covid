@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+# Dictionary of IUPAC nucleotide codes for Nanopore and Illumina
 NanoporeCountDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
                            'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
                            'N': 0, '-': 0, '.': 0}
@@ -11,6 +13,10 @@ IlluminaCountDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 
 
 
 def addToDictionary(line):
+    """
+    :param line: list of nucleotides.
+    :return:
+    """
     # print(line)
     if not ['A', 'C', 'G', 'T'].__contains__(line[5]):
         NanoporeCountDictionary[line[5]] = NanoporeCountDictionary[line[5]] + 1
@@ -20,8 +26,8 @@ def addToDictionary(line):
 
 def readFile(inFile):
     """
-    This method read the input fasta file and generate a dictionary of nucleotides
-    :param inFile:
+    This method read the input file and generate a dictionary of nucleotides
+    :param inFile: input file
     :return:
     """
     with open(inFile) as f:
@@ -56,6 +62,11 @@ def plotBar():
 
 
 def BarChart(txtFile):
+    """
+    This method gets a txt file as and input and make a Bar Chart plot for the data
+    :param txtFile: input file
+    :return:
+    """
     readFile(txtFile)
     plotBar()
 

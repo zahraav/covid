@@ -63,6 +63,15 @@ def removeSpace(inputFile, outputFile):
                 file.write('\n')
 
 
+def getSequenceTechnology(header):
+    """
+    This method get a header line of a fasta file and returns the sequence technology from the header.
+    :param header: A header line of a fasta file
+    :return: Sequence Technology
+    """
+    return header.split("|")[4].strip()
+
+
 def makeDictionaryOfSeqTech(tsvFile):
     """
     This method make a dictionary of sequence Technologies in the given TSV file

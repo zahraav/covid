@@ -6,11 +6,25 @@ from utilities.ReadAndWrite import saveSimpleDictionary, saveToCsv
 
 
 def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
+    """
+    This method send data to the saveToCSV method on ReadAndWrite.py to save on CSV file.
+    :param fileName: Address of output file
+    :param csvList: A list containing data on one CSV line
+    :param isFirstTimeUsingHeader: tell the SaveToCsv method if it's the first time the method is called so
+    that it print the header on the output file.
+    :return:
+    """
     fieldNames = ['id', 'reference', 'seq', 'date', 'location', 'technology', 'index']
     saveToCsv(fileName, csvList, fieldNames, isFirstTimeUsingHeader)
 
 
 def returnColumnDictionary(inputAddress, columnNum):
+    """
+    # TODO
+    :param inputAddress:
+    :param columnNum:
+    :return:
+    """
     # number of column for letters can be used when counting a sequence for multiple times is not important
     columnDict = {}
     isFirstRow = True
@@ -29,6 +43,7 @@ def returnColumnDictionary(inputAddress, columnNum):
 
 
 def returnDictionaryById(inputFileAddress, columnNum, initializedDictionary):
+    # TODO
     idList = []
     isFirstRow = True
     with open(inputFileAddress) as csv_file:
@@ -47,6 +62,15 @@ def returnDictionaryById(inputFileAddress, columnNum, initializedDictionary):
 
 
 def returnDictionaryByTechnologyLetter(inputAddress):
+    """
+    This method gets a CSV file containing the Sequence technology and
+    different letters. Then generates a dictionary with different letters
+    as keys and sequence technologies as value.
+    example:
+    {'S':{'Nanopore': 10, 'Illumina': 20},'N':{'Nanopore': 1, 'Illumina': 3},....}
+    :param inputAddress: Address for CSV file
+    :return: columnDict which is dictionary for letters and Sequence Technology
+    """
     # number of column for letters can be used when counting a sequence for multiple times is not important
     columnDict = {}
     isFirstRow = True
@@ -69,12 +93,11 @@ def returnDictionaryByTechnologyLetter(inputAddress):
 
 def barChart(columnDict, columnNumber):
     """
-    plt.bar(xAxis,yAxis)
-    plt.title('title name')
-    plt.xLabel('xAxis name')
-    plt.yLabel('yAxis name')
-    plt.show()
-"""
+    This method get column dictionary as in input and depends on column numbers generate a bar charts.
+    :param columnDict: Dictionary containing input data
+    :param columnNumber: Indicates the kind of bar chart.
+    :return:
+    """
 
     yAxis = []
     xAxis = []
@@ -115,13 +138,28 @@ def barChart(columnDict, columnNumber):
     plt.show()
 
 
-def simpleBars(inputFile_):
-    # columnNumber = 0  # id
-    # columnNumber=1 # date
-    # columnNumber=2 # location
-    # columnNumber = 3  # technology
-    # columnNumber = 4  # index
-    columnNumber = 5  # Letter
+def simpleBars(inputFile_, graphName):
+    """
+    This method gets a csv file and depending on the graphName draw one of the bar chart plots.
+    :param graphName: Name of graph that is going to be draw by this method
+    there is 6 different option for generating a bar graph chart : 1- by id , 2- by data 3- by location
+    4- by technology 5- by index 6- by IUPAC codes
+    :param inputFile_:
+    :return:
+    """
+    columnNumber = 0
+    if graphName == 'id':
+        columnNumber = 0  # id
+    elif graphName == 'data':
+        columnNumber = 1  # date
+    elif graphName == 'location':
+        columnNumber = 2  # location
+    elif graphName == 'technology':
+        columnNumber = 3  # technology
+    elif graphName == 'index':
+        columnNumber = 4  # index
+    elif graphName == 'letter':
+        columnNumber = 5  # Letter
 
     columnDictionary = {}
     if columnNumber == 0 or columnNumber == 4 or columnNumber == 5:
@@ -135,9 +173,21 @@ def simpleBars(inputFile_):
     barChart(columnDictionary, columnNumber)
 
 
-def TechnologyLetterBarChart(inputFile_):
-    savingAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
-    columnDictionary = returnDictionaryByTechnologyLetter(inputFile_) # columnDict[letter] = {'Nanopore': 0, 'Illumina': 0}
+def TechnologyLetterBarChart(inputFile_, savingAddress):
+    """
+    This method gets an Multiple sequence alignment file as an input.
+    Then generate the sequence technology/letter bar chart.
+    first by passing the input file to returnDictionaryByTechnologyLetter method it gets a dictionary
+    containing the relationship between sequenced technology and IUPAC nucleotide code
+    -except 'A', 'C', 'G', 'T'-
+    :param savingAddress: address for saving the dictionary that shows the relationship
+    between sequence technology and letters
+    :param inputFile_: input CSV file that was made from MSA file.
+    :return:
+    """
+
+    # columnDict[letter] = {'Nanopore': 0, 'Illumina': 0}
+    columnDictionary = returnDictionaryByTechnologyLetter(inputFile_)
 
     with open(savingAddress, "a") as output_handle:
         for elem in columnDictionary.keys():
@@ -181,4 +231,6 @@ inputFile = 'files/Msa_NoSpace_withExtraLetter.csv'
 # test
 # inputFile = 'files/test_2_withExtraLetter.csv'
 # simpleBars(inputFile)
-TechnologyLetterBarChart(inputFile)
+
+outputAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
+TechnologyLetterBarChart(inputFile, outputAddress)

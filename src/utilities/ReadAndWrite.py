@@ -25,6 +25,12 @@ def saveDictionary(inputDictionary, savingAddress):
 
 
 def saveSimpleDictionary(inputDictionary, savingAddress):
+    """
+    This method save a dictionary into a file.
+    :param inputDictionary: input dictionary
+    :param savingAddress: Output address
+    :return:
+    """
     for elem in inputDictionary.keys():
         saveData(savingAddress, elem + ':' + str(inputDictionary[elem]) + '\n')
 
@@ -62,9 +68,15 @@ def saveDictionaryWith_toprintAndCSV(inputDictionary, savingAddress, csvAddress)
 
 
 def saveToCsv(fileName, csvList, fieldNames, isHeader):
-    # is_header should set to true for the first time then it should set to false for rest of calls
-    # this print the header in CSV file.
-    # if it doesn't set to false it will print the header for every line.
+    """
+
+    :param fileName: address of the CSV file
+    :param csvList: list of one line of data for writing on the CSV file
+    :param fieldNames: List of fields for header
+    :param isHeader: It shows whether it is the first time this method is called or not.
+    If so, isHeader is going to be true. As a result, the method prints the header fields on the CSV file.
+    :return: True, if it generates the file. False if it throws any exceptions.
+    """
     x = {}
     for name, elem in zip(fieldNames, csvList):
         x[name] = str(elem)
@@ -91,7 +103,6 @@ def saveSeqAlignmentToCSV(inputDictionary, savingAddress, csvAddress):
                   ['Accession_id', 'seq_alignment'], is_header)
 
         is_header = False
-
 
 
 def printDictionary(inputDictionary, outputFileName):

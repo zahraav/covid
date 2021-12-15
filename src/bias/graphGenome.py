@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import configparser
 
-from run import getSequenceTechnology
-
 CONFIG_FILE = r'config/config.cfg'
 
 
@@ -13,6 +11,15 @@ def get_configs():
 
 
 config = get_configs()
+
+
+def getSequenceTechnology(header):
+    """
+    This method get a header line of a fasta file and returns the sequence technology from the header.
+    :param header: A header line of a fasta file
+    :return: Sequence Technology
+    """
+    return header.split("|")[4].strip()
 
 
 def getReferenceGenomeList(lengthOfCut):
@@ -42,13 +49,15 @@ colorList = {'A': 'red', 'C': 'green', 'G': 'blue', 'T': 'black', 'U': 'orange',
              'N': 'peru', '-': 'maroon', '.': 'maroon'}
 
 
-def drawLine(yLists, rGenome):
+def drawLine(yLists, rGenome, hight, repeatList):
     """
     This method gets lists of nucleotide and sequence technology and reference genome ,
     and draw the graph genome
     it change the color of lines depends on sequence technology
     and change the color of points depends on nucleotide. the colorList above this Method is the dictionary
     of color for points
+    :param repeatList:
+    :param hight:
     :param yLists: a list containing both yList and sequence technology
     :param rGenome: Reference Genome
     :return:
@@ -58,8 +67,9 @@ def drawLine(yLists, rGenome):
     f, ax = plt.subplots(1)
     xList = list(range(0, rGenome.__len__()))
     clr = 'purple'
-
+    # print(nucleotideDictLists)
     for li in reversed(yLists):
+        # print(li[0])
         if li[1] == '-':
             clr = 'red'
         elif li[1] == 'Nanopore':
@@ -68,8 +78,9 @@ def drawLine(yLists, rGenome):
             clr = 'green'
         elif li[1] == 'unknown':
             clr = 'purple'
-        index = 0
 
+        """
+        index = 0
         for nu in li[0]:
 
             for nucleotide, location in nucleotideDictLists[index].items():
@@ -77,24 +88,28 @@ def drawLine(yLists, rGenome):
                     pointColor = colorList.get(nucleotide)
                     plt.plot(index, nu, 'ro', color=pointColor, markersize=3)  # make points
             index = index + 1
-
+"""
         # plt.plot(xList, li[0], 'ro')  # make points
+
+        # tempYList = [element * numberOfSeq for element in li[0]]
+        # sum_list = [a + b for a, b in zip(tempYList, repeatLine)]
+        # plt.plot(xList, tempYList, 'k-', color=clr, linewidth=1)  # make lines
 
         plt.plot(xList, li[0], 'k-', color=clr, linewidth=1)  # make lines
 
     plt.xticks(xList, rGenome)
-    yLabel = [' '] * 17
-    plt.yticks(list(range(0, 17)), yLabel)
+    yLabel = [' '] * 17 * hight
+    plt.yticks(list(range(0, 17 * hight)), yLabel)
     ax.spines['bottom'].set_position('zero')
     ax.spines['left'].set_position('zero')
     plt.axis('off')
     plt.hsv()
-    plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=300)
+    plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=10000)
     plt.close()
     plt.show()
 
 
-def makeY(seq, referenceGenome):
+def makeY(seq, referenceGenome, hight, repeatList):
     """
     TODO: Changing the explanation!
     This method gets a line from Fasta file  and reference genome as an input
@@ -104,27 +119,39 @@ def makeY(seq, referenceGenome):
     then the number from the yaxis allocated to the nucleotide added to the list.
     otherwise the nucleotide is going to be added to the dictionary in the location
     of that nucleotide on the sequence.
+    :param hight:
     :param seq:
     :param referenceGenome:
     :return:
     """
     newLine = [0] * referenceGenome.__len__()
     startAt = 0
-
     for nu in seq[0]:
         if list(nucleotideDictLists[startAt].keys()).__contains__(nu):
-            newLine[startAt] = nucleotideDictLists[startAt][nu]
+            # newLine[startAt] = nucleotideDictLists[startAt][nu]
+            newLine[startAt] = repeatList[startAt][nu] + nucleotideDictLists[startAt][nu] * hight
+            repeatList[startAt][nu] = repeatList[startAt][nu] + 1
+            # newLine[startAt] = repeatDictionary[startAt][nu] + nucleotideDictLists[startAt][nu] * hight
+            # repeatDictionary[startAt][nu] = repeatDictionary[startAt][nu] + 1
+
         else:
+            # temp = nucleotideDictLists[startAt].__len__()
+            # nucleotideDictLists[startAt][nu] = temp
+            # newLine[startAt] = temp
+
             temp = nucleotideDictLists[startAt].__len__()
             nucleotideDictLists[startAt][nu] = temp
-
-            newLine[startAt] = temp
+            # print('--   ',repeatList[startAt])
+            newLine[startAt] = temp * hight + repeatList[startAt][nu]
+            # print(newLine[startAt], '   ', startAt, newLine,'    ',nucleotideDictLists[startAt])
+            repeatList[startAt][nu] = 1
         startAt = startAt + 1
+    # print(repeatList)
+    # print('\n')
+    return [newLine, seq[1]], repeatList
 
-    return [newLine, seq[1]]
 
-
-# Dictionary containing the lications and the dictionary of nucleotide on that location
+# Dictionary containing the locations and the dictionary of nucleotide on that location
 # example
 # {0:{'A':0,'C':1},1:{'C':0},...}
 listOfYDictionary = {}
@@ -156,10 +183,18 @@ def makeYDictionary(sequence, rGenome):
 
 nucleotideDictLists = {}
 nucleotideCut = 1000
-
-for i in range(0, getReferenceGenomeList(1000).__len__()):
+numberOfSeq = 100
+hight=100000
+for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
     # add nucleotides of reference genome to the dictionary
-    nucleotideDictLists[i] = {getReferenceGenomeList(1000)[i]: 0}
+    nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCut)[i]: 0}
+
+# repeatNDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0}
+
+
+repeatNDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
+                     'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
+                     'N': 0, '-': 0, '.': 0}
 
 
 def drawGraphGenome(inFile):
@@ -168,7 +203,7 @@ def drawGraphGenome(inFile):
     :param inFile: Input fasta file
     :return:
     """
-    # Two dimention list containing the sequences and sequence technology for every sequence
+    # Two dimension list containing the sequences and sequence technology for every sequence
     # [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]
     # sample:
     # [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
@@ -180,16 +215,23 @@ def drawGraphGenome(inFile):
                 seqTech = getSequenceTechnology(line)
                 continue
             else:
-                #
                 seqList.append([list(line.strip()), seqTech])
 
-    rGenome = getReferenceGenomeList(1000)
+    rGenome = getReferenceGenomeList(nucleotideCut)
     yAxis = [0] * rGenome.__len__()
     yLists = [[yAxis, '-']]
 
+    repeatList = [{} for _ in range(nucleotideCut)]
+    for z in repeatList:
+        z.update(repeatNDictionary)
+    # repeatList = [repeatNDictionary] * nucleotideCut
+
+    # print(repeatList)
+
     for li in seqList:
-        yAxis = makeY(li, rGenome)
+        yAxis, repeatList = makeY(li, rGenome, hight, repeatList)
+
         yLists.append(yAxis)
-    drawLine(yLists, rGenome)
+    drawLine(yLists, rGenome, hight, repeatList)
 
 # drawLine(yAxis)

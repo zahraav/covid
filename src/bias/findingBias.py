@@ -121,6 +121,7 @@ def saveToCsv(csvFile, csvList, fieldNames, isHeader):
 
 def printStats(stats, header, isHeader, numberOfElement, isIupacCode):
     """
+    This methid
     :param isIupacCode: show if the codes are from IUPAC code or not
     :param stats:
     :param header:
@@ -161,10 +162,10 @@ def printStats(stats, header, isHeader, numberOfElement, isIupacCode):
 
 def parse(inputFile):
     """
-    This method get a fasta file as an input , then send the file to analyzeFasta() method and as result
-    it gets an dictionary full of nucleotide's count in every index in sequence for different sequence
-    technology. And save them in two files, one CSV file that contains count and another CSV file which
-    contains the percentage.
+    This method gets a fasta file as an input, then sends the file to analyzeFasta() method,
+    and as a result, it gets a dictionary full of nucleotide's count in every index in sequence
+    for different sequence technology. Then it saves them in two files, one CSV file that contains
+    count and another one is a CSV file that contains the percentage.
     :param inputFile: fasta file (MSA file)
     :return: CSV file
     """
@@ -264,7 +265,7 @@ def returnCorrectValue(i):
         return i
 
 
-def transfacGenerator(csvFile, transfacFileAddress ):
+def transfacGenerator(csvFile, transfacFileAddress):
     """
     This Method gets a csv file as an input and generate a transfac format file
     :param transfacFileAddress: transfac format file which is going to saved on the transfacFileAddress
@@ -365,6 +366,7 @@ def separatePeaks(fastaFile, peakOneDates, peakTwoDates, peakThreeDates):
     secondPeakFasta = config['outputAddresses'].get('secondPeak')
     thirdPeakFasta = config['outputAddresses'].get('thirdPeak')
 
+    # open three fasta files to separate sequences of each peak on a different file
     firstPeak = open(firstPeakFasta, "w")
     secondPeak = open(secondPeakFasta, "w")
     thirdPeak = open(thirdPeakFasta, "w")
@@ -374,8 +376,8 @@ def separatePeaks(fastaFile, peakOneDates, peakTwoDates, peakThreeDates):
     with open(fastaFile) as mainFastaFile:
         for line in mainFastaFile:
             if line.__contains__('>'):
-
                 collectionDate = getDateFromHeaderLine(line)
+
                 if isInThePeak(peakOneDates, collectionDate):
                     firstPeak.write(line)
                     flag = 1
@@ -413,12 +415,14 @@ def analyseSeqTechnologyBias(fastaFile):
     :return:
     """
 
+    # take the date of three major peak from config file
     firstPeak = config['peaks'].get('firstPeakDate').split(",")
     secondPeak = config['peaks'].get('secondPeakDate').split(",")
     thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
 
-    # separatePeaks(outFastaFile,[getDate(firstPeak[0]), getDate(firstPeak[1])],
-    #              [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
+    separatePeaks(fastaFile, [getDate(firstPeak[0]), getDate(firstPeak[1])],
+                  [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
+
 
     csvFile = parse(fastaFile)
 

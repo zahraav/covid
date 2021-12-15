@@ -63,15 +63,6 @@ def removeSpace(inputFile, outputFile):
                 file.write('\n')
 
 
-def getSequenceTechnology(header):
-    """
-    This method get a header line of a fasta file and returns the sequence technology from the header.
-    :param header: A header line of a fasta file
-    :return: Sequence Technology
-    """
-    return header.split("|")[4].strip()
-
-
 def makeDictionaryOfSeqTech(tsvFile):
     """
     This method make a dictionary of sequence Technologies in the given TSV file
@@ -198,18 +189,19 @@ def main():
     """
     The pipeline starts here,
     For generating the output please uncomment the different parts in the same order as following
-
+    1- add sequence technology to fasta file
+    2-
     :return:
     """
     inputFastaFile = config['inputAddresses'].get('inputFastaFile')
     tsvFolder = config['inputAddresses'].get('TSVFolder')
-    outFastaFile = addSeqTechToFastaFile(tsvFolder, inputFastaFile)
+    # outFastaFile = addSeqTechToFastaFile(tsvFolder, inputFastaFile)
 
     """
     this method call all f the pipeline.
     Bias:
     """
-    analyseSeqTechnologyBias(outFastaFile)
+    # analyseSeqTechnologyBias(outFastaFile)
 
     # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
     # parseFastaFile("", 'files/test_MSA_2.fasta', 'files/output_Test_MSA_22.fasta')

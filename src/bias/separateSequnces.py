@@ -43,7 +43,7 @@ def separateSeqByCount(inFile, outFileAddress, seqCount, nucleotideCount):
 
 def separatePartOfFastaFile(inFasta, sequenceCount, nucleotideCount):
     """
-
+    This method gets a generate a new fasta file
     :return:
     """
     outFasta = config['separateFiles'].get('outputFastaFile')

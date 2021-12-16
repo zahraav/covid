@@ -51,14 +51,13 @@ colorList = {'A': 'red', 'C': 'green', 'G': 'blue', 'T': 'black', 'U': 'orange',
              'N': 'peru', '-': 'maroon', '.': 'maroon'}
 
 
-def drawLine(yLists, rGenome, height):
+def drawLine(yLists, rGenome):
     """
     This method gets lists of nucleotide and sequence technology and reference genome ,
     and draw the graph genome
     it change the color of lines depends on sequence technology
     and change the color of points depends on nucleotide. the colorList above this Method is the dictionary
     of color for points
-    :param height:
     :param yLists: a list containing both yList and sequence technology
     :param rGenome: Reference Genome
     :return:
@@ -99,18 +98,18 @@ def drawLine(yLists, rGenome, height):
         plt.plot(xList, li[0], 'k-', color=clr, linewidth=1)  # make lines
 
     plt.xticks(xList, rGenome)
-    yLabel = [' '] * 17 * height
-    plt.yticks(list(range(0, 17 * height)), yLabel)
+    yLabel = [' '] * 10 * height
+    plt.yticks(list(range(0, 10 * height)), yLabel)
     ax.spines['bottom'].set_position('zero')
     ax.spines['left'].set_position('zero')
     plt.axis('off')
     plt.hsv()
-    plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=5000)
+    plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=1000)
     plt.close()
     plt.show()
 
 
-def makeY(seq, referenceGenome, height, repeatList):
+def makeY(seq, referenceGenome, repeatList):
     """
     TODO: Changing the explanation!
     This method gets a line from Fasta file  and reference genome as an input
@@ -120,7 +119,7 @@ def makeY(seq, referenceGenome, height, repeatList):
     then the number from the yaxis allocated to the nucleotide added to the list.
     otherwise the nucleotide is going to be added to the dictionary in the location
     of that nucleotide on the sequence.
-    :param height:
+    :param repeatList:
     :param seq:
     :param referenceGenome:
     :return:
@@ -208,7 +207,8 @@ def drawGraphGenome(inFile):
     # [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]
     # sample:
     # [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
-    os.mkdir('files/output/GraphGenome')
+    if not os.path.isdir('files/output/GraphGenome'):
+        os.mkdir('files/output/GraphGenome')
 
     seqList = []
     seqTech = ''
@@ -232,9 +232,9 @@ def drawGraphGenome(inFile):
     # print(repeatList)
 
     for li in seqList:
-        yAxis, repeatList = makeY(li, rGenome, height, repeatList)
+        yAxis, repeatList = makeY(li, rGenome, repeatList)
 
         yLists.append(yAxis)
-    drawLine(yLists, rGenome, height, repeatList)
+    drawLine(yLists, rGenome)
 
 # drawLine(yAxis)

@@ -194,15 +194,14 @@ def main():
     2-
     :return:
     """
-    import os
+    if not os.path.isdir('files'):
+        os.makedirs('files/output')
+        os.mkdir('files/output/test')
 
-    os.makedirs('files/output')
-    os.mkdir('files/output/test')
+        os.mkdir('files/output/CSV')
 
-    os.mkdir('files/output/CSV')
-
-    inputFastaFile = config['inputAddresses'].get('inputFastaFile')
-    tsvFolder = config['inputAddresses'].get('TSVFolder')
+    # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
+    # tsvFolder = config['inputAddresses'].get('TSVFolder')
     # outFastaFile = addSeqTechToFastaFile(tsvFolder, inputFastaFile)
 
     """

@@ -185,8 +185,8 @@ def makeYDictionary(sequence, rGenome):
 
 
 nucleotideDictLists = {}
-nucleotideCut = '-'
-numberOfSeq = '-'
+nucleotideCut = '-'  #1000
+numberOfSeq = '-'  #100
 height = 250
 for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
     # add nucleotides of reference genome to the dictionary
@@ -261,8 +261,10 @@ def drawGraph(yLists, referenceGenome):
         clr = getColor(yList)
         pointsList = list(zip(xList, yList[0]))
         draw.line(pointsList, fill=clr, width=1)
+        img.save("files/FullGraphGenome3.png", "PNG")
 
-    img.save("files/FullGraphGenome.png", "PNG")
+
+# img.save("files/FullGraphGenome.png", "PNG")
 
 
 def getColor(li):

@@ -1,4 +1,7 @@
 import os
+from PIL.Image import core as _imaging
+from IPython.display import display
+from PIL import Image, ImageDraw
 
 import matplotlib.pyplot as plt
 import configparser
@@ -37,7 +40,7 @@ def getReferenceGenomeList(lengthOfCut):
                 continue
             else:
                 rGenome = rGenome + line.strip()
-    if lengthOfCut != 0:
+    if lengthOfCut != '-':
         return list(rGenome[0:lengthOfCut])
     else:
         return list(rGenome)
@@ -98,8 +101,8 @@ def drawLine(yLists, rGenome):
         plt.plot(xList, li[0], 'k-', color=clr, linewidth=1)  # make lines
 
     plt.xticks(xList, rGenome)
-    yLabel = [' '] * 10 * height
-    plt.yticks(list(range(0, 10 * height)), yLabel)
+    yLabel = [' '] * 7 * height
+    plt.yticks(list(range(0, 7 * height)), yLabel)
     ax.spines['bottom'].set_position('zero')
     ax.spines['left'].set_position('zero')
     plt.axis('off')
@@ -182,9 +185,9 @@ def makeYDictionary(sequence, rGenome):
 
 
 nucleotideDictLists = {}
-nucleotideCut = 1000
-numberOfSeq = 100
-height = 100000
+nucleotideCut = '-'
+numberOfSeq = '-'
+height = 250
 for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
     # add nucleotides of reference genome to the dictionary
     nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCut)[i]: 0}
@@ -207,6 +210,7 @@ def drawGraphGenome(inFile):
     # [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]
     # sample:
     # [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
+
     if not os.path.isdir('files/output/GraphGenome'):
         os.mkdir('files/output/GraphGenome')
 
@@ -224,10 +228,10 @@ def drawGraphGenome(inFile):
     yAxis = [0] * rGenome.__len__()
     yLists = [[yAxis, '-']]
 
-    repeatList = [{} for _ in range(nucleotideCut)]
+    repeatList = [{} for _ in range(rGenome.__len__())]
     for z in repeatList:
         z.update(repeatNDictionary)
-    # repeatList = [repeatNDictionary] * nucleotideCut
+    # repeatList = [repeatNDictionary] * rGenome.__len__()
 
     # print(repeatList)
 
@@ -235,6 +239,38 @@ def drawGraphGenome(inFile):
         yAxis, repeatList = makeY(li, rGenome, repeatList)
 
         yLists.append(yAxis)
-    drawLine(yLists, rGenome)
-
+    # drawLine(yLists, rGenome)
+    drawGraph(yLists,rGenome)
 # drawLine(yAxis)
+
+
+def drawGraph(yLists, referenceGenome):
+    """
+    for every line!
+    :param yLists:
+    :param referenceGenome:
+    :return:
+    """
+
+    graphGenomeFile = config['outputAddresses'].get('graphGenome')
+
+    img = Image.new("RGB", (800, 800), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    xList = list(range(0, referenceGenome.__len__()))
+    for yList in yLists:
+        clr = getColor(yList)
+        pointsList = list(zip(xList, yList[0]))
+        draw.line(pointsList, fill=clr, width=1)
+
+    img.save("files/FullGraphGenome.png", "PNG")
+
+
+def getColor(li):
+    if li[1] == '-':
+        return 'red'
+    elif li[1] == 'Nanopore':
+        return 'blue'
+    elif li[1] == 'Illumina':
+        return 'green'
+    else:
+        return 'purple'

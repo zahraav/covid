@@ -1,4 +1,6 @@
 import csv
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -138,28 +140,21 @@ def barChart(columnDict, columnNumber):
     plt.show()
 
 
-def simpleBars(inputFile_, graphName):
+def simpleBars(inputFile_):
     """
     This method gets a csv file and depending on the graphName draw one of the bar chart plots.
-    :param graphName: Name of graph that is going to be draw by this method
-    there is 6 different option for generating a bar graph chart : 1- by id , 2- by data 3- by location
-    4- by technology 5- by index 6- by IUPAC codes
     :param inputFile_:
     :return:
     """
-    columnNumber = 0
-    if graphName == 'id':
-        columnNumber = 0  # id
-    elif graphName == 'data':
-        columnNumber = 1  # date
-    elif graphName == 'location':
-        columnNumber = 2  # location
-    elif graphName == 'technology':
-        columnNumber = 3  # technology
-    elif graphName == 'index':
-        columnNumber = 4  # index
-    elif graphName == 'letter':
-        columnNumber = 5  # Letter
+    for i in range(0, 6):
+        columnNumber = i  # id
+
+    # columnNumber = 0 --> id
+    # columnNumber = 1 --> date
+    # columnNumber = 2 --> location
+    # columnNumber = 3 --> technology
+    # columnNumber = 4 --> index
+    # columnNumber = 5  --> Letter
 
     columnDictionary = {}
     if columnNumber == 0 or columnNumber == 4 or columnNumber == 5:
@@ -226,11 +221,12 @@ def TechnologyLetterBarChart(inputFile_, savingAddress):
     plt.show()
 
 
-# realFile
-inputFile = 'files/Msa_NoSpace_withExtraLetter.csv'
-# test
-# inputFile = 'files/test_2_withExtraLetter.csv'
-# simpleBars(inputFile)
+def DrawBarChart(inputFile, outputAddress):
+    os.mkdir('files/output/BarChart')
 
-outputAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
-TechnologyLetterBarChart(inputFile, outputAddress)
+    # realFile
+    # test
+    # inputFile = 'files/test_2_withExtraLetter.csv'
+    simpleBars(inputFile)
+
+    TechnologyLetterBarChart(inputFile, outputAddress)

@@ -121,7 +121,7 @@ def saveToCsv(csvFile, csvList, fieldNames, isHeader):
 
 def printStats(stats, header, isHeader, numberOfElement, isIupacCode):
     """
-    This methid
+
     :param isIupacCode: show if the codes are from IUPAC code or not
     :param stats:
     :param header:
@@ -251,7 +251,7 @@ def getConsensus(maxNucleotide):
 def returnCorrectValue(i):
     """
     This method check if the data is on the header or is a normal data
-    then if it's from header change the header from csv to header to save in the transfacformat txt file
+    then if it's from header change the header from csv to header to save in the transfacFormat txt file
     :param i: the header item
     :return: header in transfac format or data
     """
@@ -390,7 +390,7 @@ def separatePeaks(fastaFile, peakOneDates, peakTwoDates, peakThreeDates):
                     thirdPeak.write(line)
                     flag = 3
 
-            elif flag is not 0:
+            elif flag != 0:
                 if flag == 1:
                     firstPeak.write(line)
                     flag = 0
@@ -414,6 +414,8 @@ def analyseSeqTechnologyBias(fastaFile):
     :param fastaFile: fasta file containing sequence technology
     :return:
     """
+    os.mkdir('files/output/Peaks')
+    os.mkdir('files/output/TransfacFormat')
 
     # take the date of three major peak from config file
     firstPeak = config['peaks'].get('firstPeakDate').split(",")
@@ -422,7 +424,6 @@ def analyseSeqTechnologyBias(fastaFile):
 
     separatePeaks(fastaFile, [getDate(firstPeak[0]), getDate(firstPeak[1])],
                   [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
-
 
     csvFile = parse(fastaFile)
 

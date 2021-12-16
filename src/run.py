@@ -8,6 +8,7 @@ from alignment.makeAlignment import parseFastaFile
 from bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.mutation import mutationAnalysis
 from bias.graphGenome import drawGraphGenome
+from barChart import DrawBarChart
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -193,6 +194,13 @@ def main():
     2-
     :return:
     """
+    import os
+
+    os.makedirs('files/output')
+    os.mkdir('files/output/test')
+
+    os.mkdir('files/output/CSV')
+
     inputFastaFile = config['inputAddresses'].get('inputFastaFile')
     tsvFolder = config['inputAddresses'].get('TSVFolder')
     # outFastaFile = addSeqTechToFastaFile(tsvFolder, inputFastaFile)
@@ -209,7 +217,7 @@ def main():
     # process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
 
     """
-    Mutation Analysis
+    Mutation Analysis: 
     """
 
     # globalTree = config['inputAddresses'].get('globalTree')
@@ -217,7 +225,14 @@ def main():
     # mutationAnalysis(globalTree, metadataFile)
 
     """
-    Graph Genome
+    Bar Charts:
+    """
+    # inputFile = 'files/Msa_NoSpace_withExtraLetter.csv'
+    # outputAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
+    # DrawBarChart(inputFile,outputAddress)
+
+    """
+    Graph Genome:
     """
     # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
     # inFasta = config['outputAddresses'].get('fullFastaFile')

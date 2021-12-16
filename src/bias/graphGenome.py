@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import configparser
 
@@ -35,7 +37,7 @@ def getReferenceGenomeList(lengthOfCut):
                 continue
             else:
                 rGenome = rGenome + line.strip()
-    if lengthOfCut is not 0:
+    if lengthOfCut != 0:
         return list(rGenome[0:lengthOfCut])
     else:
         return list(rGenome)
@@ -49,15 +51,14 @@ colorList = {'A': 'red', 'C': 'green', 'G': 'blue', 'T': 'black', 'U': 'orange',
              'N': 'peru', '-': 'maroon', '.': 'maroon'}
 
 
-def drawLine(yLists, rGenome, hight, repeatList):
+def drawLine(yLists, rGenome, height):
     """
     This method gets lists of nucleotide and sequence technology and reference genome ,
     and draw the graph genome
     it change the color of lines depends on sequence technology
     and change the color of points depends on nucleotide. the colorList above this Method is the dictionary
     of color for points
-    :param repeatList:
-    :param hight:
+    :param height:
     :param yLists: a list containing both yList and sequence technology
     :param rGenome: Reference Genome
     :return:
@@ -98,18 +99,18 @@ def drawLine(yLists, rGenome, hight, repeatList):
         plt.plot(xList, li[0], 'k-', color=clr, linewidth=1)  # make lines
 
     plt.xticks(xList, rGenome)
-    yLabel = [' '] * 17 * hight
-    plt.yticks(list(range(0, 17 * hight)), yLabel)
+    yLabel = [' '] * 17 * height
+    plt.yticks(list(range(0, 17 * height)), yLabel)
     ax.spines['bottom'].set_position('zero')
     ax.spines['left'].set_position('zero')
     plt.axis('off')
     plt.hsv()
-    plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=10000)
+    plt.savefig(graphGenomeFile, bbox_inches='tight', dpi=5000)
     plt.close()
     plt.show()
 
 
-def makeY(seq, referenceGenome, hight, repeatList):
+def makeY(seq, referenceGenome, height, repeatList):
     """
     TODO: Changing the explanation!
     This method gets a line from Fasta file  and reference genome as an input
@@ -119,7 +120,7 @@ def makeY(seq, referenceGenome, hight, repeatList):
     then the number from the yaxis allocated to the nucleotide added to the list.
     otherwise the nucleotide is going to be added to the dictionary in the location
     of that nucleotide on the sequence.
-    :param hight:
+    :param height:
     :param seq:
     :param referenceGenome:
     :return:
@@ -129,9 +130,9 @@ def makeY(seq, referenceGenome, hight, repeatList):
     for nu in seq[0]:
         if list(nucleotideDictLists[startAt].keys()).__contains__(nu):
             # newLine[startAt] = nucleotideDictLists[startAt][nu]
-            newLine[startAt] = repeatList[startAt][nu] + nucleotideDictLists[startAt][nu] * hight
+            newLine[startAt] = repeatList[startAt][nu] + nucleotideDictLists[startAt][nu] * height
             repeatList[startAt][nu] = repeatList[startAt][nu] + 1
-            # newLine[startAt] = repeatDictionary[startAt][nu] + nucleotideDictLists[startAt][nu] * hight
+            # newLine[startAt] = repeatDictionary[startAt][nu] + nucleotideDictLists[startAt][nu] * height
             # repeatDictionary[startAt][nu] = repeatDictionary[startAt][nu] + 1
 
         else:
@@ -142,7 +143,7 @@ def makeY(seq, referenceGenome, hight, repeatList):
             temp = nucleotideDictLists[startAt].__len__()
             nucleotideDictLists[startAt][nu] = temp
             # print('--   ',repeatList[startAt])
-            newLine[startAt] = temp * hight + repeatList[startAt][nu]
+            newLine[startAt] = temp * height + repeatList[startAt][nu]
             # print(newLine[startAt], '   ', startAt, newLine,'    ',nucleotideDictLists[startAt])
             repeatList[startAt][nu] = 1
         startAt = startAt + 1
@@ -184,14 +185,14 @@ def makeYDictionary(sequence, rGenome):
 nucleotideDictLists = {}
 nucleotideCut = 1000
 numberOfSeq = 100
-hight=100000
+height = 100000
 for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
     # add nucleotides of reference genome to the dictionary
     nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCut)[i]: 0}
 
-# repeatNDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0}
-
-
+# This dictionary counts the number of repeat for every nucleotide in a location. Then the numbers of
+# this dictionary is going to be added to a list- one nucleotide for each dictionary.
+# So that we can add to the pixels when there is a repeat on a location.
 repeatNDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
                      'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
                      'N': 0, '-': 0, '.': 0}
@@ -207,6 +208,8 @@ def drawGraphGenome(inFile):
     # [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]
     # sample:
     # [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
+    os.mkdir('files/output/GraphGenome')
+
     seqList = []
     seqTech = ''
     with open(inFile) as mainFastaFile:
@@ -229,9 +232,9 @@ def drawGraphGenome(inFile):
     # print(repeatList)
 
     for li in seqList:
-        yAxis, repeatList = makeY(li, rGenome, hight, repeatList)
+        yAxis, repeatList = makeY(li, rGenome, height, repeatList)
 
         yLists.append(yAxis)
-    drawLine(yLists, rGenome, hight, repeatList)
+    drawLine(yLists, rGenome, height, repeatList)
 
 # drawLine(yAxis)

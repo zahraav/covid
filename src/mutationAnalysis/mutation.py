@@ -1,4 +1,6 @@
 import csv
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import configparser
@@ -236,6 +238,8 @@ def mutationAnalysis(globalTree, metadataFile):
     :param metadataFile: metadata related to the phylogenetic tree
     :return:
     """
+    os.mkdir('files/output/PhylogeneticTree')
+
     treeData = getContentOfFile(globalTree)
     CSVInfo = returnCSVList(metadataFile)
 

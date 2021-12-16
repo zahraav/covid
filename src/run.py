@@ -234,8 +234,8 @@ def main():
     Graph Genome:
     """
     # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
-    inFasta = config['outputAddresses'].get('fullFastaFile')
-    # inFasta = config['separateFiles'].get('outputFastaFile')
+    # inFasta = config['outputAddresses'].get('fullFastaFile')
+    inFasta = config['separateFiles'].get('outputFastaFile')
 
     # makeGraphGenome(inFasta)
 

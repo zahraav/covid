@@ -1,6 +1,4 @@
 import os
-from PIL.Image import core as _imaging
-from IPython.display import display
 from PIL import Image, ImageDraw
 
 import matplotlib.pyplot as plt
@@ -185,8 +183,8 @@ def makeYDictionary(sequence, rGenome):
 
 
 nucleotideDictLists = {}
-nucleotideCut = '-'  #1000
-numberOfSeq = '-'  #100
+nucleotideCut = 1000  # '-'  #1000
+numberOfSeq = 100  # '-'  #100
 height = 250
 for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
     # add nucleotides of reference genome to the dictionary

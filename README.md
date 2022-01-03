@@ -5,21 +5,24 @@ Setup/Execution:
 `  https://github.com/zahraav/covid.git`
 
 
+Install libraries/packages:
  - install [biopython](https://biopython.org/wiki/Download):
    `pip install biopython`
-
-
- - Configure your config.cfg file
-
-    ~~#TODO Remove the test folders for last release.~~
  
-    There are some lines on the configuration file which are comments, 
-    for using the pipeline on testing dataset it's better to put your data on test folders and comment the real files with same name.
+ - install [pillow]():
+   python3 -m pip install --upgrade pip
+   python3 -m pip install --upgrade Pillow
+ 
+ 
+Configure your config.cfg file
+
+- There are some lines on the configuration file which are comments, 
+   for using the pipeline on testing dataset it's better to put your data on test folders and comment the real files with same name.
 
 
- - input
+input
 
-    Put your input files on the related folder on
+   Put your input files on the related folder on
 `files/input`
 
 

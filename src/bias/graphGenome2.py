@@ -110,7 +110,7 @@ def drawLine(yLists, rGenome):
     plt.show()
 
 
-def makeY(seq, referenceGenome, repeatList):
+def makeY(seqList, referenceGenome, repeatList,threshold):
     """
     TODO: Changing the explanation!
     This method gets a line from Fasta file  and reference genome as an input
@@ -120,36 +120,57 @@ def makeY(seq, referenceGenome, repeatList):
     then the number from the yaxis allocated to the nucleotide added to the list.
     otherwise the nucleotide is going to be added to the dictionary in the location
     of that nucleotide on the sequence.
+    :param threshold:
     :param repeatList:
-    :param seq:
+    :param seqList:
     :param referenceGenome:
     :return:
     """
+    #a = [x - 13 for x in a]
     newLine = [0] * referenceGenome.__len__()
     startAt = 0
-    for nu in seq[0]:
-        if list(nucleotideDictLists[startAt].keys()).__contains__(nu):
-            # newLine[startAt] = nucleotideDictLists[startAt][nu]
-            newLine[startAt] = repeatList[startAt][nu] + nucleotideDictLists[startAt][nu] * height
-            repeatList[startAt][nu] = repeatList[startAt][nu] + 1
-            # newLine[startAt] = repeatDictionary[startAt][nu] + nucleotideDictLists[startAt][nu] * height
-            # repeatDictionary[startAt][nu] = repeatDictionary[startAt][nu] + 1
+    count=0
+    visitedList = [referenceGenome]
+    startIndex = 0
+    endIndex = 0
+    newPart=[]  # part of sequence that saved before collapse or expand !
+    for seq in seqList:
+        for visited in visitedList:
+            for i in range(0,seq.__len__()):
+                if seq[i] == visited[i]:
+                    count = count + 1
+                    newPart[i]=seq[i]
+                    endIndex=endIndex+1
+                if seq[i] != visited[i]:
+                    count = 0
+                    newLine.extend([repeatList[startAt][xxx] + repeatList[i][seq[i]]*height for xxx in newPart])
+                    drawGraph(newLine,referenceGenome[startIndex:endIndex+1])
+                    startIndex=endIndex+1
+                    newPart.clear()
+                    for j in range(startIndex,endIndex+1):
+                        repeatList[i][seq[j]] = repeatList[i][seq[j]] + 1
 
-        else:
-            # temp = nucleotideDictLists[startAt].__len__()
-            # nucleotideDictLists[startAt][nu] = temp
-            # newLine[startAt] = temp
+            if count == threshold:
+                    drawGraph(newLine,referenceGenome[startIndex:endIndex+1])
+                    print(newPart)
+                    newPart.clear()
+                    startIndex=endIndex+1
 
-            temp = nucleotideDictLists[startAt].__len__()
-            nucleotideDictLists[startAt][nu] = temp
-            # print('--   ',repeatList[startAt])
-            newLine[startAt] = temp * height + repeatList[startAt][nu]
-            # print(newLine[startAt], '   ', startAt, newLine,'    ',nucleotideDictLists[startAt])
-            repeatList[startAt][nu] = 1
-        startAt = startAt + 1
-    # print(repeatList)
-    # print('\n')
-    return [newLine, seq[1]], repeatList
+
+
+def getNewLine(nucleotide,startAt,newLine,repeatList):
+
+    if list(nucleotideDictLists[startAt].keys()).__contains__(nucleotide):
+        newLine[startAt] = repeatList[startAt][nucleotide] + nucleotideDictLists[startAt][nucleotide] * height
+        repeatList[startAt][nucleotide] = repeatList[startAt][nucleotide] + 1
+
+    else:
+        temp = nucleotideDictLists[startAt].__len__()
+        nucleotideDictLists[startAt][nucleotide] = temp
+        newLine[startAt] = temp * height + repeatList[startAt][nucleotide]
+        repeatList[startAt][nucleotide] = 1
+    startAt = startAt + 1
+    return newLine, repeatList, startAt
 
 
 # Dictionary containing the locations and the dictionary of nucleotide on that location
@@ -198,9 +219,10 @@ repeatNDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S'
                      'N': 0, '-': 0, '.': 0}
 
 
-def drawGraphGenome(inFile):
+def drawGraphGenome(inFile,threshold):
     """
     This Method gets a fasta file as input and makes a graph genome for the fasta file.
+    :param threshold:
     :param inFile: Input fasta file
     :return:
     """
@@ -234,7 +256,7 @@ def drawGraphGenome(inFile):
     # print(repeatList)
 
     for li in seqList:
-        yAxis, repeatList = makeY(li, rGenome, repeatList)
+        yAxis, repeatList = makeY(li, rGenome, repeatList, threshold)
 
         yLists.append(yAxis)
     # drawLine(yLists, rGenome)
@@ -274,3 +296,6 @@ def getColor(li):
         return 'green'
     else:
         return 'purple'
+
+
+

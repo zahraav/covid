@@ -1,47 +1,7 @@
-import os
-from PIL import Image, ImageDraw
-
-import matplotlib.pyplot as plt
-import configparser
-
-CONFIG_FILE = r'config/config.cfg'
 
 
-def get_configs():
-    app_config = configparser.RawConfigParser()
-    app_config.read(CONFIG_FILE)
-    return app_config
 
 
-config = get_configs()
-
-
-def getSequenceTechnology(header):
-    """
-    This method get a header line of a fasta file and returns the sequence technology from the header.
-    :param header: A header line of a fasta file
-    :return: Sequence Technology
-    """
-    return header.split("|")[4].strip()
-
-
-def getReferenceGenomeList(lengthOfCut):
-    """
-    This Method returns part/ whole reference Genome as a list depends on length of cut.
-    :return: List containing the nucleotide list of reference genome.
-    """
-    referenceGenomeFile = config['inputAddresses'].get('referenceGenome')
-    rGenome = ''
-    with open(referenceGenomeFile) as rFile:
-        for line in rFile:
-            if line.__contains__('>'):
-                continue
-            else:
-                rGenome = rGenome + line.strip()
-    if lengthOfCut != '-':
-        return list(rGenome[0:lengthOfCut])
-    else:
-        return list(rGenome)
 
 
 # Dictionary of color for points
@@ -182,13 +142,7 @@ def makeYDictionary(sequence, rGenome):
     return newList
 
 
-nucleotideDictLists = {}
-nucleotideCut = 1000  # '-'  #1000
-numberOfSeq = 100  # '-'  #100
-height = 250
-for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
-    # add nucleotides of reference genome to the dictionary
-    nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCut)[i]: 0}
+
 
 # This dictionary counts the number of repeat for every nucleotide in a location. Then the numbers of
 # this dictionary is going to be added to a list- one nucleotide for each dictionary.
@@ -209,68 +163,4 @@ def drawGraphGenome(inFile):
     # sample:
     # [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
 
-    if not os.path.isdir('files/output/GraphGenome'):
-        os.mkdir('files/output/GraphGenome')
 
-    seqList = []
-    seqTech = ''
-    with open(inFile) as mainFastaFile:
-        for line in mainFastaFile:
-            if line.__contains__('>'):
-                seqTech = getSequenceTechnology(line)
-                continue
-            else:
-                seqList.append([list(line.strip()), seqTech])
-
-    rGenome = getReferenceGenomeList(nucleotideCut)
-    yAxis = [0] * rGenome.__len__()
-    yLists = [[yAxis, '-']]
-
-    repeatList = [{} for _ in range(rGenome.__len__())]
-    for z in repeatList:
-        z.update(repeatNDictionary)
-    # repeatList = [repeatNDictionary] * rGenome.__len__()
-
-    # print(repeatList)
-
-    for li in seqList:
-        yAxis, repeatList = makeY(li, rGenome, repeatList)
-
-        yLists.append(yAxis)
-    # drawLine(yLists, rGenome)
-    drawGraph(yLists,rGenome)
-# drawLine(yAxis)
-
-
-def drawGraph(yLists, referenceGenome):
-    """
-    This method
-    :param yLists:
-    :param referenceGenome:
-    :return:
-    """
-
-    graphGenomeFile = config['outputAddresses'].get('graphGenome')
-
-    img = Image.new("RGB", (220000, 220000), (255, 255, 255))
-    draw = ImageDraw.Draw(img)
-    xList = list(range(0, referenceGenome.__len__()))
-    for yList in yLists:
-        clr = getColor(yList)
-        pointsList = list(zip(xList, yList[0]))
-        draw.line(pointsList, fill=clr, width=1)
-        img.save("files/FullGraphGenome3.png", "PNG")
-
-
-# img.save("files/FullGraphGenome.png", "PNG")
-
-
-def getColor(li):
-    if li[1] == '-':
-        return 'red'
-    elif li[1] == 'Nanopore':
-        return 'blue'
-    elif li[1] == 'Illumina':
-        return 'green'
-    else:
-        return 'purple'

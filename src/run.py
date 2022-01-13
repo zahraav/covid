@@ -7,7 +7,7 @@ import re
 from alignment.makeAlignment import parseFastaFile
 from bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.mutation import mutationAnalysis
-from bias.graphGenome import drawGraphGenome
+from bias.test2 import drawGraphGenome
 from barChart import DrawBarChart
 
 CONFIG_FILE = r'config/config.cfg'
@@ -237,11 +237,12 @@ def main():
     # inFasta = config['outputAddresses'].get('fullFastaFile')
     inFasta = config['separateFiles'].get('outputFastaFile')
 
+    drawGraphGenome(inFasta)
     # makeGraphGenome(inFasta)
 
     # makeGraphGenome(config,fastaFileWithSequenceTechnology)
     # drawGraphGenome(fastaFileWithSequenceTechnology)
-    drawGraphGenome(inFasta)
+    #drawGraphGenome(inFasta)
 
 
 if __name__ == '__main__':

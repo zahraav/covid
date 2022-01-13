@@ -21,14 +21,15 @@ config = get_configs()
 # This dictionary counts the number of repeat for every nucleotide in a location. Then the numbers of
 # this dictionary is going to be added to a list- one nucleotide for each dictionary.
 # So that we can add to the pixels when there is a repeat on a location.
-repeatNDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
-                     'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
-                     'N': 0, '-': 0, '.': 0}
+nucleotideRepetitionDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
+                                  'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
+                                  'N': 0, '-': 0, '.': 0}
+
 
 # Dictionary containing the locations and the dictionary of nucleotide on that location
 # example
 # {0:{'A':0,'C':1},1:{'C':0},...}
-#listOfYDictionary = {}
+# listOfYDictionary = {}
 
 
 def getReferenceGenomeList(lengthOfCut):
@@ -50,11 +51,11 @@ def getReferenceGenomeList(lengthOfCut):
         return rGenome
 
 
-
 nucleotideDictLists = {}
 for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
     # add nucleotides of reference genome to the dictionary
     nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCut)[i]: 0}
+
 
 def getSequenceTechnology(header):
     """
@@ -83,7 +84,7 @@ def drawGraphGenome(inFile):
 
     # set to '-' if you want whole rGenome
     rGenome = getReferenceGenomeList(nucleotideCut)
-    threshold=100
+    threshold = 100
     sequenceList = [[rGenome, '-']]
     seqTech = ''
     with open(inFile) as mainFastaFile:
@@ -96,12 +97,25 @@ def drawGraphGenome(inFile):
 
     repeatList = [{} for _ in range(rGenome.__len__())]
     for z in repeatList:
-        z.update(repeatNDictionary)
+        z.update(nucleotideRepetitionDictionary)
+    for nu in rGenome:
+        repeatList[i][nu] = 1
 
-    generateYaxis(sequenceList, rGenome, threshold, repeatList)
+    distanceInGraph = 100
+    generateYaxis(sequenceList, rGenome, threshold, repeatList, distanceInGraph)
 
 
-def generateYaxis(seqList, rGenome, threshold, positionList):
+def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesInGraph):
+    """
+    TODO: Changing the explanation!
+    This method gets a line from Fasta file  and reference genome as an input
+    and make a list comparing sequence and reference genome
+    also it used a nucleotideDictionary list, which is list of nucleotides that are used until now
+    if the current nucleotide in the location was in the previous sequences in this location ,
+    then the number from the yaxis allocated to the nucleotide added to the list.
+    otherwise the nucleotide is going to be added to the dictionary in the location
+    of that nucleotide on the sequence."""
+
     img = Image.new("RGB", (2200, 2200), (255, 255, 255))
     draw = ImageDraw.Draw(img)
     xList = list(range(0, rGenome.__len__()))
@@ -126,78 +140,68 @@ def generateYaxis(seqList, rGenome, threshold, positionList):
                 #   to the newline
                 # - else if they're not equal add the segment to the newline and clear the segment and
                 #   increase the repeatList for the nucleotides in the segment
-                if checkNucleotide != '*':
-                    if nucleotide == checkNucleotide:
-                        count = count + 1
-                        segmentList.append(nucleotide)
-                        # last nucleotide in the sequence and the count is less than threshold:
-                        if i == pre.__len__() - 1 and count < threshold:
-                            segSize = segmentList.__len__()
-                            for nu in segmentList:
-                                newLine = newLine + nu
-                                if positionList[i - segSize][nucleotide] != 0:
-                                    yAxis[i - segSize] = positionList[i - segSize][nu]
-                                else:
-                                    nucleotideCount[i - segSize] = nucleotideCount[i - segSize] + 1
-                                    yAxis[i - segSize] = positionList[i - segSize][nu] = nucleotideCount[i - segSize]
 
-                            segmentList.clear()
-                            count = 0
-                            continue
-                        # last element in sequence and count is greater and equal to threshold:
-                        elif i == pre.__len__() - 1 and count >= threshold:
-                            segSize = segmentList.__len__()
-                            for nu in segmentList:
-                                newLine = newLine + '*'
-                                yAxis[i - segSize] = positionList[i - segSize][nu]
-                                segSize = segSize + 1
-                            segmentList.clear()
-                            count = 0
-                            continue
-
-                    elif nucleotide != checkNucleotide:
-                        # The count is bigger or equal to threshold and the current nucleotides are not equal:
-                        if count >= threshold:
-                            segSize = segmentList.__len__()
-                            for nu in segmentList:
-                                newLine = newLine + '*'
-                                yAxis[i - segSize] = positionList[i - segSize][nu]
-                                segSize = segSize + 1
-
-                            newLine = newLine + nucleotide
-                            if positionList[i][nucleotide] != 0:
-                                yAxis[i] = positionList[i][nucleotide]
-                            else:
-                                nucleotideCount[i] = nucleotideCount[i] + 1
-                                yAxis[i] = positionList[i][nucleotide] = nucleotideCount[i]
-                        # if count is less than threshold and nucleotides are not equal:
-                        else:
-                            segSize = segmentList.__len__()
-                            for nu in segmentList:
-                                newLine = newLine + nu
-                                yAxis[i - segSize] = positionList[i - segSize][nu]
-                                segSize = segSize + 1
-
-                            if positionList[i][nucleotide] != 0:
-                                yAxis[i] = positionList[i][nucleotide]
-                            else:
-                                nucleotideCount[i] = nucleotideCount[i] + 1
-                                yAxis[i] = positionList[i][nucleotide] = nucleotideCount[i]
-
-                            newLine = newLine + nucleotide
+                if nucleotide == checkNucleotide:
+                    count = count + 1
+                    segmentList.append(nucleotide)
+                    # last nucleotide in the sequence and the count is less than threshold:
+                    if i == pre.__len__() - 1 and count < threshold:
+                        segSize = segmentList.__len__()
+                        for nu in segmentList:
+                            newLine = newLine + nu
+                            repetitionList[i - segSize+1][nu] = repetitionList[i - segSize+1][nu] + 1
+                            # repeatList[startAt][nu] + nucleotideDictLists[startAt][nu] * height
+                            yAxis[i - segSize+1] = nucleotideDictLists[i - segSize+1][nu] * distanceOfLinesInGraph + \
+                                                     repetitionList[i - segSize+1][nu]
+                            segSize = segSize -1
                         segmentList.clear()
                         count = 0
+                        continue
+                    # last element in sequence and count is greater and equal to threshold:
+                    elif i == pre.__len__() - 1 and count >= threshold:
+                        segSize = segmentList.__len__()
+                        for nu in segmentList:
+                            newLine = newLine + '*'
+                            yAxis[i - segSize+1] = nucleotideDictLists[i - segSize+1][nu] * distanceOfLinesInGraph
+                            segSize = segSize - 1
+                        segmentList.clear()
+                        count = 0
+                        continue
 
-                    # After checking the equality, we check if the similar count is greater or equal to the threshold
-                    # if it is we add the segment to the new line and don't change the repeat list
-                    # if count >= threshold:
-                    # if count >= threshold:
-                    #    print('cant believe')
-                    #    newLine.extend(segmentList)
-                    #    segmentList.clear()
-                else:
-                    newLine = newLine + '*'
+                elif nucleotide != checkNucleotide:
+                    segSize = segmentList.__len__()
+                    # The count is bigger or equal to threshold and the current nucleotides are not equal:
+                    if count >= threshold:
+                        for nu in segmentList:
+                            newLine = newLine + '*'
+                            yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph
+                            # yAxis[i - segSize] = positionList[i - segSize][nu]
+                            segSize = segSize- 1
+
+                        segmentList.clear()
+
+                    # newLine = newLine + nucleotide
+
+                    # if count is less than threshold and nucleotides are not equal:
+                    else:
+
+                        for nu in segmentList:
+                            newLine = newLine + nu
+                            repetitionList[i - segSize][nu] = repetitionList[i - segSize][nu] + 1
+
+                            yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph + \
+                                            repetitionList[i - segSize][nu]
+                            segSize = segSize -1
+                        segmentList.clear()
+                    newLine = newLine + nucleotide
+                    if not nucleotideDictLists[i].__contains__(nucleotide):
+                        nucleotideDictLists[i][nucleotide] = nucleotideDictLists[i].__len__()
+
+                    repetitionList[i][nucleotide] = repetitionList[i][nucleotide] + 1
+                    yAxis[i] = nucleotideDictLists[i][nucleotide] * distanceOfLinesInGraph + repetitionList[i][nucleotide]
+                    segmentList.clear()
                     count = 0
+
             previousSet.add(newLine)
             drawGraph(yAxis, seq[1], draw, xList)
             yAxis = [0] * rGenome.__len__()
@@ -208,13 +212,16 @@ def generateYaxis(seqList, rGenome, threshold, positionList):
         newLine = ''
         if previousSet.__len__() == 0:
             previousSet.add(seq[0])
-
+            for j in range(0,seq[0].__len__()):
+                if not nucleotideDictLists[j].__contains__(seq[0][j]):
+                    repetitionList[j][seq[0][j]]=repetitionList[j][seq[0][j]]+1
+                    nucleotideDictLists[j][seq[0][j]]=repetitionList[j][seq[0][j]]
         # remove the sequences that are all '*'
         for check in previousSet.copy():
             if check == '*' * check.__len__():
                 previousSet.remove(check)
 
-    img.save("files/FullGraphGenome43.png", "PNG")
+    #img.save("files/FullGraphGenome43.png", "PNG")
 
 
 def drawGraph(yList, seqTechnology, draw, xList):

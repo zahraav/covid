@@ -5,7 +5,7 @@ import configparser
 
 CONFIG_FILE = r'config/config.cfg'
 
-nucleotideCut = 1000  # '-'  #1000
+nucleotideCut = '-'  # '-'  #1000
 numberOfSeq = 100  # '-'  #100
 height = 250
 
@@ -84,7 +84,7 @@ def drawGraphGenome(inFile):
 
     # set to '-' if you want whole rGenome
     rGenome = getReferenceGenomeList(nucleotideCut)
-    threshold = 100
+    threshold = 3
     sequenceList = [[rGenome, '-']]
     seqTech = ''
     with open(inFile) as mainFastaFile:
@@ -116,7 +116,7 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
     otherwise the nucleotide is going to be added to the dictionary in the location
     of that nucleotide on the sequence."""
 
-    img = Image.new("RGB", (2200, 2200), (255, 255, 255))
+    img = Image.new("RGB", (1000, 1000), (255, 255, 255))
     draw = ImageDraw.Draw(img)
     xList = list(range(0, rGenome.__len__()))
     segmentList = []
@@ -203,7 +203,7 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
                     count = 0
 
             previousSet.add(newLine)
-            drawGraph(yAxis, seq[1], draw, xList)
+            drawGraph(yAxis, seq[1], draw, xList,False)
             yAxis = [0] * rGenome.__len__()
 
             newLine = ''
@@ -221,10 +221,15 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
             if check == '*' * check.__len__():
                 previousSet.remove(check)
 
-    img.save("files/FullGraphGenome43.png", "PNG")
+    graphGenomeYList=[]
+    for xxx in range(0,rGenome.__len__()):
+        graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
+    drawGraph(graphGenomeYList,'-',draw,xList,True)
+
+    img.save("files/FullGraphGenome49.png", "PNG")
 
 
-def drawGraph(yList, seqTechnology, draw, xList):
+def drawGraph(yList, seqTechnology, draw, xList,isRGenome):
     """
     This method
     :param yList:
@@ -233,9 +238,14 @@ def drawGraph(yList, seqTechnology, draw, xList):
     :param xList:
     :return:
     """
-    clr = getColor(seqTechnology)
-    newYList = [element * 100 for element in yList]
-    pointsList = list(zip(xList, newYList))
+    if isRGenome:
+        clr = 'red'
+    else:
+        clr = getColor(seqTechnology)
+    print(yList)
+
+    newXList = [element*100 for element in xList]
+    pointsList = list(zip(newXList, yList))
     draw.line(pointsList, fill=clr, width=1)
 
 
@@ -244,7 +254,7 @@ def drawGraph(yList, seqTechnology, draw, xList):
 
 def getColor(seqTechnology):
     if seqTechnology == '-':
-        return 'red'
+        return 'yellow'
     elif seqTechnology == 'Nanopore':
         return 'blue'
     elif seqTechnology == 'Illumina':

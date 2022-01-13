@@ -7,7 +7,7 @@ import re
 from alignment.makeAlignment import parseFastaFile
 from bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.mutation import mutationAnalysis
-from bias.test2 import drawGraphGenome
+from bias.graphGenome import drawGraphGenome
 from barChart import DrawBarChart
 
 CONFIG_FILE = r'config/config.cfg'

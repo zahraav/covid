@@ -221,7 +221,7 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
             if check == '*' * check.__len__():
                 previousSet.remove(check)
 
-    #img.save("files/FullGraphGenome43.png", "PNG")
+    img.save("files/FullGraphGenome43.png", "PNG")
 
 
 def drawGraph(yList, seqTechnology, draw, xList):

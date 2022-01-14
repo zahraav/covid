@@ -5,9 +5,11 @@ import configparser
 
 CONFIG_FILE = r'config/config.cfg'
 
-nucleotideCut = '-'  # '-'  #1000
+nucleotideCutLength = '-'  # '-'  #1000
 numberOfSeq = 100  # '-'  #100
 height = 250
+threshold = 3
+distanceOfLinesInGraph = 100
 
 
 def get_configs():
@@ -18,24 +20,11 @@ def get_configs():
 
 config = get_configs()
 
-# This dictionary counts the number of repeat for every nucleotide in a location. Then the numbers of
-# this dictionary is going to be added to a list- one nucleotide for each dictionary.
-# So that we can add to the pixels when there is a repeat on a location.
-nucleotideRepetitionDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
-                                  'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
-                                  'N': 0, '-': 0, '.': 0}
-
-
-# Dictionary containing the locations and the dictionary of nucleotide on that location
-# example
-# {0:{'A':0,'C':1},1:{'C':0},...}
-# listOfYDictionary = {}
-
 
 def getReferenceGenomeList(lengthOfCut):
     """
-    This Method returns part/ whole reference Genome as a list depends on length of cut.
-    :return: List containing the nucleotide list of reference genome.
+    This method returns part/ whole reference Genome depending on the cut length.
+    :return: part/whole reference Genome
     """
     referenceGenomeFile = config['inputAddresses'].get('referenceGenome')
     rGenome = ''
@@ -51,15 +40,10 @@ def getReferenceGenomeList(lengthOfCut):
         return rGenome
 
 
-nucleotideDictLists = {}
-for i in range(0, getReferenceGenomeList(nucleotideCut).__len__()):
-    # add nucleotides of reference genome to the dictionary
-    nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCut)[i]: 0}
-
-
 def getSequenceTechnology(header):
     """
-    This method get a header line of a fasta file and returns the sequence technology from the header.
+    This method gets a fasta file header line and returns the sequencing technology from the header.
+    If the header does not have the sequencing technology, it returns '-'.
     :param header: A header line of a fasta file
     :return: Sequence Technology
     """
@@ -71,21 +55,31 @@ def getSequenceTechnology(header):
 
 def drawGraphGenome(inFile):
     """
-       This Method gets a fasta file as input and makes a graph genome for the fasta file.
-       :param inFile: Input fasta file
-       :return:
-       """
-    # Two dimension list containing the sequences and sequence technology for every sequence
-    # [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]
-    # sample:
-    # [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
+    This Method gets a fasta file as input and makes a graph genome for the fasta file
+    :param inFile: Input fasta file
+    :return:
+    """
+
+    # making a folder for graphGenome if one is not available in the files/output folder
     if not os.path.isdir('files/output/GraphGenome'):
         os.mkdir('files/output/GraphGenome')
 
     # set to '-' if you want whole rGenome
-    rGenome = getReferenceGenomeList(nucleotideCut)
-    threshold = 3
+    rGenome = getReferenceGenomeList(nucleotideCutLength)
+
+    """
+    A list containing the sequences and sequencing technology for every sequence
+    [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]
+    sample:
+    [['ACGTAAAG...', 'Nanopore'],['ACGTAAG...', 'Illumina],[..]]
+    at first, we initialize it with the reference genome
+    so that when we want to draw the genome, we have access to sequencing technology too.
+    """
     sequenceList = [[rGenome, '-']]
+
+    """
+    Reading the code and sequencing technology from inFile and make the sequenceList in the following code.
+    """
     seqTech = ''
     with open(inFile) as mainFastaFile:
         for line in mainFastaFile:
@@ -95,32 +89,71 @@ def drawGraphGenome(inFile):
             else:
                 sequenceList.append((line.strip(), seqTech))
 
+    """
+    This dictionary contains a dictionary for every location in the sequence.
+    It keeps the nucleotide that was seen in the previous sequences and the order of seeing the nucleotide in that 
+    location. for example, if in location 20 of the first sequence we see nucleotide 'A',
+    then in the 20sth dictionary in this dictionary, we add an 'A', and because it is the first sequence,
+    that means the order for 'A' is 0, so we add {'A':0}  
+    example
+    {0:{'A':0,'C':1},1:{'C':0},...}
+    """
+    nucleotideDictLists = {}
+    for i in range(0, getReferenceGenomeList(nucleotideCutLength).__len__()):
+        # add nucleotides of reference genome to the dictionary
+        nucleotideDictLists[i] = {getReferenceGenomeList(nucleotideCutLength)[i]: 0}
+
+    """
+    the repeatList keeps the number of repeats for every nucleotide in a location, 
+    if the number of nucleotide that we saw before current nucleotide is equal or greater to 
+    threshold, the repeat list on that location for the nucleotide is not increase by 1 
+    other wise it will increase by 1. 
+    so that in the location that we have similar nucleotide equal or greater than threshold 
+    there is one line  
+    """
+    # This dictionary counts the number of repeat for every nucleotide in a location. Then the numbers of
+    # this dictionary is going to be added to a list- one nucleotide for each dictionary.
+    # So that we can add to the pixels when there is a repeat on a location.
+    nucleotideRepetitionDictionary = {'A': 0, 'C': 0, 'G': 0, 'T': 0, 'U': 0, 'R': 0, 'Y': 0, 'S': 0,
+                                      'W': 0, 'K': 0, 'M': 0, 'B': 0, 'D': 0, 'H': 0, 'V': 0,
+                                      'N': 0, '-': 0, '.': 0}
+
+    # add reference genome to repeatList
     repeatList = [{} for _ in range(rGenome.__len__())]
     for z in repeatList:
         z.update(nucleotideRepetitionDictionary)
+    tempCount = 0
     for nu in rGenome:
-        repeatList[i][nu] = 1
+        repeatList[tempCount][nu] = 1
+        tempCount = tempCount + 1
 
-    distanceInGraph = 100
-    generateYaxis(sequenceList, rGenome, threshold, repeatList, distanceInGraph)
+    # Call the processSequence function for generating yAxis for every sequence and draw graph genome.
+    processSequence(sequenceList, rGenome, repeatList, nucleotideDictLists)
 
 
-def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesInGraph):
+def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     """
-    TODO: Changing the explanation!
-    This method gets a line from Fasta file  and reference genome as an input
-    and make a list comparing sequence and reference genome
-    also it used a nucleotideDictionary list, which is list of nucleotides that are used until now
-    if the current nucleotide in the location was in the previous sequences in this location ,
-    then the number from the yaxis allocated to the nucleotide added to the list.
-    otherwise the nucleotide is going to be added to the dictionary in the location
-    of that nucleotide on the sequence."""
+    This method takes list of sequences and process the sequences and make a yAxis for every sequence
+    then by calling the drawGraph method add the line for that sequence to the chart.
+    :param seqList: List of sequences
+    :param rGenome: Reference genome
+    :param repetitionList:
+    :param nucleotideDictLists:
+    :return:
+    """
 
+    # information that is needed for drawing the graph,
     img = Image.new("RGB", (1000, 1000), (255, 255, 255))
     draw = ImageDraw.Draw(img)
+
+    # X axis is the same for all sequences, it started from 0 to the length of  reference genome
     xList = list(range(0, rGenome.__len__()))
+
+    # segment List is a list that contains nucleotide that are similar between the current sequence and the previous
+    # sequence that we are comparing
     segmentList = []
 
+    # TODO
     previousSet = set()
     newLine = rGenome
 
@@ -149,11 +182,10 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
                         segSize = segmentList.__len__()
                         for nu in segmentList:
                             newLine = newLine + nu
-                            repetitionList[i - segSize+1][nu] = repetitionList[i - segSize+1][nu] + 1
-                            # repeatList[startAt][nu] + nucleotideDictLists[startAt][nu] * height
-                            yAxis[i - segSize+1] = nucleotideDictLists[i - segSize+1][nu] * distanceOfLinesInGraph + \
-                                                     repetitionList[i - segSize+1][nu]
-                            segSize = segSize -1
+                            repetitionList[i - segSize + 1][nu] = repetitionList[i - segSize + 1][nu] + 1
+                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] * distanceOfLinesInGraph + \
+                                                     repetitionList[i - segSize + 1][nu]
+                            segSize = segSize - 1
                         segmentList.clear()
                         count = 0
                         continue
@@ -162,7 +194,7 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
                         segSize = segmentList.__len__()
                         for nu in segmentList:
                             newLine = newLine + '*'
-                            yAxis[i - segSize+1] = nucleotideDictLists[i - segSize+1][nu] * distanceOfLinesInGraph
+                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] * distanceOfLinesInGraph
                             segSize = segSize - 1
                         segmentList.clear()
                         count = 0
@@ -176,7 +208,7 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
                             newLine = newLine + '*'
                             yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph
                             # yAxis[i - segSize] = positionList[i - segSize][nu]
-                            segSize = segSize- 1
+                            segSize = segSize - 1
 
                         segmentList.clear()
 
@@ -190,20 +222,21 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
                             repetitionList[i - segSize][nu] = repetitionList[i - segSize][nu] + 1
 
                             yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph + \
-                                            repetitionList[i - segSize][nu]
-                            segSize = segSize -1
+                                                 repetitionList[i - segSize][nu]
+                            segSize = segSize - 1
                         segmentList.clear()
                     newLine = newLine + nucleotide
                     if not nucleotideDictLists[i].__contains__(nucleotide):
                         nucleotideDictLists[i][nucleotide] = nucleotideDictLists[i].__len__()
 
                     repetitionList[i][nucleotide] = repetitionList[i][nucleotide] + 1
-                    yAxis[i] = nucleotideDictLists[i][nucleotide] * distanceOfLinesInGraph + repetitionList[i][nucleotide]
+                    yAxis[i] = nucleotideDictLists[i][nucleotide] * distanceOfLinesInGraph + repetitionList[i][
+                        nucleotide]
                     segmentList.clear()
                     count = 0
 
             previousSet.add(newLine)
-            drawGraph(yAxis, seq[1], draw, xList,False)
+            drawGraph(yAxis, seq[1], draw, xList, False)
             yAxis = [0] * rGenome.__len__()
 
             newLine = ''
@@ -212,47 +245,52 @@ def generateYaxis(seqList, rGenome, threshold, repetitionList, distanceOfLinesIn
         newLine = ''
         if previousSet.__len__() == 0:
             previousSet.add(seq[0])
-            for j in range(0,seq[0].__len__()):
+            for j in range(0, seq[0].__len__()):
                 if not nucleotideDictLists[j].__contains__(seq[0][j]):
-                    repetitionList[j][seq[0][j]]=repetitionList[j][seq[0][j]]+1
-                    nucleotideDictLists[j][seq[0][j]]=repetitionList[j][seq[0][j]]
+                    repetitionList[j][seq[0][j]] = repetitionList[j][seq[0][j]] + 1
+                    nucleotideDictLists[j][seq[0][j]] = repetitionList[j][seq[0][j]]
         # remove the sequences that are all '*'
         for check in previousSet.copy():
             if check == '*' * check.__len__():
                 previousSet.remove(check)
 
-    graphGenomeYList=[]
-    for xxx in range(0,rGenome.__len__()):
+    graphGenomeYList = []
+    for xxx in range(0, rGenome.__len__()):
         graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
-    drawGraph(graphGenomeYList,'-',draw,xList,True)
+    drawGraph(graphGenomeYList, '-', draw, xList, True)
 
     img.save("files/FullGraphGenome49.png", "PNG")
 
 
-def drawGraph(yList, seqTechnology, draw, xList,isRGenome):
+def drawGraph(yList, seqTechnology, draw, xList, isrGenome):
     """
-    This method
-    :param yList:
-    :param seqTechnology:
+    This method take yAxis and draw a line for that axis on the graph.
+    color of the line depends on the sequencing technology that is used.
+    :param yList: yList belongs to the sequence for drawing the line
+    :param seqTechnology: sequencing technology for that sequence
     :param draw:
-    :param xList:
+    :param xList: A list started from 0 to length of reference genome
+    :param isrGenome: Check if the yList is belongs to reference genome, so that we change the color of the line to red
     :return:
     """
-    if isRGenome:
+    if isrGenome:
         clr = 'red'
     else:
         clr = getColor(seqTechnology)
     print(yList)
 
-    newXList = [element*100 for element in xList]
+    newXList = [element * 100 for element in xList]
     pointsList = list(zip(newXList, yList))
     draw.line(pointsList, fill=clr, width=1)
 
 
-# img.save("files/FullGraphGenome.png", "PNG")
-
-
 def getColor(seqTechnology):
+    """
+    This method check the sequencing technology and return a specific color for Illumina and Nanopore.
+    :param seqTechnology:
+    :return:
+    """
+
     if seqTechnology == '-':
         return 'yellow'
     elif seqTechnology == 'Nanopore':

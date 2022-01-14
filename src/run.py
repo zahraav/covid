@@ -235,7 +235,7 @@ def main():
     """
     # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
     inFasta = config['outputAddresses'].get('fullFastaFile')
-    # inFasta = config['separateFiles'].get('outputFastaFile')
+    #inFasta = config['separateFiles'].get('outputFastaFile')
 
     drawGraphGenome(inFasta)
     # makeGraphGenome(inFasta)

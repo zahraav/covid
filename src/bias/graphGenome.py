@@ -145,6 +145,7 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     # information that is needed for drawing the graph,
     img = Image.new("RGB", (1000, 1000), (255, 255, 255))
     draw = ImageDraw.Draw(img)
+    graphGenomeAddress = config['outputAddresses'].get('graphGenome')
 
     # X axis is the same for all sequences, it started from 0 to the length of  reference genome
     xList = list(range(0, rGenome.__len__()))
@@ -259,7 +260,8 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
         graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
     drawGraph(graphGenomeYList, '-', draw, xList, True)
 
-    img.save("files/FullGraphGenome49.png", "PNG")
+    img.save(graphGenomeAddress, "PNG")
+    # img.save("files/FullGraphGenome49.png", "PNG")
 
 
 def drawGraph(yList, seqTechnology, draw, xList, isrGenome):

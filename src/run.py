@@ -234,15 +234,15 @@ def main():
     Graph Genome:
     """
     # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
-    # inFasta = config['outputAddresses'].get('fullFastaFile')
-    inFasta = config['separateFiles'].get('outputFastaFile')
+    inFasta = config['outputAddresses'].get('fullFastaFile')
+    # inFasta = config['separateFiles'].get('outputFastaFile')
 
     drawGraphGenome(inFasta)
     # makeGraphGenome(inFasta)
 
     # makeGraphGenome(config,fastaFileWithSequenceTechnology)
     # drawGraphGenome(fastaFileWithSequenceTechnology)
-    #drawGraphGenome(inFasta)
+    # drawGraphGenome(inFasta)
 
 
 if __name__ == '__main__':

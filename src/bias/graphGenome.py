@@ -154,18 +154,32 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     # sequence that we are comparing
     segmentList = []
 
-    # TODO
+    # The previous set keeps the sequence from the previous sequences; we use the set for
+    # previous sequences to not have repetitive sequences.
+    # in the previous set if the nucleotides in the threshold are equal to thc
+    # When we want to add a sequence to the previous list, we check if some nucleotides are
+    # equal or greater than the threshold similar to the sequence that we are checking, then
+    # we put '*' instead of those nucleotides.
+    # We do not need to check those parts with other nucleotides because those parts of the
+    # sequence are already available on the previous list.
     previousSet = set()
     newLine = rGenome
 
     count = 0
     yAxis = [0] * rGenome.__len__()
-    nucleotideCount = [0] * rGenome.__len__()
-    for seq in seqList:
 
+    # In these for loops, we compare every nucleotide in sequences in the sequence list
+    # with all sequences compared with the previous ones.
+    # Then depending on the equality of nucleotide and previous nucleotide, we decide
+    # whether to increase the repetitive list for the nucleotide on this location and add
+    # the nucleotide to the nucleotide dictionary.
+    # Also, the y axis for every sequence in the sequence list is generated too. Then it
+    # will be passed to the drawGraph method for drawing the line related to this sequence.
+    for seq in seqList:
         for pre in previousSet.copy():
             for i in range(0, pre.__len__()):  # iterate on nucleotides
                 nucleotide = seq[0][i]
+                print(seq[0])
                 checkNucleotide = pre[i]
                 # check if the nucleotide in previousList are equal to the nucleotide in the sequenceList
                 # in i location,
@@ -184,8 +198,8 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
                         for nu in segmentList:
                             newLine = newLine + nu
                             repetitionList[i - segSize + 1][nu] = repetitionList[i - segSize + 1][nu] + 1
-                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] * distanceOfLinesInGraph + \
-                                                     repetitionList[i - segSize + 1][nu]
+                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu]\
+                                                     * distanceOfLinesInGraph + repetitionList[i - segSize + 1][nu]
                             segSize = segSize - 1
                         segmentList.clear()
                         count = 0
@@ -236,14 +250,20 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
                     segmentList.clear()
                     count = 0
 
+            # adding the sequence to previous set
             previousSet.add(newLine)
-            drawGraph(yAxis, seq[1], draw, xList, False)
+            # send the y axis to drawing the line in the graph genome
+            drawGraph(yAxis, seq[1], draw, xList, False,img,graphGenomeAddress)
             yAxis = [0] * rGenome.__len__()
 
             newLine = ''
             segmentList.clear()
             count = 0
         newLine = ''
+
+        # If the previous set is empty, we add the first sequence of sequence List to the previous
+        # sequence and add the nucleotide of the first sequence into the repetition list and
+        # nucleotide dictionary.
         if previousSet.__len__() == 0:
             previousSet.add(seq[0])
             for j in range(0, seq[0].__len__()):
@@ -258,13 +278,10 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     graphGenomeYList = []
     for xxx in range(0, rGenome.__len__()):
         graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
-    drawGraph(graphGenomeYList, '-', draw, xList, True)
-
-    img.save(graphGenomeAddress, "PNG")
-    # img.save("files/FullGraphGenome49.png", "PNG")
+    drawGraph(graphGenomeYList, '-', draw, xList, True,img,graphGenomeAddress)
 
 
-def drawGraph(yList, seqTechnology, draw, xList, isrGenome):
+def drawGraph(yList, seqTechnology, draw, xList, isrGenome,img,graphGenomeAddress):
     """
     This method take yAxis and draw a line for that axis on the graph.
     color of the line depends on the sequencing technology that is used.
@@ -279,11 +296,14 @@ def drawGraph(yList, seqTechnology, draw, xList, isrGenome):
         clr = 'red'
     else:
         clr = getColor(seqTechnology)
-    print(yList)
+    # print(yList)
 
     newXList = [element * 100 for element in xList]
     pointsList = list(zip(newXList, yList))
     draw.line(pointsList, fill=clr, width=1)
+
+    # Saving the graph genome into .png file.
+    img.save(graphGenomeAddress, "PNG")
 
 
 def getColor(seqTechnology):

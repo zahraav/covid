@@ -414,16 +414,18 @@ def analyseSeqTechnologyBias(fastaFile):
     :param fastaFile: fasta file containing sequence technology
     :return:
     """
-    os.mkdir('files/output/Peaks')
-    os.mkdir('files/output/TransfacFormat')
+    if not os.path.isdir('files/output/Peaks'):
+        os.mkdir('files/output/Peaks')
+    if not os.path.isdir('files/output/TransfacFormat'):
+        os.mkdir('files/output/TransfacFormat')
 
     # take the date of three major peak from config file
-    firstPeak = config['peaks'].get('firstPeakDate').split(",")
-    secondPeak = config['peaks'].get('secondPeakDate').split(",")
-    thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
+    # firstPeak = config['peaks'].get('firstPeakDate').split(",")
+    # secondPeak = config['peaks'].get('secondPeakDate').split(",")
+    # thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
 
-    separatePeaks(fastaFile, [getDate(firstPeak[0]), getDate(firstPeak[1])],
-                  [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
+    # separatePeaks(fastaFile, [getDate(firstPeak[0]), getDate(firstPeak[1])],
+    #              [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
 
     csvFile = parse(fastaFile)
 

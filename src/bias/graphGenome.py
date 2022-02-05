@@ -141,6 +141,7 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     :param nucleotideDictLists:
     :return:
     """
+    yAxes = []
 
     # information that is needed for drawing the graph,
     img = Image.new("RGB", (1000, 1000), (255, 255, 255))
@@ -178,8 +179,8 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     for seq in seqList:
         for pre in previousSet.copy():
             for i in range(0, pre.__len__()):  # iterate on nucleotides
+                # print(seq[0][i-1] , i, seq[0].__len__(),rGenome.__len__())
                 nucleotide = seq[0][i]
-                print(seq[0])
                 checkNucleotide = pre[i]
                 # check if the nucleotide in previousList are equal to the nucleotide in the sequenceList
                 # in i location,
@@ -198,7 +199,7 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
                         for nu in segmentList:
                             newLine = newLine + nu
                             repetitionList[i - segSize + 1][nu] = repetitionList[i - segSize + 1][nu] + 1
-                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu]\
+                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] \
                                                      * distanceOfLinesInGraph + repetitionList[i - segSize + 1][nu]
                             segSize = segSize - 1
                         segmentList.clear()
@@ -253,7 +254,8 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
             # adding the sequence to previous set
             previousSet.add(newLine)
             # send the y axis to drawing the line in the graph genome
-            drawGraph(yAxis, seq[1], draw, xList, False,img,graphGenomeAddress)
+            yAxes.append([yAxis, seq[1]])
+            drawGraph(yAxis, seq[1], draw, xList, False, img, graphGenomeAddress)
             yAxis = [0] * rGenome.__len__()
 
             newLine = ''
@@ -278,13 +280,15 @@ def processSequence(seqList, rGenome, repetitionList, nucleotideDictLists):
     graphGenomeYList = []
     for xxx in range(0, rGenome.__len__()):
         graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
-    drawGraph(graphGenomeYList, '-', draw, xList, True,img,graphGenomeAddress)
+    drawGraph(graphGenomeYList, '-', draw, xList, True, img, graphGenomeAddress)
+    saveDifferenceArea(repetitionList, 2, 13, yAxes)
 
 
-def drawGraph(yList, seqTechnology, draw, xList, isrGenome,img,graphGenomeAddress):
+def drawGraph(yList, seqTechnology, draw, xList, isrGenome, img, graphGenomeAddress):
     """
     This method take yAxis and draw a line for that axis on the graph.
     color of the line depends on the sequencing technology that is used.
+    :param graphGenomeAddress:
     :param yList: yList belongs to the sequence for drawing the line
     :param seqTechnology: sequencing technology for that sequence
     :param draw:
@@ -321,3 +325,52 @@ def getColor(seqTechnology):
         return 'green'
     else:
         return 'purple'
+
+
+def saveDifferenceArea(repetitionList, countOfDeference, differenceAmount, yAxes):
+    """
+    :param yAxes:
+    :param countOfDeference:
+    :param repetitionList:
+    :param differenceAmount:
+    :return:
+    """
+    # information that is needed for drawing the graph,
+    img = Image.new("RGB", (1000, 1000), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    graphGenomeAddress = config['outputAddresses'].get('graphGenomeFolder')
+
+    count = 0
+    startIndex = 0
+    endIndex = 0
+    sumOfDifferences = 0
+    numberOfFiles=0
+    """ for x in yAxes:
+        print(x)
+        print()"""
+
+    for i in range(0, repetitionList.__len__()):
+        for nRepeat in repetitionList[i]:
+            sumOfDifferences = repetitionList[i][nRepeat] + sumOfDifferences
+
+        # print(sumOfDifferences, differenceAmount,'   count:', count)
+
+        if sumOfDifferences >= differenceAmount:  # this means in this location sum of number of location
+            # that are different from each other is greater than differenceAmount.
+            # Therefore we are going to add one to the endIndex
+            endIndex = endIndex + 1
+            count = count + 1
+            # print(count)
+        elif sumOfDifferences < differenceAmount:
+            # print('ww' , count , countOfDeference)
+            if count >= countOfDeference:
+                for j in range(startIndex, endIndex):
+                    drawGraph(yAxes[j][0], yAxes[j][1], draw, list(range(0, count)), False, img,
+                              graphGenomeAddress+str(numberOfFiles)+'.png')
+                    print(graphGenomeAddress+str(numberOfFiles)+'.png')
+                numberOfFiles=numberOfFiles+1
+            count = 0
+            startIndex = endIndex
+
+
+        sumOfDifferences = 0

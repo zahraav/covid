@@ -3,6 +3,8 @@ import csv
 import logging
 import os
 import re
+import datetime
+from datetime import *
 
 from alignment.makeAlignment import parseFastaFile
 from bias.findingBias import analyseSeqTechnologyBias
@@ -69,6 +71,7 @@ def makeDictionaryOfSeqTech(tsvFile):
     This method make a dictionary of sequence Technologies in the given TSV file
     and return the dictionary.seqTecDictionary
     :param tsvFile: tsv file that used for returning dictionary of {accessionId: SequenceTechnology}
+    :return:
     """
 
     firstRow = True
@@ -83,7 +86,7 @@ def makeDictionaryOfSeqTech(tsvFile):
                 continue
             else:
                 seqTecDictionary[row[1]] = row[8]
-
+    print(seqTecDictionary)
     return seqTecDictionary
 
 
@@ -135,18 +138,17 @@ def getAccessionId(header):
             return i
 
 
-def addSeqTechToFastaFile(tsvFolder, inFastaFile):
+def addSeqTechToFastaFile(tsvFolder, inFastaFile, outFastaFile):
     """
     This method make a new fasta file and insert the seq technology from
     {accessionId :sequenceTechnology} dictionary that generated in the
     makeDictionaryOfSeqTechForEachFile(tsvFolder) method
     header, using accession Id
+    :param outFastaFile:
     :param tsvFolder: Name of TSV folder containing all TSV files
     :param inFastaFile: Address of input Fasta File
     :return: Fasta file containing sequencing technology
     """
-
-    outFastaFile = config['outputAddresses'].get('fullFastaFile')
 
     seqDictionary = makeDictionaryOfSeqTechForEachFile(tsvFolder)
     firstTime = True
@@ -165,13 +167,14 @@ def addSeqTechToFastaFile(tsvFolder, inFastaFile):
     f = open(outFastaFile, "w")
 
     isContainsSeq = False
-
+    count=0
     with open(inFastaFile) as inFastaFile:
         for line in inFastaFile:
             if line.__contains__('>'):
 
                 accessionId = getAccessionId(line)
                 if seqDictionary.__contains__(accessionId):
+                    count=count+1
                     f.write(line.strip())
                     f.write("|")
                     f.write(seqDictionary[accessionId])
@@ -180,10 +183,87 @@ def addSeqTechToFastaFile(tsvFolder, inFastaFile):
 
             elif isContainsSeq:
                 f.write(line)
+                print(line.__len__())
+                # f.write(removeGap(line, seqSize))
                 isContainsSeq = False
+
+    print(count)
     f.close()
 
-    return outFastaFile
+
+def removeGap(seq, seqSize):
+    seqWithoutGap = ''
+    for i in seq:
+        if i != '-':
+            seqWithoutGap = seqWithoutGap + i
+
+    if seqSize != 0 and seqWithoutGap.__len__() != seqSize:
+        print('lengths of sequences are not equal!', seqSize, seqWithoutGap.__len__())
+
+    return seqWithoutGap
+
+
+def removeGapReferenceGenome(rgFile):
+    rGenome = ''
+    header = ''
+    with open(rgFile) as rg:
+        for line in rg:
+            line = line.rstrip()
+            if line.__contains__('>'):
+                header = line
+            else:
+                rGenome = rGenome + removeGap(line, 0)
+
+    with open(rgFile, "w") as outrg:
+        outrg.write(header)
+        outrg.write('\n')
+        outrg.write(rGenome)
+
+    return rGenome.__len__()
+
+
+def findReferenceGenome(inputFastaFile):
+    accessionIdMin = '1'
+    minCollectionDate = datetime.now()
+    year = 2020
+    month = 1
+    day = 1
+    rGenome=''
+    with open(inputFastaFile) as infile:
+        for line in infile:
+            if line.__contains__('>'):
+                collectionDate = line.rsplit('|')[2]
+                if collectionDate.rsplit('-').__len__() >= 0:
+                    year = collectionDate.rsplit('-')[0]
+                    if collectionDate.rsplit('-').__len__() >= 1:
+                        month = collectionDate.rsplit('-')[1]
+                        if month == '00':
+                            month = 1
+                        if collectionDate.rsplit('-').__len__() >= 2:
+                            day = collectionDate.rsplit('-')[2]
+                            if day == '00':
+                                day = 1
+                        else:
+                            day = 1
+                    else:
+                        month = 1
+                        day = 1
+
+                d = datetime(int(year), int(month), int(day))
+
+                if d < minCollectionDate:
+                    minCollectionDate = d
+                    accessionIdMin = line.rsplit('|')[1]
+                    header=line
+
+            else:
+                rGenome=line
+    rGenomeFile = config['inputAddresses'].get('referenceGenome')
+
+    with open(rGenomeFile, "w") as outrg:
+        outrg.write(header)
+        outrg.write(rGenome)
+    print(minCollectionDate, accessionIdMin)
 
 
 def main():
@@ -197,12 +277,13 @@ def main():
     if not os.path.isdir('files'):
         os.makedirs('files/output')
         os.mkdir('files/output/test')
-
         os.mkdir('files/output/CSV')
 
-    # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
-    # tsvFolder = config['inputAddresses'].get('TSVFolder')
-    # outFastaFile = addSeqTechToFastaFile(tsvFolder, inputFastaFile)
+    inputFastaFile = config['inputAddresses'].get('inputFastaFile')
+    tsvFolder = config['inputAddresses'].get('TSVFolder')
+    outFastaFile = config['outputAddresses'].get('fullFastaFile')
+    findReferenceGenome(inputFastaFile)
+    addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
 
     """
     this method call all f the pipeline.
@@ -233,16 +314,10 @@ def main():
     """
     Graph Genome:
     """
-    # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
-    inFasta = config['outputAddresses'].get('fullFastaFile')
-    #inFasta = config['separateFiles'].get('outputFastaFile')
+    #fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
+    # fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
 
-    drawGraphGenome(inFasta)
-    # makeGraphGenome(inFasta)
-
-    # makeGraphGenome(config,fastaFileWithSequenceTechnology)
-    # drawGraphGenome(fastaFileWithSequenceTechnology)
-    # drawGraphGenome(inFasta)
+    #drawGraphGenome(fastaFileWithSequenceTechnology)
 
 
 if __name__ == '__main__':

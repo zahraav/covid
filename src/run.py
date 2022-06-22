@@ -9,7 +9,7 @@ from datetime import *
 from alignment.makeAlignment import parseFastaFile
 from bias.findingBias import analyseSeqTechnologyBias
 from mutationAnalysis.mutation import mutationAnalysis
-from bias.graphGenome import drawGraphGenome
+from bias.graphGenome2 import drawGraphGenome
 from barChart import DrawBarChart
 
 CONFIG_FILE = r'config/config.cfg'
@@ -71,7 +71,7 @@ def makeDictionaryOfSeqTech(tsvFile):
     This method make a dictionary of sequence Technologies in the given TSV file
     and return the dictionary.seqTecDictionary
     :param tsvFile: tsv file that used for returning dictionary of {accessionId: SequenceTechnology}
-    :return:
+    :return: sequence- sequence Technology dictionary
     """
 
     firstRow = True
@@ -86,7 +86,6 @@ def makeDictionaryOfSeqTech(tsvFile):
                 continue
             else:
                 seqTecDictionary[row[1]] = row[8]
-    print(seqTecDictionary)
     return seqTecDictionary
 
 
@@ -183,43 +182,9 @@ def addSeqTechToFastaFile(tsvFolder, inFastaFile, outFastaFile):
 
             elif isContainsSeq:
                 f.write(line)
-                print(line.__len__())
-                # f.write(removeGap(line, seqSize))
                 isContainsSeq = False
 
-    print(count)
     f.close()
-
-
-def removeGap(seq, seqSize):
-    seqWithoutGap = ''
-    for i in seq:
-        if i != '-':
-            seqWithoutGap = seqWithoutGap + i
-
-    if seqSize != 0 and seqWithoutGap.__len__() != seqSize:
-        print('lengths of sequences are not equal!', seqSize, seqWithoutGap.__len__())
-
-    return seqWithoutGap
-
-
-def removeGapReferenceGenome(rgFile):
-    rGenome = ''
-    header = ''
-    with open(rgFile) as rg:
-        for line in rg:
-            line = line.rstrip()
-            if line.__contains__('>'):
-                header = line
-            else:
-                rGenome = rGenome + removeGap(line, 0)
-
-    with open(rgFile, "w") as outrg:
-        outrg.write(header)
-        outrg.write('\n')
-        outrg.write(rGenome)
-
-    return rGenome.__len__()
 
 
 def findReferenceGenome(inputFastaFile):
@@ -279,11 +244,12 @@ def main():
         os.mkdir('files/output/test')
         os.mkdir('files/output/CSV')
 
-    inputFastaFile = config['inputAddresses'].get('inputFastaFile')
+
+    #inputFastaFile = config['inputAddresses'].get('inputFastaFile')
     tsvFolder = config['inputAddresses'].get('TSVFolder')
     outFastaFile = config['outputAddresses'].get('fullFastaFile')
-    findReferenceGenome(inputFastaFile)
-    addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
+    #findReferenceGenome(inputFastaFile)
+    #addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
 
     """
     this method call all f the pipeline.
@@ -314,10 +280,10 @@ def main():
     """
     Graph Genome:
     """
-    #fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
+    fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
     # fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
 
-    #drawGraphGenome(fastaFileWithSequenceTechnology)
+    drawGraphGenome(fastaFileWithSequenceTechnology)
 
 
 if __name__ == '__main__':

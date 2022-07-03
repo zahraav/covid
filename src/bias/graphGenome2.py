@@ -16,8 +16,8 @@ def get_configs():
 
 config = get_configs()
 
-height = 400000
-width = 225000
+height = 2000
+width =  2000
 
 
 def getReferenceGenome(lengthOfCut):

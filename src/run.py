@@ -6,11 +6,7 @@ import re
 import datetime
 from datetime import *
 
-from alignment.makeAlignment import parseFastaFile
-from bias.findingBias import analyseSeqTechnologyBias
-from mutationAnalysis.mutation import mutationAnalysis
-from bias.graphGenome2 import drawGraphGenome
-from barChart import DrawBarChart
+from graphGenome.graphGenome import drawGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -51,11 +47,9 @@ unknownSequencerList = ["MGI CleanPlex", "MGI", "unknown"]
 
 def removeSpace(inputFile, outputFile):
     """
-    This class remove the spaces in the header lines of fasta file for
+    This method remove the spaces in the header lines of fasta file for
     converting metadata from TSV to fasta file
     """
-    # inputFile = 'files/slice/output_slice_seq.fasta'
-    # outputFile = inputFile.replace('.fasta', '_2.fasta')
     with open(inputFile) as infile:
         for line in infile:
             line = line.rstrip()
@@ -166,14 +160,14 @@ def addSeqTechToFastaFile(tsvFolder, inFastaFile, outFastaFile):
     f = open(outFastaFile, "w")
 
     isContainsSeq = False
-    count=0
+    count = 0
     with open(inFastaFile) as inFastaFile:
         for line in inFastaFile:
             if line.__contains__('>'):
 
                 accessionId = getAccessionId(line)
                 if seqDictionary.__contains__(accessionId):
-                    count=count+1
+                    count = count + 1
                     f.write(line.strip())
                     f.write("|")
                     f.write(seqDictionary[accessionId])
@@ -193,7 +187,7 @@ def findReferenceGenome(inputFastaFile):
     year = 2020
     month = 1
     day = 1
-    rGenome=''
+    rGenome = ''
     with open(inputFastaFile) as infile:
         for line in infile:
             if line.__contains__('>'):
@@ -219,15 +213,15 @@ def findReferenceGenome(inputFastaFile):
                 if d < minCollectionDate:
                     minCollectionDate = d
                     accessionIdMin = line.rsplit('|')[1]
-                    header=line
+                    header = line
 
             else:
-                rGenome=line
+                rGenome = line
     rGenomeFile = config['inputAddresses'].get('referenceGenome')
 
-    with open(rGenomeFile, "w") as outrg:
-        outrg.write(header)
-        outrg.write(rGenome)
+    with open(rGenomeFile, "w") as outRG:
+        outRG.write(header)
+        outRG.write(rGenome)
     print(minCollectionDate, accessionIdMin)
 
 
@@ -241,15 +235,14 @@ def main():
     """
     if not os.path.isdir('files'):
         os.makedirs('files/output')
-        os.mkdir('files/output/test')
+        #os.mkdir('files/output/test')
         os.mkdir('files/output/CSV')
 
-
-    #inputFastaFile = config['inputAddresses'].get('inputFastaFile')
+    # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
     tsvFolder = config['inputAddresses'].get('TSVFolder')
     outFastaFile = config['outputAddresses'].get('fullFastaFile')
-    #findReferenceGenome(inputFastaFile)
-    #addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
+    # findReferenceGenome(inputFastaFile)
+    # addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
 
     """
     this method call all f the pipeline.

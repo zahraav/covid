@@ -94,7 +94,7 @@ def drawGraphGenome(inFile):
 
     # set to '-' if you want whole rGenome
     nucleotideCutLength = '-'  # '-'  #1000
-    numberOfSeq = 100  # '-'  #100
+    # numberOfSeq = 100  # '-'  #100
     interval = 50
     distanceOfLinesInGraph = 900
     rGenome = getReferenceGenome(nucleotideCutLength)
@@ -243,9 +243,8 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                         for nu in segmentList:
                             newLine = newLine + nu
                             repetitionList[i - segSize + 1][nu] = repetitionList[i - segSize + 1][nu] + 1
-                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] \
-                                                     * distanceOfLinesInGraph + repetitionList[i - segSize + 1][nu] \
-                                                     * sameNucleotideDistance
+                            yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] * distanceOfLinesInGraph \
+                                + repetitionList[i - segSize + 1][nu] * sameNucleotideDistance
                             segSize = segSize - 1
                         segmentList.clear()
                         count = 0
@@ -282,7 +281,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                             repetitionList[i - segSize][nu] = repetitionList[i - segSize][nu] + 1
 
                             yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph + \
-                                                 repetitionList[i - segSize][nu] * sameNucleotideDistance
+                                repetitionList[i - segSize][nu] * sameNucleotideDistance
                             segSize = segSize - 1
                         segmentList.clear()
                     newLine = newLine + nucleotide
@@ -299,7 +298,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
             previousSet.add(newLine)
             # send the y axis to drawing the line in the graph genome
             yAxes.append([yAxis, seq[1]])
-            drawGraph(yAxis, seq[1], draw, xList, False, img, graphGenomeAddress)
+            drawGraph(yAxis, seq[1], draw, xList, img, graphGenomeAddress)
             yAxis = [0] * rGenome.__len__()
 
             newLine = ''
@@ -324,15 +323,15 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
     graphGenomeYList = []
     for xxx in range(0, rGenome.__len__()):
         graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
-    drawGraph(graphGenomeYList, '-', draw, xList, True, img, graphGenomeAddress)
+    drawGraph(graphGenomeYList, '-', draw, xList, img, graphGenomeAddress)
     # saveDifferenceArea(repetitionList, 2, 13, yAxes)
 
 
-def drawGraph(yList, seqTechnology, draw, xList, isGraphGenome, img, graphGenomeAddress):
+def drawGraph(yList, seqTechnology, draw, xList, img, graphGenomeAddress):
     """
     This method take yAxis and draw a line for that axis on the graph.
     color of the line depends on the sequencing technology that is used.
-    :param isGraphGenome: check if the line is belongs to graph genome!
+    :param img:
     :param graphGenomeAddress:
     :param yList: yList belongs to the sequence for drawing the line
     :param seqTechnology: sequencing technology for that sequence

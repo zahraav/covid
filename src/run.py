@@ -6,6 +6,7 @@ import re
 import datetime
 from datetime import *
 
+from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
 from graphGenome.graphGenome import drawGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
@@ -235,7 +236,7 @@ def main():
     """
     if not os.path.isdir('files'):
         os.makedirs('files/output')
-        #os.mkdir('files/output/test')
+        # os.mkdir('files/output/test')
         os.mkdir('files/output/CSV')
 
     # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
@@ -277,6 +278,7 @@ def main():
     # fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
 
     drawGraphGenome(fastaFileWithSequenceTechnology)
+    # compareToUCSCSpike()
 
 
 if __name__ == '__main__':

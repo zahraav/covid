@@ -1,9 +1,7 @@
+import seaborn as sns
+import matplotlib.ticker as ticker
 import os
-from PIL import Image, ImageDraw
-
 import configparser
-
-from graphGenome.GenerateSpikeProtein import generateSpikes
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -16,8 +14,8 @@ def get_configs():
 
 config = get_configs()
 
-graphHeight = 2000
-graphWidth = 2000
+graphHeight = 8000
+graphWidth = 3600
 
 
 def getReferenceGenome(lengthOfCut):
@@ -25,7 +23,8 @@ def getReferenceGenome(lengthOfCut):
     This method returns part/ whole reference Genome depending on the cut length.
     :return: part/whole reference Genome
     """
-    referenceGenomeFile = config['inputAddresses'].get('referenceGenome')
+    # referenceGenomeFile = config['inputAddresses'].get('referenceGenome')
+    referenceGenomeFile = config['inputAddresses'].get('spikeReferenceGenome')
     rGenome = ''
     with open(referenceGenomeFile) as rFile:
         for line in rFile:
@@ -52,31 +51,6 @@ def getSequenceTechnology(header):
         return header.split("|")[4].strip()
 
 
-def drawGrids(distanceOfLinesInGraph, draw, img, graphGenomeAddress):
-    """
-    This method gets the image information and draw grids in the graph, for better understanding the graph
-    :param distanceOfLinesInGraph:
-    :param draw:
-    :param img:
-    :param graphGenomeAddress:
-    :return:
-    """
-    xStart = 0
-    xEnd = graphWidth
-    yStart = 0
-    yEnd = graphHeight
-    for y in range(0, graphWidth, distanceOfLinesInGraph):
-        line = ((xStart, y), (xEnd, y))
-        draw.line(line, fill=128, width=5)
-    for x in range(0, graphHeight, distanceOfLinesInGraph):
-        line = ((yStart, x), (yEnd, x))
-        draw.line(line, fill=128, width=5)
-    # Saving the graph genome into .png file.
-    img.save(graphGenomeAddress, "PNG")
-
-    return draw, img
-
-
 def drawGraphGenome(inFile):
     """
     This Method gets a fasta file as input and makes a graph genome for the fasta file
@@ -90,12 +64,12 @@ def drawGraphGenome(inFile):
         os.mkdir('files/output/GraphGenome/spike')
 
     # use spikes instead of whole genome!
-    spikeFile = generateSpikes(inFile)
-
+    # spikeFile = generateSpikes(inFile)
+    spikeFile = config['outputAddresses'].get('spikeFastaFile')
     # set to '-' if you want whole rGenome
     nucleotideCutLength = '-'  # '-'  #1000
     # numberOfSeq = 100  # '-'  #100
-    interval = 50
+    interval = 4
     distanceOfLinesInGraph = 900
     rGenome = getReferenceGenome(nucleotideCutLength)
 
@@ -159,7 +133,6 @@ def drawGraphGenome(inFile):
     for nu in rGenome:
         repeatList[tempCount][nu] = 1
         tempCount = tempCount + 1
-
     # Call the processSequence function for generating yAxis for every sequence and draw graph genome.
     processSequences(sequenceList, rGenome, repeatList, nucleotideDictLists, interval, distanceOfLinesInGraph)
 
@@ -181,9 +154,9 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
     # information that is needed for drawing the graph,
     # img = Image.new("RGB", (2000, 2000), (255, 255, 255))
 
-    img = Image.new("RGB", (graphHeight, graphWidth), (255, 255, 255))
+    # img = Image.new("RGB", (graphHeight, graphWidth), (255, 255, 255))
 
-    draw = ImageDraw.Draw(img)
+    # draw = ImageDraw.Draw(img)
 
     graphGenomeAddress = config['outputAddresses'].get('graphGenome')
     if os.path.exists(graphGenomeAddress):
@@ -194,7 +167,6 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
 
     xList = [i * 10 for i in list(range(0, rGenome.__len__()))]
 
-    draw, img = drawGrids(distanceOfLinesInGraph, draw, img, graphGenomeAddress)
     # segment List is a list that contains nucleotide that are similar between the current sequence and the previous
     # sequence that we are comparing
     segmentList = []
@@ -212,7 +184,6 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
     sameNucleotideDistance = 10
     count = 0
     yAxis = [0] * rGenome.__len__()
-
     # In these for loops, we compare every nucleotide in sequences in the sequence list
     # with all sequences compared with the previous ones.
     # Then depending on the equality of nucleotide and previous nucleotide, we decide
@@ -224,6 +195,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
         for pre in previousSet.copy():
             for i in range(0, pre.__len__()):  # iterate on nucleotides
                 # print(seq[0][i-1] , i, seq[0].__len__(),rGenome.__len__())
+
                 nucleotide = seq[0][i]
                 checkNucleotide = pre[i]
                 # check if the nucleotide in previousList are equal to the nucleotide in the sequenceList
@@ -269,7 +241,6 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                             yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph
                             # yAxis[i - segSize] = positionList[i - segSize][nu]
                             segSize = segSize - 1
-
                         segmentList.clear()
 
                     # newLine = newLine + nucleotide
@@ -280,8 +251,8 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                             newLine = newLine + nu
                             repetitionList[i - segSize][nu] = repetitionList[i - segSize][nu] + 1
 
-                            yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph + \
-                                repetitionList[i - segSize][nu] * sameNucleotideDistance
+                            yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph \
+                                + repetitionList[i - segSize][nu] * sameNucleotideDistance
                             segSize = segSize - 1
                         segmentList.clear()
                     newLine = newLine + nucleotide
@@ -289,8 +260,8 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                         nucleotideDictLists[i][nucleotide] = nucleotideDictLists[i].__len__()
 
                     repetitionList[i][nucleotide] = repetitionList[i][nucleotide] + 1
-                    yAxis[i] = nucleotideDictLists[i][nucleotide] * distanceOfLinesInGraph + repetitionList[i][
-                        nucleotide] * sameNucleotideDistance
+                    yAxis[i] = nucleotideDictLists[i][nucleotide] * distanceOfLinesInGraph \
+                        + repetitionList[i][nucleotide]
                     segmentList.clear()
                     count = 0
 
@@ -298,7 +269,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
             previousSet.add(newLine)
             # send the y axis to drawing the line in the graph genome
             yAxes.append([yAxis, seq[1]])
-            drawGraph(yAxis, seq[1], draw, xList, img, graphGenomeAddress)
+            drawGraph(yAxis, seq[1], xList, graphGenomeAddress)
             yAxis = [0] * rGenome.__len__()
 
             newLine = ''
@@ -323,29 +294,33 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
     graphGenomeYList = []
     for xxx in range(0, rGenome.__len__()):
         graphGenomeYList.append(nucleotideDictLists[xxx][rGenome[xxx]])
-    drawGraph(graphGenomeYList, '-', draw, xList, img, graphGenomeAddress)
-    # saveDifferenceArea(repetitionList, 2, 13, yAxes)
+    drawGraph(graphGenomeYList, '-', xList, graphGenomeAddress)
 
 
-def drawGraph(yList, seqTechnology, draw, xList, img, graphGenomeAddress):
+def drawGraph(yList, seqTechnology, xList, graphGenomeAddress):
     """
     This method take yAxis and draw a line for that axis on the graph.
     color of the line depends on the sequencing technology that is used.
-    :param img:
     :param graphGenomeAddress:
     :param yList: yList belongs to the sequence for drawing the line
     :param seqTechnology: sequencing technology for that sequence
-    :param draw:
     :param xList: A list started from 0 to length of reference genome
     :return:
     """
 
+    sns.set(style="darkgrid")
     newXList = [element * 100 for element in xList]
-    pointsList = list(zip(newXList, yList))
-    draw.line(pointsList, fill=getColor(seqTechnology), width=1)
-
-    # Saving the graph genome into .png file.
-    img.save(graphGenomeAddress, "PNG")
+    sns.despine(bottom=True, left=True)
+    ax = sns.lineplot(newXList, yList, color=getColor(seqTechnology), linewidth=0.5)
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1000))
+    ax.set(xticklabels=[])
+    ax.set(xlabel=None)
+    ax.set(ylabel=None)
+    ax.set(yticklabels=[])
+    ax.set(xticks=[])
+    ax.set(yticks=[])
+    fig = ax.get_figure()
+    fig.savefig(graphGenomeAddress)
 
 
 def getColor(seqTechnology):

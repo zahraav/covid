@@ -13,6 +13,28 @@ def get_configs():
 config = get_configs()
 
 
+# make reference genome's spike
+def makeSpikeReferenceGenome():
+    saving_address = "files/input/referenceGenomeSpike.txt"
+
+    inputFile = "files/input/referenceGenome_wuhan.txt"
+    output = ""
+    s = 21563
+    e = 25384
+
+    temp = ""
+    with open(saving_address, "a") as output_handle:
+        with open(inputFile) as infile:
+            for line in infile:
+                if line.__contains__('>'):
+                    output_handle.write(line)
+                else:
+                    temp += line.strip()
+
+        output = (temp[s:e])
+        output_handle.write(output)
+
+
 def generateSpikes(inFastaFile):
     """
     This method generate Spike protein from MSA FASTA file, and save the result in the spikeFastaFile
@@ -44,3 +66,6 @@ def generateSpikes(inFastaFile):
                     spike = line[spikeStartPoint:spikeEndPoint]
                     output_handle.write(spike)
     return spikeFile
+
+# fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
+# generateSpikes(fastaFileWithSequenceTechnology)

@@ -7,5 +7,8 @@ def getContentOfFile(inputFile):
     output = ''
     with open(inputFile) as infile:
         for line in infile:
-            output += line
+            if line.__contains__('>'):
+                output += line
+            else:
+                output += line.strip()
     return output

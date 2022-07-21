@@ -1,5 +1,4 @@
-import seaborn as sns
-import matplotlib.ticker as ticker
+import matplotlib.pyplot as plt
 import os
 import configparser
 
@@ -216,7 +215,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                             newLine = newLine + nu
                             repetitionList[i - segSize + 1][nu] = repetitionList[i - segSize + 1][nu] + 1
                             yAxis[i - segSize + 1] = nucleotideDictLists[i - segSize + 1][nu] * distanceOfLinesInGraph \
-                                + repetitionList[i - segSize + 1][nu] * sameNucleotideDistance
+                                                     + repetitionList[i - segSize + 1][nu] * sameNucleotideDistance
                             segSize = segSize - 1
                         segmentList.clear()
                         count = 0
@@ -252,7 +251,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
                             repetitionList[i - segSize][nu] = repetitionList[i - segSize][nu] + 1
 
                             yAxis[i - segSize] = nucleotideDictLists[i - segSize][nu] * distanceOfLinesInGraph \
-                                + repetitionList[i - segSize][nu] * sameNucleotideDistance
+                                                 + repetitionList[i - segSize][nu] * sameNucleotideDistance
                             segSize = segSize - 1
                         segmentList.clear()
                     newLine = newLine + nucleotide
@@ -261,7 +260,7 @@ def processSequences(seqList, rGenome, repetitionList, nucleotideDictLists, inte
 
                     repetitionList[i][nucleotide] = repetitionList[i][nucleotide] + 1
                     yAxis[i] = nucleotideDictLists[i][nucleotide] * distanceOfLinesInGraph \
-                        + repetitionList[i][nucleotide]
+                               + repetitionList[i][nucleotide]
                     segmentList.clear()
                     count = 0
 
@@ -307,20 +306,11 @@ def drawGraph(yList, seqTechnology, xList, graphGenomeAddress):
     :param xList: A list started from 0 to length of reference genome
     :return:
     """
-
-    sns.set(style="darkgrid")
     newXList = [element * 100 for element in xList]
-    sns.despine(bottom=True, left=True)
-    ax = sns.lineplot(newXList, yList, color=getColor(seqTechnology), linewidth=0.5)
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(1000))
-    ax.set(xticklabels=[])
-    ax.set(xlabel=None)
-    ax.set(ylabel=None)
-    ax.set(yticklabels=[])
-    ax.set(xticks=[])
-    ax.set(yticks=[])
-    fig = ax.get_figure()
-    fig.savefig(graphGenomeAddress)
+
+    plt.plot(newXList, yList, color=getColor(seqTechnology), linewidth=0.2)
+    plt.axis('off')
+    plt.savefig(graphGenomeAddress,dpi=1200)
 
 
 def getColor(seqTechnology):
@@ -338,3 +328,6 @@ def getColor(seqTechnology):
         return 'green'
     else:
         return 'purple'
+
+
+

@@ -29,13 +29,15 @@ def getContinents():
     print('a')
 
 
-def printCollectionDataDictionaryToFile(DateDictionary, DateFile):
+def printCollectionDataDictionaryToFile(DateDictionary):
     """
-    This program Method print the Collection Data dictionary into Datefile,
+    This program Method print the Collection Data dictionary into DateFile.
     :param DateDictionary:
-    :param DateFile: Address of file containing the Date information( minDate, maxDate, count of
     :return:
     """
+
+    # Address of file containing the Date information( minDate, maxDate, count of variants)
+    DateFile = config['outputAddresses'].get('DateFile')
 
     with open(DateFile, '+a') as dateFile:
         for mmd in DateDictionary:
@@ -55,6 +57,7 @@ def printClustersToFile(clusterDictionary):
     :param clusterDictionary:  different clusters data are stored in this dictionary
     :return:
     """
+
     outputFile = config['outputAddresses'].get('country')
 
     with open(outputFile, '+a') as outfile:
@@ -176,6 +179,12 @@ def returnCSVList(inputCSV):
 
 
 def DFS(v, cutLength, colour):
+    """
+    :param v: Branch of graph( it can be terminal or non-terminal)
+    :param cutLength: Threshold for cutting graph and make some sub-branches
+    :param colour: A number to colour different sub-branches. every sub-branch has a different number
+    :return:
+    """
     if v.is_terminal():
         color[v.name] = colour
     else:
@@ -233,12 +242,15 @@ def listOfCountries(idCluster, csvInfo):
 def mutationAnalysis(globalTree, metadataFile):
     """
     This method gets a phylogeneticTree and metadata File related to phylogenetic Tree.
-    Phylogenetic Tree is on the newick format.
+    Phylogenetic Tree is on the newick format. ( the Data that are being used in this pipeline
+    was provided from GisAid.)
     :param globalTree: Phylogenetic tree in Newick format
     :param metadataFile: metadata related to the phylogenetic tree
     :return:
     """
-    os.mkdir('files/output/PhylogeneticTree')
+
+    if not os.path.isdir('files/output/PhylogeneticTree'):
+        os.mkdir('files/output/PhylogeneticTree')
 
     treeData = getContentOfFile(globalTree)
     CSVInfo = returnCSVList(metadataFile)

@@ -8,6 +8,7 @@ from datetime import *
 
 from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
 from graphGenome.graphGenome import drawGraphGenome
+from mutationAnalysis.mutation import mutationAnalysis
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -239,6 +240,7 @@ def main():
         # os.mkdir('files/output/test')
         os.mkdir('files/output/CSV')
 
+
     # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
     tsvFolder = config['inputAddresses'].get('TSVFolder')
     outFastaFile = config['outputAddresses'].get('fullFastaFile')
@@ -260,9 +262,9 @@ def main():
     Mutation Analysis: 
     """
 
-    # globalTree = config['inputAddresses'].get('globalTree')
-    # metadataFile = config['inputAddresses'].get('metaDate')
-    # mutationAnalysis(globalTree, metadataFile)
+    globalTree = config['inputAddresses'].get('globalTree')
+    metadataFile = config['inputAddresses'].get('metaDate')
+    mutationAnalysis(globalTree, metadataFile)
 
     """
     Bar Charts:
@@ -274,10 +276,10 @@ def main():
     """
     Graph Genome:
     """
-    fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
+    # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
     # fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
 
-    drawGraphGenome(fastaFileWithSequenceTechnology)
+    # drawGraphGenome(fastaFileWithSequenceTechnology)
     # compareToUCSCSpike()
 
 

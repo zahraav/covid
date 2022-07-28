@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import os
 import configparser
 
+from graphGenome.GenerateSpikeProtein import generateSpikes
+from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
+
 CONFIG_FILE = r'config/config.cfg'
 
 
@@ -63,7 +66,7 @@ def drawGraphGenome(inFile):
         os.mkdir('files/output/GraphGenome/spike')
 
     # use spikes instead of whole genome!
-    # spikeFile = generateSpikes(inFile)
+    spikeFile = generateSpikes(inFile)
     spikeFile = config['outputAddresses'].get('spikeFastaFile')
     # set to '-' if you want whole rGenome
     nucleotideCutLength = '-'  # '-'  #1000
@@ -72,6 +75,7 @@ def drawGraphGenome(inFile):
     distanceOfLinesInGraph = 900
     rGenome = getReferenceGenome(nucleotideCutLength)
 
+    compareToUCSCSpike()
     """
     A list containing the sequences and sequencing technology for every sequence
     [[Sequence1 , SequenceTechnology],[Sequence2,sequenceTechnology][...,...]

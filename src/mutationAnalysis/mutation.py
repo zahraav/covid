@@ -210,7 +210,6 @@ def saveToFile(cluster, collectionDate, country, accessionId):
 
 def listOfCountries(idCluster, csvInfo):
     """
-
     :param idCluster:
     :param csvInfo:
     :return:
@@ -251,6 +250,8 @@ def mutationAnalysis(globalTree, metadataFile):
 
     if not os.path.isdir('files/output/PhylogeneticTree'):
         os.mkdir('files/output/PhylogeneticTree')
+        os.mkdir('files/output/PhylogeneticTree/pieCharts')
+        os.mkdir('files/output/PhylogeneticTree/timeCharts')
 
     treeData = getContentOfFile(globalTree)
     CSVInfo = returnCSVList(metadataFile)
@@ -259,7 +260,7 @@ def mutationAnalysis(globalTree, metadataFile):
 
     tree = Phylo.read(StringIO(treeData), "newick")
 
-    lenForCount = 1e-4
+    lenForCount = 1e-2
     for cld in tree.clade:
         DFS(cld, lenForCount, 0)
 

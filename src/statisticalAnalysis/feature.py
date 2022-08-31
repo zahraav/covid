@@ -2,7 +2,7 @@ class Info:
     def __init__(self, line):
         self.technology = self.set_technology(line)
         self.protocol = self.set_protocol(line)
-        self.country, self.region = self.set_country_region(line)  # state
+        self.country, self.region = self.setCountryRegion(line)  # state
         self.collection_date = self.set_collection_date(line)
 
     def get_technology(self):
@@ -23,7 +23,7 @@ class Info:
         else:
             return 'v1'
 
-    def set_country_region(self,line):
+    def setCountryRegion(self, line):
         temp = line.rsplit('|')[0].rsplit('/')
         country = temp[1]
         region = temp[2].rsplit('_')[0]  # state

@@ -1,0 +1,85 @@
+"""#!/usr/bin/perl
+##
+# for using this file copy this file to the parent folder of TSV files and run it
+# It will scan all the subfolders and make one SQL file.
+##
+use strict;
+
+# This is the table name in your database:
+my $table = qq(example_table);
+
+# Set this to your short username (use 'whoami' in the Terminal):
+my $username = qw(username);
+
+# change this if you want to customize the name of sql file:
+my $outputfile = qq(/Users/$username/Desktop/example.sql);
+
+# open up the exported file with tab separated values and slurp it all in:
+open(INFILE, "</Users/$username/Desktop/rawInput.txt") or die qq(Can't open input file: $!\n);
+my @lines = <INFILE>;
+close(INFILE);
+
+# Since we made our first line the field names, build the first part of our SQL statement:
+# First, pull the first line off the array of lines:
+my $line1 = shift @lines;
+
+# Get rid of the newline at the end:
+chomp($line1);
+
+# Get the field names. Customize it based on the
+# number of fields you have:
+my ($field1, $field2, $field3, $field4, $field5) = split(/\t/, $line1);
+
+# first part of our SQL:
+my $prefix = qq(INSERT INTO $table($field1, $field2, $field3, $field4, $field5) VALUES);
+
+# open the output file for writing:
+open(OUTFILE, ">$outputfile") or die qq(Can't open output file: $!\n);
+
+# now, roll thru the lines and build the second half of the SQL statement:
+foreach my $line (@lines) {
+
+	# get rid of the newline at the end:
+	chomp($line);
+
+	# get the individual values. Customize it based on the
+	# number of fields you have:
+	my ($first_name, $last_name, $city, $phone, $age) = split(/\t/, $line);
+
+	# escape the text fields:
+	$first_name = mysql_escape($first_name);
+	$last_name = mysql_escape($last_name);
+	$city = mysql_escape($city);
+	$phone = mysql_escape($phone);
+
+	# check to see if it's an empty field, if it is, make it NULL:
+	$first_name = qq(NULL) if ($first_name eq "''");
+	$last_name = qq(NULL) if ($last_name eq "''");
+	$city = qq(NULL) if ($city eq "''");
+	$phone = qq(NULL) if ($phone eq "''");
+
+	# build a line:
+	my $sql = $prefix . qq(($first_name,$last_name,$city,$phone,$age););
+
+	# print it to the output file:
+	print OUTFILE qq($sql\n);
+}
+
+# close the output file:
+close(OUTFILE);
+
+# ================ SUBROUTINES ==========
+# pass in a string and get back a safer one:
+sub mysql_escape
+{
+	# get the text:
+	my $rawText = shift;
+
+	# first, look for any apostrophes and escape them:
+	$rawText =~ s/'/\\'/g;
+
+	# since it's a text field, we want to enclose it in apostrophes:
+	$rawText = qq('$rawText');
+
+	return $rawText;
+}"""

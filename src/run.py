@@ -47,21 +47,6 @@ IlluminaNamesList = ["Illumina NextSeq", "MiSeq", "Illumina NexteraFlex", "Illum
 unknownSequencerList = ["MGI CleanPlex", "MGI", "unknown"]
 
 
-def removeSpace(inputFile, outputFile):
-    """
-    This method remove the spaces in the header lines of fasta file for
-    converting metadata from TSV to fasta file
-    """
-    with open(inputFile) as infile:
-        for line in infile:
-            line = line.rstrip()
-            with open(outputFile, 'a+', newline='') as file:
-                if line.__contains__('>'):
-                    line = re.sub("\s", "_", line)
-                file.write(line)
-                file.write('\n')
-
-
 def makeDictionaryOfSeqTech(tsvFile):
     """
     This method make a dictionary of sequence Technologies in the given TSV file
@@ -267,7 +252,7 @@ def main():
     mutationAnalysis(globalTree, metadataFile)
 
     """
-    Bar Charts:
+    Charts:
     """
     # inputFile = 'files/Msa_NoSpace_withExtraLetter.csv'
     # outputAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"

@@ -1,7 +1,6 @@
-from utilities.feature import Feature
-from utilities.feature import Info
-from utilities import StatisticalTest
-from utilities import ReadAndWrite
+from statisticalAnalysis.feature import Feature
+from statisticalAnalysis.feature import Info
+from statisticalAnalysis import StatisticalTest
 
 
 class Nucleotide:

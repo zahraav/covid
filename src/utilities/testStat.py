@@ -1,7 +1,7 @@
 import csv
 import math
 
-from ReadAndWrite import saveToCsv
+from utilities.ReadAndWrite import saveToCsv
 
 is_header = True
 inputFile = 'files/test_MSA_2.csv'

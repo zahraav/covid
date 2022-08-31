@@ -1,0 +1,33 @@
+
+def make_seq(length=40):
+    return ''.join([random.choice(['A','C','T','G','Y','S','W','K','R','M','H','D','B','V','N']) for i in range(length)])
+
+def mutate_seq(seq):
+    """mutate a sequence randomly"""
+    seq = list(seq)
+    pos = np.random.randint(1,len(seq),17)
+    for i in pos:
+        seq[i] = random.choice(['A','C','T','G','Y','S','W','K','R','M','H','D','B','V','N'])
+    return ''.join(seq)
+
+def get_colors(seqs):
+    """make colors for bases in sequence"""
+    text = [i for s in list(seqs) for i in s]
+    clrs =  {'A':'red','T':'green','G':'orange','C':'blue','-':'white','N':'white','Y':'peach','S':'gold','W':'black','K':'eggplant','R':'slategrey','M':'peru','H':'silver','D':'palegreen','B':'greenyellow','V':'aqua'}
+    colors = [clrs[i] for i in text]
+    return colors
+
+def muscle_alignment(seqs):
+    """Align 2 sequences with muscle"""
+    filename = 'temp.faa'
+    SeqIO.write(seqs, filename, "fasta")
+    name = os.path.splitext(filename)[0]
+    from Bio.Align.Applications import MuscleCommandline
+    cline = MuscleCommandline(input=filename, out=name+'.txt')
+    stdout, stderr = cline()
+    align = AlignIO.read(name+'.txt', 'fasta')
+    return align
+
+
+
+

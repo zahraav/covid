@@ -1,7 +1,6 @@
 from Bio import SeqIO
 from Bio.Align.Applications import MuscleCommandline  # Read in unfiltered data
 
-
 import logging
 
 from utilities.ReadAndWrite import saveToCsv
@@ -9,7 +8,8 @@ from utilities.ReadAndWrite import saveToCsv
 logger = logging.getLogger(__name__)
 
 
-def findSeqTechByID(accessionId):
+def findSeqTechByID(tableName, accessionId):
+    print(tableName, accessionId)
     return ''
 
 
@@ -29,8 +29,8 @@ def nextData(fastaFile):
             else:
                 sequence = sequence.rstrip("\n") + line.rstrip("\n")
 
-            #  tempseq = sequence
-            #  temph = header
+            #  tempSeq = sequence
+            #  tempH = header
             #  header = ''
             #  sequence = ''
         yield header, sequence
@@ -49,7 +49,6 @@ def parseFastaFile(tableName, inputFastaFile, outputFastaFile):
                 else:
                     accessionId = header.split('|')[1]
                     technology = findSeqTechByID(tableName, accessionId)
-                    # newHeader = header.rstrip() + '|' + str(technology)
                     f1.write(header.rstrip())
                     f1.write('|')
                     f1.write(str(technology))
@@ -94,5 +93,4 @@ def alignFastaFile(fastaFile):
                                      log="files/align_log.txt")
     muscle_cline()
 
-
-#alignFastaFile("files/quebec_seqtech_gisaid_hcov-19_2021_01_13_23_1.fasta")"""
+# alignFastaFile("files/quebec_seqtech_gisaid_hcov-19_2021_01_13_23_1.fasta")"""

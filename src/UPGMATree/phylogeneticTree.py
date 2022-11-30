@@ -70,7 +70,7 @@ def treeDFS(DFSBranch, clusters_name):
         if '_' in DFSBranch.name:  # or 'Nanopore' in branch.name:
             DFSBranch._set_color('red')
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
-            return (1, 0)
+            return 1, 0
         else:  # 'Illumina' in branch.name:
             DFSBranch._set_color('blue')
             # branch.name = (branch.name.rsplit('|')[1].rsplit('_')[2])
@@ -78,7 +78,6 @@ def treeDFS(DFSBranch, clusters_name):
 
     (r_, b_) = (0, 0)
     for i in DFSBranch:
-        ratio = 0
         (r, b) = treeDFS(i, clusters_name)
         print(clusters_name)
         if i.name in clusters_name:

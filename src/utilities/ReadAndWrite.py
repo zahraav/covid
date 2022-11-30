@@ -20,7 +20,7 @@ def saveDictionary(inputDictionary, savingAddress):
     :return: none
     """
     for elem in inputDictionary.keys():
-        for i in inputDictionary[elem]:
+        for _ in inputDictionary[elem]:
             saveData(savingAddress, inputDictionary[elem] + '\n')
 
 
@@ -38,7 +38,7 @@ def saveSimpleDictionary(inputDictionary, savingAddress):
 def saveDictionaryWith_toPrint(inputDictionary, savingAddress):
     """
     This function pass elements of dictionary of specific classes for saving to the saveData function
-    every elem in dictionary must have toprint() function, which gives a string
+    every elem in dictionary must have toPrint() function, which gives a string
     :param inputDictionary: Dictionary for saving in the file
     :param savingAddress: Address of file which we want to save data
     :return: none
@@ -47,12 +47,12 @@ def saveDictionaryWith_toPrint(inputDictionary, savingAddress):
         saveData(savingAddress, inputDictionary[elem].toPrint())
 
 
-def saveDictionaryWith_toprintAndCSV(inputDictionary, savingAddress, csvAddress):
+def saveDictionaryWith_toPrintAndCSV(inputDictionary, csvAddress):
     """
     This function pass elements of dictionary of specific classes for saving to the saveData function
-    every elem in dictionary must have toprint() function, which gives a string
+    every elem in dictionary must have toPrint() function, which gives a string
+    :param csvAddress:
     :param inputDictionary: Dictionary for saving in the file
-    :param savingAddress: Address of file which we want to save data
     :return: none
     """
     is_header = True
@@ -69,7 +69,6 @@ def saveDictionaryWith_toprintAndCSV(inputDictionary, savingAddress, csvAddress)
 
 def saveToCsv(fileName, csvList, fieldNames, isHeader):
     """
-
     :param fileName: address of the CSV file
     :param csvList: list of one line of data for writing on the CSV file
     :param fieldNames: List of fields for header
@@ -90,7 +89,8 @@ def saveToCsv(fileName, csvList, fieldNames, isHeader):
 def saveSeqAlignmentToCSV(inputDictionary, savingAddress, csvAddress):
     """
     This function pass elements of dictionary of specific classes for saving to the saveData function
-    every elem in dictionary must have toprint() function, which gives a string
+    every elem in dictionary must have toPrint() function, which gives a string
+    :param csvAddress:
     :param inputDictionary: Dictionary for saving in the file
     :param savingAddress: Address of file which we want to save data
     :return: none
@@ -118,7 +118,10 @@ def printDictionary(inputDictionary, outputFileName):
             cFile.write('\n')
 
 
-
-
-
-
+def changeTxtToCSV(inputAddress, outputFile):
+    with open(inputAddress) as infile:
+        with open(outputFile, 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            for line in infile:
+                newRow = [line.split(':')[0], line.split(':')[1].strip()]
+                writer.writerow(newRow)

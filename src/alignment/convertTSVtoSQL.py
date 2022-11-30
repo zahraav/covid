@@ -9,7 +9,7 @@ def convertTsvToSQL(file_name, table_name):
         for line in tabular_file:
             values = line.split("\t")
             if attributes is None:
-                attrList = [re.sub(r"\s+", '_', whitespace_attribues) for whitespace_attribues in values]
+                attrList = [re.sub(r"\s+", '_', whitespace_attributes) for whitespace_attributes in values]
                 attributes = ','.join(attrList)
                 data = "CREATE TABLE {table} ({attribute_types});".format(table=table_name, attribute_types=",".join(
                     [attr + " VARCHAR(100)" for attr in attrList]))

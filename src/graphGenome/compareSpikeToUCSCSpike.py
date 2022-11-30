@@ -37,7 +37,7 @@ def compareToUCSCSpike():
             else:
                 spikeList[header] = line.strip()
                 header = ""
-    spikeList['referenceGenome']=getContentOfFile(referenceGenomeFile)
+    spikeList['referenceGenome'] = getContentOfFile(referenceGenomeFile)
 
     if os.path.exists(comparedFile):
         print('Existing UCSC comparison csv file for spike removed successfully!!')

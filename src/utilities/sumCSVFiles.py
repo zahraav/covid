@@ -1,5 +1,5 @@
 import os
-from newParser import parse
+# from newParser import parse
 
 
 def addCSVFiles():
@@ -12,11 +12,11 @@ def addCSVFiles():
                 f.close()
 
 
-def runFastaFiles():
-    for i in range(1, 10, ):
+"""def runFastaFiles():
+   for i in range(1, 10, ):
         fileName = 'files/allfiles/' + str(i) + '.fasta'
-        parse(fileName)
-        # print(fileName)
+         parse(fileName)
+         print(fileName)
+"""
 
-
-runFastaFiles()
+# runFastaFiles()

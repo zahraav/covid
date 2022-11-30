@@ -2,13 +2,12 @@ import configparser
 import csv
 import logging
 import os
-import re
 import datetime
+import sys
 from datetime import *
 
-from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
-from graphGenome.graphGenome import drawGraphGenome
-from mutationAnalysis.mutation import mutationAnalysis
+# from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
+# from graphGenome.graphGenome import drawGraphGenome
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -31,9 +30,9 @@ config = get_configs()
 NanoporeNamesList = ["Oxford Nanopore Artic", "ONT_ARTIC", "Oxford Nanopore", "Oxford Nanopore GridION",
                      "Oxford Nanopore ARTIC", "MinION Oxford Nanopore", "Nanopore MinION", "MinION", "Nanopore ARTIC",
                      "GridION", "Nanopore MinIon", "Ion Torrent", "ONT ARTIC", "Nanopore minION",
-                     "Nanopore MinION Mk1C", "Oxford Nanopore Technologies ARTIC"
-                                             "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol",
-                     "Oxford Nanopore MinION", "Nanopore",
+                     "Nanopore MinION Mk1C", "Oxford Nanopore Technologies ARTIC", "Ion_Torrent_S5",
+                     "IonTorrent", "Nanopore GridION", "Nanopore GridION, ARTIC V3 protocol",
+                     "Oxford Nanopore MinION", "Nanopore", "Ion_Torrent",
                      "Oxford Nanopore - Artic", "Nanopore GridION", "Oxford Nanopore Technologies ARTIC"]
 
 # List of Illumina in TSV file
@@ -42,9 +41,19 @@ IlluminaNamesList = ["Illumina NextSeq", "MiSeq", "Illumina NexteraFlex", "Illum
                      "Illumina Miseq", "Illumina NextSeq 2000", "Illumina MiSeq", "NovaSeq 6000", "Illumina Nextseq",
                      "Illumina MiniSeq", "Illumina nextSeq", "Illumina NovaSeq 6000", "Illumina MiSeq, 1200bp",
                      "Illumina Nextera Flex", "Illumina NextSeq 550", "Illumina", "Illumina iSeq 100",
-                     "Illumina NovaSeq"]
+                     "Illumina NovaSeq", "Illumina_iSeq,_2_x_150bp_paired_end_reads,_ARTIC_V3,_Nextera_Flex_prep",
+                     "Illumna_NextSeq", "Illumina_MiniSeq", "Illumina_MiSeq,_2x300bp", "NextSeq_500", "iSeq100",
+                     "Illumina_/_iSeq", "NextSeq", "Illumina_MiSeq,_NextSeq", "llumina_NextSeq",
+                     "Illumina_Nextseq,_Illumina_Miseq"
+                     "MiSeq_V3_2x75_paired_reads_("
+                     "Illumina)_+Nextera_Flex_Enrichment_Library_with_Respiratory_Virus_Oligo ", "NextSeq",
+                     "nCoV_NextSeq", "Illumna_MiSeq", "nCoV_MiSeq",
+                     "Illumina_NestSeq500 Swift_Amplicon_SARS-CoV-2_Panel+Illumina_MiniSeq Illumina_Miseq,"
+                     "_2_x_250bp_paired_end_reads, "
+                     "_ARTIC_V3,_Nextera_Flex_prep",
+                     ]
 
-unknownSequencerList = ["MGI CleanPlex", "MGI", "unknown"]
+unknownSequencerList = ["MGI CleanPlex", "MGI", "unknown", "MGI_CleanPlex"]
 
 
 def makeDictionaryOfSeqTech(tsvFile):
@@ -212,7 +221,7 @@ def findReferenceGenome(inputFastaFile):
     print(minCollectionDate, accessionIdMin)
 
 
-def main():
+def main(*args):
     """
     The pipeline starts here,
     For generating the output please uncomment the different parts in the same order as following
@@ -220,15 +229,24 @@ def main():
     2-
     :return:
     """
+    """    for x in range(0, args.__len__()):
+        if args[x] == "SA":  # statistical Analysis
+            print(args[x])
+            # address
+            print(args[x + 1])
+        elif args[x] == "PT":  # phylogenetic Tree
+            print(args[x])
+        elif args[x] == "PT":  # phylogenetic Tree
+            print(args[x])"""
+
     if not os.path.isdir('files'):
         os.makedirs('files/output')
         # os.mkdir('files/output/test')
         os.mkdir('files/output/CSV')
 
-
     # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
-    tsvFolder = config['inputAddresses'].get('TSVFolder')
-    outFastaFile = config['outputAddresses'].get('fullFastaFile')
+    # tsvFolder = config['inputAddresses'].get('TSVFolder')
+    # outFastaFile = config['outputAddresses'].get('fullFastaFile')
     # findReferenceGenome(inputFastaFile)
     # addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
 
@@ -247,9 +265,9 @@ def main():
     Mutation Analysis: 
     """
 
-    globalTree = config['inputAddresses'].get('globalTree')
-    metadataFile = config['inputAddresses'].get('metaDate')
-    mutationAnalysis(globalTree, metadataFile)
+    # globalTree = config['inputAddresses'].get('globalTree')
+    # metadataFile = config['inputAddresses'].get('metaDate')
+    # mutationAnalysis(globalTree, metadataFile)
 
     """
     Charts:
@@ -269,7 +287,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    options = sys.argv
+    main(*options)
 
 """
 def main():
@@ -278,12 +297,12 @@ def main():
     table_name=config['databaseInfo'].get('table_name')
 
     input_fasta_file = config['address'].get('folder')+table_name+\
-                       config['address'].get('input_fastafile')
+                       config['address'].get('inputFastaFile')
 
 
 
     aligned_file_name = config['address'].get('folder')+"aligned_"+\
-                  table_name+ config['address'].get('input_fastafile')\
+                  table_name+ config['address'].get('inputFastaFile')\
                       .replace(".fasta","_"+basePairCount+".fasta")
 
 

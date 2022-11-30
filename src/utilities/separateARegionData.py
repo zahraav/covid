@@ -10,7 +10,7 @@ def separateARegionData(inputAddress, outputAddress):
     with open(outputAddress, 'a', encoding='utf-8') as output_handle:
         with open(inputAddress) as infile:
             for line in infile:
-                if line.__contains__('>') and line.__contains__('Canada'):
+                if line.__contains__('>') and line.__contains__('Qc'):
                     output += line
                     flag = True
                 elif flag:
@@ -22,4 +22,5 @@ def separateARegionData(inputAddress, outputAddress):
 
 inputFile = 'files/input/msa_0206_NorthAmerica.fasta'
 outputFile = 'files/input/msa_0206_Canada.fasta'
-separateARegionData(inputFile, outputFile)
+outputFile2 = 'files/input/msa_0206_QC.fasta'
+separateARegionData(outputFile, outputFile2)

@@ -40,13 +40,12 @@ def compareGenome(referenceGenome):
     """
     # referenceFasta = "files/ReferenceSequence.fasta"
     # referenceFastaWithoutHeader = "files/ReferenceSequence_2.fasta"
-    newReferenceGenome= referenceGenome.replace('.fasta', 'WithoutHeaderAndExtraLine.fasta')
+    newReferenceGenome = referenceGenome.replace('.fasta', 'WithoutHeaderAndExtraLine.fasta')
     makeReferenceGenomeFileWithoutExtraEnter(referenceGenome, newReferenceGenome)
 
     csvFile = 'files/Msa_NoSpace_withExtraLetter.csv'
     outFile = 'files/Msa_2060_withReferenceLetter.csv'
 
-    idList = []
     isFirstRow = True
 
     with open(csvFile) as csv_file:

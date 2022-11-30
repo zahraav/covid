@@ -87,10 +87,10 @@ def printCountryDictionary(inputDictionary, outputFileName):
 
 def drawPieChart(countryCountList, myLabels, cluster):
     """
-    This method gets a country lists and lable for the pie chart.
+    This method gets a country lists and label for the pie chart.
     Then draw pieChart for different countries in the clusters.
     :param countryCountList: List of different countries and the number of variants in that country in a cluster
-    :param myLabels: lables for the pieCart sample
+    :param myLabels: labels for the pieCart sample
     # myLabels = ["Apples", "Bananas", "Cherries", "Dates", "haha"]
     :param cluster: cluster number
     :return:
@@ -144,8 +144,7 @@ def analyzeTree(DFSTreeDictionary, CSVDictionary):
                 maxDate = collectionDateDictionary[DFSTreeDictionary[leaf]][2]
 
             else:
-                collectionDateDictionary[DFSTreeDictionary[leaf]] = [0, minDate,
-                                                                     maxDate]
+                collectionDateDictionary[DFSTreeDictionary[leaf]] = [0, minDate, maxDate]
 
             date_dt3 = datetime.strptime(CSVDictionary[leaf][1], '%Y-%m-%d')
 

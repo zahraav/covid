@@ -1,18 +1,64 @@
 import csv
+import scipy.stats as stats
+from utilities.ReadAndWrite import saveData
 
-from StatisticalTest import FisherExactTest
+
+def generateCSVFile(inputFile, csvOutput, csvHeader):
+    """
+    This method converts a txt file containing p-value and Nucleotide counts into a CSV file.
+    :param inputFile:
+    :param csvOutput:
+    :param csvHeader:
+    :return:
+    """
+    with open(csvOutput, 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(csvHeader)
+
+        with open(inputFile) as infile:
+            for line in infile:
+                data = line.split(' ')
+                data = list(filter(None, data))
+                newData = []
+                for x in data:
+                    if x.__contains__('\n'):
+                        newData.append(x.replace("\n", ""))
+                    elif x.__contains__(':'):
+                        pass
+                    else:
+                        newData.append(x)
+                writer.writerow(newData)
+
+
+def FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleotide_in_nanopore,
+                    not_nucleotide_in_illumina, p_value_file='files/p_value.txt'):
+    """
+                 |       Nanopore      | Illumina
+    -------------|---------------------|---------------
+     Nucleotide  | n_in_Nanopore       |  n_in_Illumina
+    -------------|---------------------|---------------
+     !Nucleotide | not_n_in_Nanopore   | not_n_in_Illumina
+                 |                     |
+    """
+    oddsRatio, p_value = stats.fisher_exact([[nucleotide_in_nanopore, nucleotide_in_illumina],
+                                             [not_nucleotide_in_nanopore, not_nucleotide_in_illumina]])
+
+    str_p_value = 'n_n: ' + str(nucleotide_in_nanopore) + '  n_i: ' + str(nucleotide_in_illumina) + '  nn_n: ' + str(
+        not_nucleotide_in_nanopore) + '  nn_i: ' + str(not_nucleotide_in_illumina) + '  p_value: ' + str(
+        p_value) + ' \n'
+    saveData(p_value_file, str_p_value)
+    return p_value
 
 
 def setInfo(line):
     """
-    This method gets the header and exteract information in the header like
+    This method gets the header and extract information in the header like
     Sequencing Technology, location, region, time
     :param line: header
     :return:
     """
     info = []
     # sequencing technology
-    sequenceTech = ''
     if 'nanopore' in line.lower():
         info.append('Nanopore')
         sequenceTech = 'Nanopore'
@@ -62,8 +108,8 @@ def VerticalCutNucleotideCount(line, sequenceTechnology, verticalDictionary):
     return verticalDictionary
 
 
-def savePValueDataToCSV(allCSV):
-    csvOutputFile = "Files/output/statisticalAnalysis/p_valueThirdPeak.csv"
+def savePValueDataToCSV(allCSV, city):
+    csvOutputFile = "Files/output/statisticalAnalysis/location/p_value_" + city + ".csv"
     header = ['NA', 'NC', 'NG', 'NT', 'IA', 'IC', 'IG', 'IT', 'A', 'C', 'G', 'T']
     with open(csvOutputFile, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
@@ -73,43 +119,42 @@ def savePValueDataToCSV(allCSV):
             writer.writerow(j)
 
 
-def fisherExactTest(allDictionary, seqLength):
+def fisherExactTest(allDictionary, seqLength, city):
     """
+    :param city:
     :param allDictionary: first Nanopore dictionary then Illumina dictionary
     :param seqLength:
     :return:
     """
-    """
-    
-    def FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleotide_in_nanopore,
-                        not_nucleotide_in_illumina, p_value_file='files/p_value.txt'):"""
+
     mainNucleotides = ['A', 'C', 'G', 'T']
 
-    CSVdata = [[], [], []]  # [[Nanopore: A,C,G,T][Illumina : A,C,G,T][pValue]]
+    CsvData = [[], [], []]  # [[Nanopore: A,C,G,T][Illumina : A,C,G,T][pValue]]
     allCSVData = []
-    for l in range(seqLength):
+    for ll in range(seqLength):
         for x in range(mainNucleotides.__len__()):
             # print(allDictionary[l][0][x])
-            nucleotide_in_nanopore = allDictionary[l][0][mainNucleotides[x]]
-            nucleotide_in_illumina = allDictionary[l][1][mainNucleotides[x]]
-            not_nucleotide_in_nanopore = sum(allDictionary[l][0].values()) - nucleotide_in_nanopore
-            not_nucleotide_in_illumina = sum(allDictionary[l][1].values()) - nucleotide_in_illumina
+            nucleotide_in_nanopore = allDictionary[ll][0][mainNucleotides[x]]
+            nucleotide_in_illumina = allDictionary[ll][1][mainNucleotides[x]]
+            not_nucleotide_in_nanopore = sum(allDictionary[ll][0].values()) - nucleotide_in_nanopore
+            not_nucleotide_in_illumina = sum(allDictionary[ll][1].values()) - nucleotide_in_illumina
             pValue = FisherExactTest(nucleotide_in_nanopore, nucleotide_in_illumina, not_nucleotide_in_nanopore,
-                                     not_nucleotide_in_illumina, 'files/output/statisticalAnalysis/p_valuePeakthreeNew.txt')
-            CSVdata[0].append(nucleotide_in_nanopore)
-            CSVdata[1].append(nucleotide_in_illumina)
-            CSVdata[2].append(pValue)
+                                     not_nucleotide_in_illumina, 'files/output/statisticalAnalysis/'
+                                                                 'location/p_value' + city + '.txt')
+            CsvData[0].append(nucleotide_in_nanopore)
+            CsvData[1].append(nucleotide_in_illumina)
+            CsvData[2].append(pValue)
 
         j = []
-        for i in CSVdata:
+        for i in CsvData:
             j = j.__add__(i)
 
         allCSVData.append(j)
-        CSVdata = [[], [], []]
-    savePValueDataToCSV(allCSVData)
+        CsvData = [[], [], []]
+    savePValueDataToCSV(allCSVData, city)
 
 
-def process_fasta_file(fasta_address):
+def process_fasta_file(fasta_address, city):
     infoDictionary = {}
 
     verticalTotalNucleotideDictionary = {}
@@ -147,8 +192,21 @@ def process_fasta_file(fasta_address):
 
                 sequencingTechnology = ''
 
-    fisherExactTest(verticalTotalNucleotideDictionary, sequenceLength)
+    fisherExactTest(verticalTotalNucleotideDictionary, sequenceLength, city)
 
 
-# process_fasta_file('files/output/peaks/firstTest.fasta')
-process_fasta_file('files/output/peaks/thirdPeak.fasta')
+def statisticalAnalysis(inputFile):
+    # Time
+    # 'files/output/peaks/firstTest.fasta'
+    # 'files/output/peaks/secondPeak.fasta'
+    # 'files/output/peaks/thirdPeak.fasta'
+    # process_fasta_file(inputFile)
+
+    # header = ['Nanopore', 'A', 'C', 'G', 'T', 'N', 'Gap', 'Illumina', 'A', 'C', 'G', 'T', 'N', 'Gap', 'P_value', 'A',
+    #          'C', 'G', 'T']
+    # generateCSVFile('files/output/statisticalAnalysis/Canada_NucleotideCountDictionary.txt',
+    #                'files/output/statisticalAnalysis/p_valueAll.csv', header)
+
+    # location: BC, QC
+    # process_fasta_file('files/input/statisticalAnalysis/msa_0206_BC_WithSeqTech.fasta', 'BC')
+    process_fasta_file(inputFile, 'BC')

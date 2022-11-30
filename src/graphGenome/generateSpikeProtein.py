@@ -18,7 +18,6 @@ def makeSpikeReferenceGenome():
     saving_address = "files/input/referenceGenomeSpike.txt"
 
     inputFile = "files/input/referenceGenome_wuhan.txt"
-    output = ""
     s = 21563
     e = 25384
 

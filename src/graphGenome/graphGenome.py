@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import os
 import configparser
 
-from graphGenome.GenerateSpikeProtein import generateSpikes
-from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
+from compareSpikeToUCSCSpike import compareToUCSCSpike
+# from graphGenome.generateSpikeProtein import generateSpikes
 
 CONFIG_FILE = r'config/config.cfg'
 
@@ -59,14 +59,14 @@ def drawGraphGenome(inFile):
     :param inFile: Multiple sequence alignment(MSA) file
     :return:
     """
-
+    print(inFile)
     # making a folder for graphGenome if one is not available in the files/output folder
     if not os.path.isdir('files/output/GraphGenome'):
         os.mkdir('files/output/GraphGenome')
         os.mkdir('files/output/GraphGenome/spike')
 
     # use spikes instead of whole genome!
-    spikeFile = generateSpikes(inFile)
+    # spikeFile = generateSpikes(inFile)
     spikeFile = config['outputAddresses'].get('spikeFastaFile')
     # set to '-' if you want whole rGenome
     nucleotideCutLength = '-'  # '-'  #1000

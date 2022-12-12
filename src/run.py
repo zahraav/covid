@@ -236,7 +236,7 @@ def main(*args):
             print(args[x + 1])
         elif args[x] == "PT":  # phylogenetic Tree
             print(args[x])
-        elif args[x] == "PT":  # phylogenetic Tree
+        elif args[x] == "GG":  # Graph genome
             print(args[x])"""
 
     if not os.path.isdir('files'):
@@ -289,32 +289,3 @@ def main(*args):
 if __name__ == '__main__':
     options = sys.argv
     main(*options)
-
-"""
-def main():
-    config = get_configs()
-    basePairCount=config['databaseInfo'].get('basePairCount')
-    table_name=config['databaseInfo'].get('table_name')
-
-    input_fasta_file = config['address'].get('folder')+table_name+\
-                       config['address'].get('inputFastaFile')
-
-
-
-    aligned_file_name = config['address'].get('folder')+"aligned_"+\
-                  table_name+ config['address'].get('inputFastaFile')\
-                      .replace(".fasta","_"+basePairCount+".fasta")
-
-
-    #basePairCount=int(basePairCount)
-    is_header=True
-    change_fasta_header(aligned_file_name,basePairCount,input_fasta_file,is_header)
-
-    #align_seq(input_fasta_file)
-
-    parseFastaFile(table_name,'files/test_MSA_2.fasta','files/output_Test_MSA_22.fasta')
-    #addSeqTechToMSAMetaData()
-    #process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
-
-
-"""

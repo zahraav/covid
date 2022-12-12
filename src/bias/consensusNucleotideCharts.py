@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import numpy as np
 
+
 def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
     """
     This method send data to the saveToCSV method on ReadAndWrite.py to save on CSV file.
@@ -43,21 +44,20 @@ def returnDictionaryById(inputFileAddress, columnNum, initializedDictionary):
     return initializedDictionary
 
 
-
-def returnDictionaryByTechnologyLetter(inputAddress):
+def returnDictionaryByTechnologyLetter(inputFile):
     """
     This method gets a CSV file containing the Sequence technology and
     different letters. Then generates a dictionary with different letters
     as keys and sequence technologies as value.
     example:
     {'S':{'Nanopore': 10, 'Illumina': 20},'N':{'Nanopore': 1, 'Illumina': 3},....}
-    :param inputAddress: Address for CSV file
+    :param inputFile: Address for CSV file
     :return: columnDict which is dictionary for letters and Sequence Technology
     """
     # number of column for letters can be used when counting a sequence for multiple times is not important
     columnDict = {}
     isFirstRow = True
-    with open(inputAddress) as csv_file:
+    with open(inputFile) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             if isFirstRow:
@@ -260,7 +260,7 @@ def letterBarChart(inputDictionary, yLabel, xLabel, title, BarOutputAddress):
     plt.show()
 
 
-def returnDictionaryByTechnologyLetter(inputFile):
+def returnDictionarybyTechnologyLetter(inputFile):
     """
     This method gets a CSV file containing the Sequence technology and
     different letters. Then generates a dictionary with different letters
@@ -294,7 +294,7 @@ def technologyConsensusNucleotide(inputFile, outFolder):
     """
     This method gets an Multiple sequence alignment file as an input.
     Then generate the sequence technology/letter bar chart.
-    first by passing the input file to returnDictionaryByTechnologyLetter method it gets a dictionary
+    first by passing the input file to returnDictionarybyTechnologyLetter method it gets a dictionary
     containing the relationship between sequenced technology and IUPAC nucleotide code
     -except 'A', 'C', 'G', 'T'-
     between sequence technology and letters
@@ -302,7 +302,7 @@ def technologyConsensusNucleotide(inputFile, outFolder):
     """
 
     # columnDict[letter] = {'Nanopore': 0, 'Illumina': 0}
-    columnDictionary = returnDictionaryByTechnologyLetter(inputFile)
+    columnDictionary = returnDictionarybyTechnologyLetter(inputFile)
     header = ['letter', 'Nanopore', 'Illumina']
     with open(outFolder + 'technology_letter.csv', 'w', encoding='UTF8', newline='') as f:
         firstItem = 'letter'
@@ -369,13 +369,13 @@ def indicesConsensusNucleotide(inputFile, outFolder):
     for elem in columnDictionary.keys():
         if columnDictionary[elem] >= 1000:
             resultDictionary[elem] = indicesDictionary[elem]
-    saveDictionaryWithConsensusNucleotideToCSV(outFolder+'IndicesLetter.csv', resultDictionary, 'Indices')
+    saveDictionaryWithConsensusNucleotideToCSV(outFolder + 'IndicesLetter.csv', resultDictionary, 'Indices')
 
-    BarOutputAddress = outFolder+'Indices_Letter.jpeg'
-    letterBarChart(resultDictionary, 'Sum of Consensus nucleotide', 'Location in the sequences','distribution of '
-                                                                                                'consensus nucleotide'
-                                                                                                ' in loci of '
-                                                                                                'sequences',
+    BarOutputAddress = outFolder + 'Indices_Letter.jpeg'
+    letterBarChart(resultDictionary, 'Sum of Consensus nucleotide', 'Location in the sequences', 'distribution of '
+                                                                                                 'consensus nucleotide'
+                                                                                                 ' in loci of '
+                                                                                                 'sequences',
                    BarOutputAddress)
 
 
@@ -396,19 +396,18 @@ def generateLocationDictionary(inputFile):
     return columnDict
 
 
-def indicesCountMoreThan1000(inputFile,outFolder):
+def indicesCountMoreThan1000(inputFile, outFolder):
     """
     This method get column dictionary as in input and depends on column numbers generate a bar charts.
+    :param inputFile:
     :param outFolder:
-    :param columnDict: Dictionary containing input data
-    :param columnNumber: Indicates the kind of bar chart.
     :return:
     """
     locationDictionary = generateLocationDictionary(inputFile)
 
     yAxis = []
     xAxis = []
-    BarOutputAddress = outFolder+'indicesBar.png'
+    BarOutputAddress = outFolder + 'indicesBar.png'
     for elem in locationDictionary.keys():
         if locationDictionary[elem] >= 1000:
             yAxis.append(locationDictionary[elem])
@@ -422,7 +421,92 @@ def indicesCountMoreThan1000(inputFile,outFolder):
     plt.show()
 
 
-#inputAddress = 'files/test_Msa_withExtraLetter.csv'
+def addTwoArray(list1, list2):
+    res_list = []
+    for i in range(0, len(list1)):
+        res_list.append(list1[i] + list2[i])
+    return res_list
+
+
+def continent(inputFile, outFolder):
+    """
+    This method gets an csv file that was generated from MSA file
+    as an input.Then generate the continent/letter bar chart.
+    :return:
+    """
+    inputDictionary = generateLocationLettersDictionary(inputFile)
+    outputFile = outFolder + 'continent_letter.csv'
+    saveDictionaryWithConsensusNucleotideToCSV(outputFile, inputDictionary, 'Continent')
+    # letterBarChart(inputDictionary, 'Count per sequencing (ratio)', 'Continents', 'Ratio of consensus nucleotide in '
+    #                                                                             'different continents',
+    #           outFolder + 'location_letter_ratio.jpeg')
+    # data to plot
+    n_groups = inputDictionary.__len__()
+    YList = []
+    SList = []
+    WList = []
+    KList = []
+    RList = []
+    MList = []
+    HList = []
+    DList = []
+    BList = []
+    VList = []
+    sumDictionary = {}
+
+    for xx in inputDictionary:
+        sumDictionary[xx] = sum(inputDictionary[xx].values())
+    for elem in inputDictionary:
+        YList.append((inputDictionary[elem]['Y']))
+        SList.append((inputDictionary[elem]['S']))
+        WList.append((inputDictionary[elem]['W']))
+        KList.append((inputDictionary[elem]['K']))
+        RList.append((inputDictionary[elem]['R']))
+        MList.append((inputDictionary[elem]['M']))
+        HList.append((inputDictionary[elem]['H']))
+        DList.append((inputDictionary[elem]['D']))
+        BList.append((inputDictionary[elem]['B']))
+        VList.append((inputDictionary[elem]['V']))
+
+    Y = np.array(YList)
+    S = np.array(SList)
+    W = np.array(WList)
+    K = np.array(KList)
+    R = np.array(RList)
+    M = np.array(MList)
+    H = np.array(HList)
+    D = np.array(DList)
+    B = np.array(BList)
+    V = np.array(VList)
+
+    # create plot
+    _, ax = plt.subplots()
+    index = np.arange(n_groups)
+    bar_width = 0.25
+    opacity = 0.8
+    plt.bar(index, YList, bar_width, alpha=opacity, color='green', label='Y')
+    plt.bar(index, RList, bar_width, alpha=opacity, color='pink', label='R', bottom=Y)
+    plt.bar(index, SList, bar_width, alpha=opacity, color='blue', label='S', bottom=Y + R)
+    plt.bar(index, WList, bar_width, alpha=opacity, color='gray', label='W', bottom=Y + R + S)
+    plt.bar(index, KList, bar_width, alpha=opacity, color='yellow', label='K', bottom=Y + R + S + W)
+    plt.bar(index, MList, bar_width, alpha=opacity, color='red', label='M', bottom=Y + R + S + W + K)
+    plt.bar(index, HList, bar_width, alpha=opacity, color='black', label='H', bottom=Y + R + S + W + K + M)
+    plt.bar(index, DList, bar_width, alpha=opacity, color='aqua', label='D', bottom=Y + R + S + W + K + M + H)
+    plt.bar(index, BList, bar_width, alpha=opacity, color='c', label='B', bottom=Y + R + S + W + K + M + H + D)
+    plt.bar(index, VList, bar_width, alpha=opacity, color='orange', label='V', bottom=Y + R + S + W + K + M + H + D + B)
+
+    plt.xlabel('Continent')
+    plt.ylabel('count')
+    plt.title('Distribution of consensus nucleotides in continents')
+    plt.xticks(index, inputDictionary.keys())
+    plt.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(outFolder + 'continent.jpeg', dpi=1600)
+
+    plt.show()
+
+
+# inputAddress = 'files/test_Msa_withExtraLetter.csv'
 inputAddress = 'files/Msa_NoSpace_withExtraLetter.csv'
 outputFolder = 'files/output/BarCharts/BarCharts/'
 # location(inputAddress, outputFolder)
@@ -431,5 +515,6 @@ outputFolder = 'files/output/BarCharts/BarCharts/'
 # ids(inputAddress, outputFolder)
 # indices(inputAddress, outputFolder)
 # locationConsensusNucleotide(inputAddress, outputFolder)
+continent(inputAddress, outputFolder)
 # technologyConsensusNucleotide(inputAddress, outputFolder)
 # indicesConsensusNucleotide(inputAddress, outputFolder)

@@ -14,9 +14,9 @@ def addCSVFiles():
 
 """def runFastaFiles():
    for i in range(1, 10, ):
-        fileName = 'files/allfiles/' + str(i) + '.fasta'
-         parse(fileName)
-         print(fileName)
+        file_name = 'files/allfiles/' + str(i) + '.fasta'
+         parse(file_name)
+         print(file_name)
 """
 
 # runFastaFiles()

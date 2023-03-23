@@ -6,6 +6,8 @@ import datetime
 import sys
 from datetime import *
 
+from statisticalAnalysis.generatePeaks import analyse_sequence_technology_bias
+
 # from graphGenome.compareSpikeToUCSCSpike import compareToUCSCSpike
 # from graphGenome.graphGenome import drawGraphGenome
 
@@ -60,7 +62,7 @@ def makeDictionaryOfSeqTech(tsvFile):
     """
     This method make a dictionary of sequence Technologies in the given TSV file
     and return the dictionary.seqTecDictionary
-    :param tsvFile: tsv file that used for returning dictionary of {accessionId: SequenceTechnology}
+    :param tsvFile: tsv file that used for returning dictionary of {accession_id: SequenceTechnology}
     :return: sequence- sequence Technology dictionary
     """
 
@@ -130,7 +132,7 @@ def getAccessionId(header):
 def addSeqTechToFastaFile(tsvFolder, inFastaFile, outFastaFile):
     """
     This method make a new fasta file and insert the seq technology from
-    {accessionId :sequenceTechnology} dictionary that generated in the
+    {accession_id :sequenceTechnology} dictionary that generated in the
     makeDictionaryOfSeqTechForEachFile(tsvFolder) method
     header, using accession Id
     :param outFastaFile:
@@ -244,43 +246,42 @@ def main(*args):
         # os.mkdir('files/output/test')
         os.mkdir('files/output/CSV')
 
-    # inputFastaFile = config['inputAddresses'].get('inputFastaFile')
+    # input_fasta_file = config['inputAddresses'].get('input_fasta_file')
     # tsvFolder = config['inputAddresses'].get('TSVFolder')
     # outFastaFile = config['outputAddresses'].get('fullFastaFile')
-    # findReferenceGenome(inputFastaFile)
-    # addSeqTechToFastaFile(tsvFolder, inputFastaFile, outFastaFile)
+    # findReferenceGenome(input_fasta_file)
+    # addSeqTechToFastaFile(tsvFolder, input_fasta_file, outFastaFile)
 
     """
     this method call all f the pipeline.
     Bias:
     """
-    # analyseSeqTechnologyBias(outFastaFile)
-
-    # alignedFileFame = config['address'] + "aligned_" + config['address'].get('inputFastaFile')
+    # analyse_sequence_technology_bias(outFastaFile)
+    # alignedFileFame = config['address'] + "aligned_" + config['address'].get('input_fasta_file')
     # parseFastaFile("", 'files/test_MSA_2.fasta', 'files/output_Test_MSA_22.fasta')
-    # addSeqTechToMSAMetaData()
+    #add_seq_techToMSAMetaData()
     # process_fasta_file('files/outputCanada_msa_0120-Copy.fasta', '1', table_name+'_')
 
     """
-    Mutation Analysis: 
+    Mutation Analysis: -
     """
 
-    # globalTree = config['inputAddresses'].get('globalTree')
-    # metadataFile = config['inputAddresses'].get('metaDate')
-    # mutationAnalysis(globalTree, metadataFile)
+    # global_tree = config['inputAddresses'].get('global_tree')
+    # metadata_file = config['inputAddresses'].get('metaDate')
+    # mutationAnalysis(global_tree, metadata_file)
 
     """
     Charts:
     """
-    # inputFile = 'files/Msa_NoSpace_withExtraLetter.csv'
+    # input_file = 'files/Msa_NoSpace_withExtraLetter.csv'
     # outputAddress = "files/BarCharts/relationBetweenTechAndLetter_Dictionary.txt"
-    # DrawBarChart(inputFile,outputAddress)
+    # DrawBarChart(input_file,outputAddress)
 
     """
-    Graph Genome:
+    Graph Genome:  
     """
     # fastaFileWithSequenceTechnology = config['outputAddresses'].get('fullFastaFile')
-    # fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
+    # fastaFileWithSequenceTechnology = config['separateFiles'].get('output_fasta_file')
 
     # drawGraphGenome(fastaFileWithSequenceTechnology)
     # compareToUCSCSpike()

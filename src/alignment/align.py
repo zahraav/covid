@@ -77,7 +77,7 @@ def parseHeader(header):
 
 
 def alignFastaFile(fastaFile):
-    # fastaFile="files/test.fasta"
+    # fasta_file="files/test.fasta"
     unfiltered = SeqIO.parse(fastaFile, "fasta")  # Drop data without (close to) full length sequences
     full_length_records = []
     for record in unfiltered:

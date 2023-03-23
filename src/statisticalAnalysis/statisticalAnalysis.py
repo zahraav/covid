@@ -196,11 +196,12 @@ def process_fasta_file(fasta_address, city):
 
 
 def statisticalAnalysis(inputFile):
+    print(1)
     # Time
     # 'files/output/peaks/firstTest.fasta'
     # 'files/output/peaks/secondPeak.fasta'
     # 'files/output/peaks/thirdPeak.fasta'
-    # process_fasta_file(inputFile)
+    # process_fasta_file(input_file)
 
     # header = ['Nanopore', 'A', 'C', 'G', 'T', 'N', 'Gap', 'Illumina', 'A', 'C', 'G', 'T', 'N', 'Gap', 'P_value', 'A',
     #          'C', 'G', 'T']
@@ -209,4 +210,6 @@ def statisticalAnalysis(inputFile):
 
     # location: BC, QC
     # process_fasta_file('files/input/statisticalAnalysis/msa_0206_BC_WithSeqTech.fasta', 'BC')
-    process_fasta_file(inputFile, 'BC')
+
+inputFile=''
+process_fasta_file(inputFile, 'BC')

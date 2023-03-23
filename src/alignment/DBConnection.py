@@ -30,9 +30,9 @@ def query_execute_all(query):
     return result
 
 
-def readSeqTech(table, accessionId):
-    # return query_execute("SELECT Sequencing_technology FROM "+table+" WHERE Accession_ID='"+accessionId+"'")
-    query = "SELECT Sequencing_technology FROM " + table + " WHERE Accession_ID='" + accessionId + "'"
+def readSeqTech(table, accession_id):
+    # return query_execute("SELECT Sequencing_technology FROM "+table+" WHERE Accession_ID='"+accession_id+"'")
+    query = "SELECT Sequencing_technology FROM " + table + " WHERE Accession_ID='" + accession_id + "'"
     result = query_execute(query)
     return result
 
@@ -45,10 +45,10 @@ def addColumnToTable(tableName, columnName):
     return query_execute("ALTER TABLE " + tableName + " ADD " + columnName + " VARCHAR(100) NOT NULL")
 
 
-def updateTable(tableName, accessionIdColumnName, accessionId, columnName, value):
+def updateTable(tableName, accessionIdColumnName, accession_id, columnName, value):
     return query_execute(
         "UPDATE " + tableName + " SET " + columnName + " = '" + value +
-        "' WHERE " + accessionIdColumnName + " = '" + accessionId + "' ")
+        "' WHERE " + accessionIdColumnName + " = '" + accession_id + "' ")
 
 
 def makeTable(tableName, firstLine, row):

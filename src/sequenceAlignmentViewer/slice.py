@@ -72,12 +72,12 @@ def separatePartOfFastaFile(inFasta, sequenceCount):
     This method gets a generate a new fasta file
     :return:
     """
-    outFasta = config['separateFiles'].get('outputFastaFile')
+    outFasta = config['separateFiles'].get('output_fasta_file')
     # inFasta = config['outputAddresses'].get('fullFastaFile')
     separateSeqByCount(inFasta, outFasta, sequenceCount)
 
 
-# inputFile = 'files/input/msa_0206_Canada.fasta'
+# input_file = 'files/input/msa_0206_Canada.fasta'
 # savingAddress = 'files/input/msa_0206_Canada_1000to20000.fasta'
 inputAddress = 'files/input/msa_0206_Canada_10000to20000.fasta'
 outputAddress = 'files/input/msa_0206_canada_1000sequence_5000nucleotide.fasta'

@@ -4,53 +4,53 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 
 
-def editTxtFileFormat(inputFile, clusterNumber):
-    outputChart = inputFile.replace(".txt", ".jpeg")
-    outputFile = inputFile.replace(".txt", "_ratio.csv")
+def edit_txt_file_format(input_file, cluster_number):
+    output_chart = input_file.replace(".txt", ".jpeg")
+    output_file = input_file.replace(".txt", "_ratio.csv")
     countries = {}
-    MinTime = datetime.now()
-    MaxTime = datetime(2018, 1, 1, 0)
-    with open(inputFile) as inFile:
+    min_time = datetime.now()
+    max_time = datetime(2018, 1, 1, 0)
+    with open(input_file) as inFile:
         for line in inFile:
             line = line.strip()
-            x = line.rsplit("\t")
-            country = x[0]
-            date = x[2]
+            xx = line.rsplit("\t")
+            country = xx[0]
+            date = xx[2]
             if country in countries:
                 countries[country].append(date)
             else:
                 countries[country] = [date]
     count = 0
-    dataCount = 0
+    data_count = 0
     for (country, dates) in countries.items():
-        sequenceDates = []
+        sequence_dates = []
         for dd in dates:
-            x = dd.split('-')
-            if len(x) >= 2:
-                if int(x[1]) == 0:
-                    x[1] = 1
-                if len(x) == 2:
-                    sequenceDates.append(datetime(int(x[0]), int(x[1]), 1, 0))
-                elif len(x) == 3:
-                    if int(x[2]) == 0:
-                        x[2] = 1
-                    sequenceDates.append(datetime(int(x[0]), int(x[1]), int(x[2]), 0))
-            dataCount += 1
+            xx = dd.split('-')
+            if len(xx) >= 2:
+                if int(xx[1]) == 0:
+                    xx[1] = 1
+                if len(xx) == 2:
+                    sequence_dates.append(datetime(int(xx[0]), int(xx[1]), 1, 0))
+                elif len(xx) == 3:
+                    if int(xx[2]) == 0:
+                        xx[2] = 1
+                    sequence_dates.append(datetime(int(xx[0]), int(xx[1]), int(xx[2]), 0))
+            data_count += 1
         # dates = [datetime(int(dd.split('-')[0]), int(dd.split('-')[1]), int(dd.split('-')[2]), 0) for dd in dates]
 
-        sequenceDates = sorted(sequenceDates)
-        for x in sequenceDates:
-            if x <= MinTime:
-                MinTime = x
-            if x >= MaxTime:
-                MaxTime = x
-    header = ["min Time", "Max Time", "MaxTime-MinTime", "dataCount", "mutationPerDay"]
-    with open(outputFile, 'w', encoding='UTF8', newline='') as f:
+        sequence_dates = sorted(sequence_dates)
+        for xx in sequence_dates:
+            if xx <= min_time:
+                min_time = xx
+            if xx >= max_time:
+                max_time = xx
+    header = ["min Time", "Max Time", "max_time-min_time", "data_count", "mutationPerDay"]
+    with open(output_file, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(header)
-        writer.writerow([MinTime, MaxTime, (MaxTime - MinTime), dataCount, (MaxTime - MinTime) / dataCount])
+        writer.writerow([min_time, max_time, (max_time - min_time), data_count, (max_time - min_time) / data_count])
 
-    print(MinTime, "   ", MaxTime)
+    print(min_time, "   ", max_time)
 
 
 """count += 1
@@ -61,7 +61,7 @@ def editTxtFileFormat(inputFile, clusterNumber):
             plt.plot(sequenceDates, [x + 1 for x in range(len(sequenceDates))])
     plt.xlabel('Time')
     plt.ylabel('Confirmed cases')
-    plt.title('Cumulative worldwide confirmed Covid-19 cases in Cluster ' + str(clusterNumber))
+    plt.title('Cumulative worldwide confirmed Covid-19 cases in Cluster ' + str(cluster_number))
 
     plt.legend(loc='best', fontsize='5')
     plt.gcf().autofmt_xdate()
@@ -70,6 +70,6 @@ def editTxtFileFormat(inputFile, clusterNumber):
 """
 
 for x in range(0, 63):
-    editTxtFileFormat("files/output/PhylogeneticTree/TimeCharts/timeChart_" + str(x) + ".txt", x)
+    edit_txt_file_format("files/output/PhylogeneticTree/TimeCharts/timeChart_" + str(x) + ".txt", x)
 
 # editTxtFileFormat("files/output/PhylogeneticTree/TimeCharts/sample.txt",0,)

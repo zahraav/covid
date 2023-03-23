@@ -48,16 +48,16 @@ def ignoreLetters(inputAddress, outputAddress):
 
 
 def addProtocolToMSAFile():
-    # inputFile = "files/Msa_NoSpace_withExtraLetter.csv"
+    # input_file = "files/Msa_NoSpace_withExtraLetter.csv"
     inputFile = "files/test_Msa_withExtraLetter.csv"
     outputFile = inputFile.replace("_withExtraLetter.csv", "_withoutLetter.csv")
 
 
     # TSVFiles = "files/output/BarCharts/TSVFiles/mergedFile_1.tsv"
     #TSVFiles = "files/output/BarCharts/test/test_mergedFile_1.tsv"
-    # addProtocolToMSAFile(inputFile)
+    # addProtocolToMSAFile(input_file)
     # drawProtocolChart("files/test_Msa_withExtraLetter_withProtocol.csv")
-    #ignoreLetters(inputFile, outputFile)
+    #ignoreLetters(input_file, outputFile)
     #newAccessionFile(outputFile, TSVFiles)
 
     # directory = 'files/output/BarCharts/TSVFiles'

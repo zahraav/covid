@@ -22,7 +22,7 @@ def removeSequence(inputAddress, outputAddress):
 
 inputFile = 'files/input/statisticalAnalysis/msa_0206_BC_WithSeqTech.fasta'
 outputFile = 'files/input/statisticalAnalysis/msa_0206_BC_WithSeqTech_1.fasta'
-# inputFile = 'files/input/statisticalAnalysis/test.fasta'
+# input_file = 'files/input/statisticalAnalysis/test.fasta'
 # outputFile = 'files/input/statisticalAnalysis/test2.fasta'
 
 removeSequence(inputFile, outputFile)

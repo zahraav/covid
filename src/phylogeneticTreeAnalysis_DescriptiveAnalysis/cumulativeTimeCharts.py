@@ -91,7 +91,7 @@ def timeChart(inputFile):
     :return:
     """
     outputChartFile = config['outputAddresses'].get('timeChart')
-    outputFolder = 'files/output/BarCharts/BarCharts/'
+    outputFolder = 'files/output/PhylogeneticTreeDescriptiveAnalysis/'
     makeTimeChartGraph(inputFile, outputFolder)
 
 

@@ -6,30 +6,30 @@ import pandas as pd
 import numpy as np
 
 
-def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
+def save_csv(file_name, csv_list, is_first_time_using_header):
     """
     This method send data to the saveToCSV method on ReadAndWrite.py to save on CSV file.
-    :param fileName: Address of output file
-    :param csvList: A list containing data on one CSV line
-    :param isFirstTimeUsingHeader: tell the SaveToCsv method if it's the first time the method is called so
+    :param file_name: Address of output file
+    :param csv_list: A list containing data on one CSV line
+    :param is_first_time_using_header: tell the SaveToCsv method if it's the first time the method is called so
     that it print the header on the output file.
     :return:
     """
-    fieldNames = ['id', 'reference', 'seq', 'date', 'location', 'technology', 'index']
-    x = {}
-    for name, elem in zip(fieldNames, csvList):
-        x[name] = str(elem)
-    with open(fileName, 'a+', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldNames)
-        if isFirstTimeUsingHeader:
+    field_names = ['id', 'reference', 'seq', 'date', 'location', 'technology', 'index']
+    xx = {}
+    for name, elem in zip(field_names, csv_list):
+        xx[name] = str(elem)
+    with open(file_name, 'a+', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=field_names)
+        if is_first_time_using_header:
             writer.writeheader()
-        writer.writerow(x)
+        writer.writerow(xx)
 
 
-def returnDictionaryById(inputFileAddress, columnNum, initializedDictionary):
+def return_dictionary_by_id(input_file_address, column_num, initialized_dictionary):
     idList = []
     isFirstRow = True
-    with open(inputFileAddress) as csv_file:
+    with open(input_file_address) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             if isFirstRow:
@@ -38,10 +38,10 @@ def returnDictionaryById(inputFileAddress, columnNum, initializedDictionary):
             seqId = row[0]
             if seqId not in idList:  # we didn't see id before
                 idList.append(seqId)
-                temp = row[columnNum]
-                if temp in initializedDictionary.keys():
-                    initializedDictionary[temp] = initializedDictionary[temp] + 1
-    return initializedDictionary
+                temp = row[column_num]
+                if temp in initialized_dictionary.keys():
+                    initialized_dictionary[temp] = initialized_dictionary[temp] + 1
+    return initialized_dictionary
 
 
 def returnDictionaryByTechnologyLetter(inputFile):
@@ -96,14 +96,17 @@ def location(inputFile, outFolder):
 
 
 def sequencingTechnology(inputFile, outFolder):
+    # nanopore_cnt,illumina_cnt=sequence_technology_percentage(input_file)
+
     df = pd.read_csv(inputFile, index_col=0, encoding='utf-8')
+    print(df['technology'])
     sns.countplot(x='technology', data=df)
     plt.xlabel('Sequencing technology')
     plt.ylabel('Count')
     plt.title('Number of consensus nucleotides in each sequencing technology')
     plt.xticks(rotation=-15)
-    plt.savefig(outFolder + 'sequencingTechnology.jpeg')
-    # plt.show()
+    plt.savefig(outFolder + 'sequencingTechnology1.jpeg')
+    plt.show()
 
 
 def ids(inputFile, outFolder):
@@ -437,7 +440,7 @@ def continent(inputFile, outFolder):
     inputDictionary = generateLocationLettersDictionary(inputFile)
     outputFile = outFolder + 'continent_letter.csv'
     saveDictionaryWithConsensusNucleotideToCSV(outputFile, inputDictionary, 'Continent')
-    # letterBarChart(inputDictionary, 'Count per sequencing (ratio)', 'Continents', 'Ratio of consensus nucleotide in '
+    # letterBarChart(input_dictionary, 'Count per sequencing (ratio)', 'Continents', 'Ratio of consensus nucleotide in '
     #                                                                             'different continents',
     #           outFolder + 'location_letter_ratio.jpeg')
     # data to plot
@@ -506,15 +509,56 @@ def continent(inputFile, outFolder):
     plt.show()
 
 
-# inputAddress = 'files/test_Msa_withExtraLetter.csv'
-inputAddress = 'files/Msa_NoSpace_withExtraLetter.csv'
+def sequence_technology_percentage(input_file, out_folder):
+    illumina_list = []
+    illumina_cnt = 0
+    nanopore_cnt = 0
+    nanopore_list = []
+    nanopore_iupac_cnt = 0
+    illumina_iupac_cnt = 0
+    with open(input_file) as infile:
+        for line in infile:
+            line = line.split(',')
+            if line.__contains__('Illumina'):
+                illumina_iupac_cnt += 1
+                if not illumina_list.__contains__(line[1]):
+                    illumina_cnt += 1
+                    illumina_list.append(line[1])
+            elif line.__contains__('Nanopore'):
+                nanopore_iupac_cnt += 1
+                if not nanopore_list.__contains__(line[1]):
+                    nanopore_cnt += 1
+                    nanopore_list.append(line[1])
+
+    fig = plt.figure()
+    nanopore_percentage=(nanopore_iupac_cnt/nanopore_cnt)*100
+    illumina_percentage=(illumina_iupac_cnt/illumina_cnt)*100
+
+    sequencing_technology = ['Nanopore', 'Illumina']
+    iupac_percentage = [nanopore_percentage,illumina_percentage]
+    c = ['blue', 'green']
+    plt.bar(sequencing_technology, iupac_percentage, color=c)
+    plt.xlabel('Sequencing technology')
+    plt.ylabel('proportion of consensus nucleotides')
+    plt.title('proportion of consensus nucleotides per sequencing technology')
+    plt.xticks(rotation=-15)
+    plt.savefig(out_folder + 'sequencingTechnology1.jpeg')
+    print('nanopore percentage: ', nanopore_percentage)
+    print('illumina percentage: ',illumina_percentage)
+    plt.show()
+
+
+inputAddress = 'files/test_Msa_withExtraLetter.csv'
+full_file=''
+# inputAddress = 'files/Msa_NoSpace_withExtraLetter.csv'
 outputFolder = 'files/output/BarCharts/BarCharts/'
 # location(inputAddress, outputFolder)
 # IUPACAnnotation(inputAddress, outputFolder)
-# sequencingTechnology(inputAddress, outputFolder)
+sequencingTechnology(inputAddress, outputFolder)
 # ids(inputAddress, outputFolder)
 # indices(inputAddress, outputFolder)
 # locationConsensusNucleotide(inputAddress, outputFolder)
-continent(inputAddress, outputFolder)
+# continent(inputAddress, outputFolder)
 # technologyConsensusNucleotide(inputAddress, outputFolder)
 # indicesConsensusNucleotide(inputAddress, outputFolder)
+# sequence_technology_percentage(inputAddress, outputFolder)

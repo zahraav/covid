@@ -66,5 +66,5 @@ def generateSpikes(inFastaFile):
                     output_handle.write(spike)
     return spikeFile
 
-# fastaFileWithSequenceTechnology = config['separateFiles'].get('outputFastaFile')
+# fastaFileWithSequenceTechnology = config['separateFiles'].get('output_fasta_file')
 # generateSpikes(fastaFileWithSequenceTechnology)

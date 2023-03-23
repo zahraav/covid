@@ -1,4 +1,4 @@
-def separateARegionData(inputAddress, outputAddress):
+def separate_data_for_a_location(inputAddress, outputAddress):
     """
     This Method separates data for a specific region from input file, and save it into outputAddress.
     :param inputAddress:
@@ -23,4 +23,4 @@ def separateARegionData(inputAddress, outputAddress):
 inputFile = 'files/input/msa_0206_NorthAmerica.fasta'
 outputFile = 'files/input/msa_0206_Canada.fasta'
 outputFile2 = 'files/input/msa_0206_QC.fasta'
-separateARegionData(outputFile, outputFile2)
+separate_data_for_a_location(outputFile, outputFile2)

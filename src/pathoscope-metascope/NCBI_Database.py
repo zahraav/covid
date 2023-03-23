@@ -10,11 +10,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["iFile=", "oFile="])
     except getopt.GetoptError:
-        print('ModifyTaxonNames.py -i <inputFile> -o <outputFile>')
+        print('ModifyTaxonNames.py -i <input_file> -o <outputFile>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('ModifyTaxonNames.py -i <inputFile> -o <outputFile>')
+            print('ModifyTaxonNames.py -i <input_file> -o <outputFile>')
             sys.exit()
         elif opt in ("-i", "--iFile"):
             inputFile = arg

@@ -178,7 +178,7 @@ def drawProtocol(inputAddress):
     plt.show()
 
 
-# inputFile = "files/test_Msa_withExtraLetter.csv"
+# input_file = "files/test_Msa_withExtraLetter.csv"
 # protocolFile = "files/test_Msa_NoSpace_withoutLetter_WithProtocolsNEW.csv"
 inputFile = "files/Msa_NoSpace_withExtraLetter.csv"
 protocolFile = "files/Msa_NoSpace_withoutLetter_WithProtocolsNEW.csv"

@@ -73,7 +73,7 @@ def saveToCsv(fileName, csvList, fieldNames, isHeader):
     :param csvList: list of one line of data for writing on the CSV file
     :param fieldNames: List of fields for header
     :param isHeader: It shows whether it is the first time this method is called or not.
-    If so, isHeader is going to be true. As a result, the method prints the header fields on the CSV file.
+    If so, is_header is going to be true. As a result, the method prints the header fields on the CSV file.
     :return: True, if it generates the file. False if it throws any exceptions.
     """
     x = {}

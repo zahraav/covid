@@ -1,32 +1,33 @@
 import csv
 
 
-def saveToCsv(fileName, csvList, isHeader):
+def save_to_csv(file_name, csv_list, is_header):
     """
-    :param fileName: address of the CSV file
-    :param csvList: list of one line of data for writing on the CSV file
-    :param isHeader: It shows whether it is the first time this method is called or not.
-    If so, isHeader is going to be true. As a result, the method prints the header fields on the CSV file.
+    :param file_name: address of the CSV file
+    :param csv_list: list of one line of data for writing on the CSV file
+    :param is_header: It shows whether it is the first time this method is called or not.
+    If so, is_header is going to be true. As a result, the method prints the header fields on the CSV file.
     :return: True, if it generates the file. False if it throws any exceptions.
     """
-    fieldNames = ['id', 'date', 'location', 'technology', 'index', 'letter']
-    # fieldNames = ['id', 'date', 'location']
-    dictX = {}
-    for name, elem in zip(fieldNames, csvList):
-        dictX[name] = str(elem)
-    with open(fileName, 'a+', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldNames)
-        if isHeader:
+    field_names = ['id', 'date', 'location', 'technology', 'index', 'letter']
+    # field_names = ['id', 'date', 'location']
+    dict_x = {}
+    for name, elem in zip(field_names, csv_list):
+        dict_x[name] = str(elem)
+    with open(file_name, 'a+', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=field_names)
+        if is_header:
             writer.writeheader()
-        writer.writerow(dictX)
+        writer.writerow(dict_x)
 
 
 """
 This code separate the sequences with IUPAC codes and the ones without IUPAC codes and 
 save them in the csv file and also make a new fasta file that contaings with the IUPAC codes  
 """
-# fastaFile = "files/input/test_MSA_2.fasta"
-fastaFile = "files/input/msa_0206.fasta"
+# fasta_file = "files/input/test_MSA_2.fasta"
+# fastaFile = "files/input/msa_0206.fasta"
+fastaFile = "files/Msa_NoSpace_without_reference_genome.fasta"
 outFastaFile = fastaFile.replace(".fasta", "_withExtraLetter.fasta")
 firstTimeUsingHeader = True
 nucleotideList = ['A', 'C', 'G', 'T', 'N', '-']
@@ -39,7 +40,7 @@ with open(fastaFile) as infile:
             seqId = headerSplit[1]
             date = headerSplit[2]
             location = headerSplit[3]
-            # technology = headerSplit[4]
+            technology = headerSplit[4]
 
         else:
             newLetterIndex = 0
@@ -48,7 +49,7 @@ with open(fastaFile) as infile:
                 if x not in nucleotideList:
                     letterIndicesForFile = letterIndicesForFile + ' ' + str(newLetterIndex)
 
-                    # saveCSV(fastaFile.replace('.fasta', '_withExtraLetter.csv'),
+                    # saveCSV(fasta_file.replace('.fasta', '_withExtraLetter.csv'),
                     #        [seqId, date, location, technology, newLetterIndex, x], firstTimeUsingHeader)
                     firstTimeUsingHeader = False
 
@@ -66,5 +67,5 @@ with open(fastaFile) as infile:
                     f1.write(line)
                     f1.write('\n')"""
             else:
-                saveToCsv(fastaFile.replace('.fasta', '_withoutLetter.csv'),
-                          [seqId, date, location], False)
+                save_to_csv(fastaFile.replace('.fasta', '_withoutLetter.csv'),
+                            [seqId, date, location,technology], False)

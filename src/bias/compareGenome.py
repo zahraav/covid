@@ -2,17 +2,17 @@ from utilities.ReadAndWrite import saveToCsv
 import csv
 
 
-def saveCSV(fileName, csvList, isFirstTimeUsingHeader):
+def save_csv(file_name, csv_list, is_first_time_using_header):
     """
     This method save the data into CSV file
-    :param fileName: Name of CSV file
-    :param csvList: list of Data for saving on csv file
-    :param isFirstTimeUsingHeader:  flag for indicating whether it's the first time sending data to a CSV file
+    :param file_name: Name of CSV file
+    :param csv_list: list of Data for saving on csv file
+    :param is_first_time_using_header:  flag for indicating whether it's the first time sending data to a CSV file
     if it's the first time, it means the filed names will be written too.
     :return:
     """
-    fieldNames = ['id', 'date', 'location', 'technology', 'index', 'Letter', 'reference Letter']
-    saveToCsv(fileName, csvList, fieldNames, isFirstTimeUsingHeader)
+    field_names = ['id', 'date', 'location', 'technology', 'index', 'Letter', 'reference Letter']
+    saveToCsv(file_name, csv_list, field_names, is_first_time_using_header)
 
 
 def makeReferenceGenomeFileWithoutExtraEnter(referenceFastaFile, newFile):
@@ -60,4 +60,4 @@ def compareGenome(referenceGenome):
                 for line in RFastaFile:
                     rLetter = line[int(index)]
             row.append(rLetter)
-            saveCSV(outFile, row, isFirstRow)
+            save_csv(outFile, row, isFirstRow)

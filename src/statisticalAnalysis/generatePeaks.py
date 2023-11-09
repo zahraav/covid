@@ -418,17 +418,17 @@ def analyse_sequence_technology_bias(fasta_file):
         os.mkdir('files/output/TransfacFormat')
 
     # take the date of three major peak from config file
-    # firstPeak = config['peaks'].get('firstPeakDate').split(",")
-    # secondPeak = config['peaks'].get('secondPeakDate').split(",")
-    # thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
+    firstPeak = config['peaks'].get('firstPeakDate').split(",")
+    secondPeak = config['peaks'].get('secondPeakDate').split(",")
+    thirdPeak = config['peaks'].get('thirdPeakDate').split(",")
 
-    # separatePeaks(fasta_file, [getDate(firstPeak[0]), getDate(firstPeak[1])],
-    #              [getDate(secondPeak[0]), getDate(secondPeak[1])], [getDate(thirdPeak[0]), getDate(thirdPeak[1])])
+    separate_peaks(fasta_file, [get_date(firstPeak[0]), get_date(firstPeak[1])],
+                  [get_date(secondPeak[0]), get_date(secondPeak[1])], [get_date(thirdPeak[0]), get_date(thirdPeak[1])])
 
     csv_file = parse(fasta_file)
 
     # testTransfacGenerator:
     # csv_file = config['outputAddresses'].get('csv_file')
-    transfac_file = config['outputAddresses'].get('TransfacFile')
+    # transfac_file = config['outputAddresses'].get('TransfacFile')
 
-    transfac_generator(csv_file, transfac_file)
+    # transfac_generator(csv_file, transfac_file)

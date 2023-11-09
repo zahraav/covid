@@ -108,7 +108,7 @@ def draw_pie_chart_for_proportion_of_sequencing_technologies(data_without_iupac_
     plt.xlabel('Sequencing technologies')
     plt.ylabel('Count')
     plt.xticks(np.arange(2), ('Nanopore', 'Illumina'))
-    plt.title("proportion of consensus nucleotides per sequencing technologies")
+    plt.title("proportion of consensus nucleotides per sequencing technologies",fontsize=8)
     plt.savefig(output_file, dpi=800)
     plt.show()
     plt.close()
@@ -128,9 +128,9 @@ def consensus_nucleotide():
     #                                                         'files/output/Bias/sequencingTechnology.png')
     draw_pie_chart_for_proportion_of_sequencing_technologies(
         [45032 / (94059) * 100, 148486 / (308972) * 100]
-        , 'files/output/BarCharts/BarCharts/sequencingTechnology.png')
+        , 'files/output/BarCharts/BarCharts/sequencingTechnology2.png')
 
 
-# consensus_nucleotide()
+consensus_nucleotide()
 #count_consensus_nucleotide("files/MSA_NoSpace_without_reference_genome.fasta")
-technologyConsensusNucleotide()
+#technologyConsensusNucleotide()
